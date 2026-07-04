@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { encrypt } from "@/lib/crypto";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
         id: user.id,
         github_username: user.user_metadata.user_name,
         avatar_url: user.user_metadata.avatar_url,
-        github_access_token: githubToken,
+        github_access_token: githubToken ? encrypt(githubToken) : null,
         updated_at: new Date().toISOString(),
       });
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { decrypt } from "@/lib/crypto";
 
 function impactScore(repo: {
   stargazers_count: number;
@@ -15,17 +16,67 @@ function impactScore(repo: {
 // Resumo gerado automaticamente a partir dos dados reais (sem IA por trás,
 // só regras) — se depois vocês quiserem trocar por uma chamada à API da
 // Anthropic pra deixar mais natural, é só substituir essa função.
+//
+// Pra não parecer um mad-lib (mesma frase, só trocando os números), existem
+// várias variações de template e a escolha é determinística por usuário
+// (hash do username) — assim o texto não muda a cada sync, mas dois perfis
+// diferentes tendem a sair com estruturas de frase diferentes.
+function hashSeed(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function joinStack(names: string[]): string {
+  if (names.length === 0) return "múltiplas tecnologias";
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} e ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
+}
+
 function buildSummary(opts: {
+  username: string;
   topStack: { name: string; percentage: number }[];
   publicRepos: number;
   activeRepos: number;
+  totalStars: number;
+  topRepoName: string | null;
 }) {
-  const [first, second] = opts.topStack;
-  const stackPhrase = second
-    ? `${first?.name ?? "código"} e ${second.name}`
-    : first?.name ?? "múltiplas tecnologias";
+  const stackNames = opts.topStack.slice(0, 3).map((s) => s.name);
+  const stack = joinStack(stackNames);
+  const hasStars = opts.totalStars > 0;
+  const hasTopRepo = Boolean(opts.topRepoName);
 
-  return `Desenvolvedor(a) com foco em ${stackPhrase}, mantendo ${opts.publicRepos} repositórios públicos no GitHub — ${opts.activeRepos} deles com atividade nos últimos 90 dias.`;
+  const variants = [
+    `Desenvolvedor(a) com foco em ${stack}, mantendo ${opts.publicRepos} repositórios públicos no GitHub — ${opts.activeRepos} deles com atividade nos últimos 90 dias.`,
+
+    `Trabalha principalmente com ${stack}.${
+      hasStars
+        ? ` No GitHub, soma ${opts.totalStars} estrelas distribuídas entre ${opts.publicRepos} repositórios públicos.`
+        : ` Mantém ${opts.publicRepos} repositórios públicos no GitHub, com foco em qualidade sobre quantidade.`
+    }`,
+
+    `${stack} formam a stack principal.${
+      hasTopRepo
+        ? ` O projeto ${opts.topRepoName} é o destaque atual, dentro de um total de ${opts.publicRepos} repositórios públicos.`
+        : ` Mantém uma base de ${opts.publicRepos} repositórios públicos no GitHub.`
+    }`,
+
+    `Constrói principalmente em ${stack}.${
+      hasStars
+        ? ` Já acumulou ${opts.totalStars} estrelas em projetos open source`
+        : ` Mantém presença ativa em código aberto`
+    }, com ${opts.activeRepos} repositórios em desenvolvimento nos últimos 90 dias.`,
+
+    `Entre ${opts.publicRepos} repositórios públicos no GitHub, ${opts.activeRepos} seguem em desenvolvimento ativo — principalmente em ${stack}${
+      hasTopRepo ? `, com destaque para ${opts.topRepoName}` : ""
+    }.`,
+  ];
+
+  const index = hashSeed(opts.username) % variants.length;
+  return variants[index];
 }
 
 export async function POST() {
@@ -48,8 +99,20 @@ export async function POST() {
     return NextResponse.json({ error: "no github token stored" }, { status: 400 });
   }
 
+  let githubAccessToken: string;
+  try {
+    githubAccessToken = decrypt(profile.github_access_token);
+  } catch {
+    // Token salvo antes dessa criptografia entrar em vigor (texto puro).
+    // Pede pra pessoa logar de novo pra ele ser salvo já criptografado.
+    return NextResponse.json(
+      { error: "token in legacy format, please sign in again" },
+      { status: 401 }
+    );
+  }
+
   const githubHeaders = {
-    Authorization: `Bearer ${profile.github_access_token}`,
+    Authorization: `Bearer ${githubAccessToken}`,
     Accept: "application/vnd.github+json",
   };
 
@@ -109,6 +172,12 @@ export async function POST() {
     (r: any) => Date.now() - new Date(r.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90
   ).length;
 
+  const totalStars = enriched.reduce((sum, r) => sum + r.stars, 0);
+  const topRepoName =
+    enriched.length > 0
+      ? enriched.slice().sort((a, b) => b.impact_score - a.impact_score)[0].name
+      : null;
+
   // 5. Salva repos
   const { error: reposError } = await supabase
     .from("repos")
@@ -127,7 +196,14 @@ export async function POST() {
       public_repos: githubUser.public_repos,
       followers: githubUser.followers,
       top_stack: topStack,
-      summary: buildSummary({ topStack, publicRepos: githubUser.public_repos, activeRepos }),
+      summary: buildSummary({
+        username: githubUser.login,
+        topStack,
+        publicRepos: githubUser.public_repos,
+        activeRepos,
+        totalStars,
+        topRepoName,
+      }),
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

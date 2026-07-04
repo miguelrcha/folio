@@ -5,6 +5,7 @@ import { DownloadCvButton } from "@/components/DownloadCvButton";
 import { SignOutButton } from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
+import { EditOverviewModal } from "@/components/EditOverviewModal";
 
 type PublicProfile = {
   id: string;
@@ -111,11 +112,23 @@ export default async function ProfilePage({
         </section>
 
         {/* Resumo profissional gerado automaticamente */}
-        {profile.summary && (
+        {(profile.summary || isOwner) && (
           <section className="mt-12">
-            <SectionLabel>overview</SectionLabel>
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+                overview
+              </span>
+              {isOwner && (
+                <EditOverviewModal profileId={profile.id} initialSummary={profile.summary ?? ""} />
+              )}
+              <span className="flex-1 h-px bg-[var(--color-border)]" />
+            </div>
             <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl">
-              {profile.summary}
+              {profile.summary || (
+                <span className="text-[var(--color-text-faint)] font-mono text-sm">
+                  nenhum resumo ainda.
+                </span>
+              )}
             </p>
           </section>
         )}
@@ -148,7 +161,7 @@ export default async function ProfilePage({
         {/* Portfólio ordenado por impacto */}
         <section className="mt-12 mb-20">
           <div className="flex items-center gap-3">
-            <span className="font-lato text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
               projects, by impact
             </span>
             {isOwner && <EditProjectsModal profileId={profile.id} />}
@@ -161,37 +174,44 @@ export default async function ProfilePage({
           ) : (
             <ol className="mt-4 space-y-4">
               {selectedRepos.map((repo, i) => (
-                <li
-                  key={repo.id}
-                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="font-mono text-xs text-[var(--color-text-faint)]">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="font-mono text-[var(--color-text)]">{repo.name}</span>
-                      </div>
-                      <p className="mt-1.5 text-sm text-[var(--color-text-muted)] max-w-xl">
-                        {repo.description || "sem descrição"}
-                      </p>
-                      <div className="mt-2.5 flex flex-wrap gap-2">
-                        {(repo.stack ?? []).slice(0, 6).map((s) => (
-                          <span
-                            key={s}
-                            className="text-[11px] font-mono text-[var(--color-text-faint)] border border-[var(--color-border)] rounded px-1.5 py-0.5"
-                          >
-                            {s}
+                <li key={repo.id}>
+                  <a
+                    href={`https://github.com/${profile.github_username}/${repo.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 transition-colors hover:border-[var(--color-border-bright)] hover:bg-[var(--color-surface-raised)]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-mono text-xs text-[var(--color-text-faint)]">
+                            {String(i + 1).padStart(2, "0")}
                           </span>
-                        ))}
+                          <span className="font-mono text-[var(--color-text)] group-hover:underline underline-offset-2">
+                            {repo.name}
+                          </span>
+                          <GithubIcon className="h-3 w-3 text-[var(--color-text-faint)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <p className="mt-1.5 text-sm text-[var(--color-text-muted)] max-w-xl">
+                          {repo.description || "sem descrição"}
+                        </p>
+                        <div className="mt-2.5 flex flex-wrap gap-2">
+                          {(repo.stack ?? []).slice(0, 6).map((s) => (
+                            <span
+                              key={s}
+                              className="text-[11px] font-mono text-[var(--color-text-faint)] border border-[var(--color-border)] rounded px-1.5 py-0.5"
+                            >
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-right font-mono text-xs text-[var(--color-text-faint)] space-y-0.5">
+                        <div>★ {repo.stars}</div>
+                        <div>{repo.forks} forks</div>
                       </div>
                     </div>
-                    <div className="shrink-0 text-right font-mono text-xs text-[var(--color-text-faint)] space-y-0.5">
-                      <div>★ {repo.stars}</div>
-                      <div>{repo.forks} forks</div>
-                    </div>
-                  </div>
+                  </a>
                 </li>
               ))}
             </ol>
