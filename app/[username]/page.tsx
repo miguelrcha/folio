@@ -4,6 +4,7 @@ import { ProfileHeader } from "@/components/ProfileHeader";
 import { DownloadCvButton } from "@/components/DownloadCvButton";
 import { SignOutButton } from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/server";
+import { EditProjectsModal } from "@/components/EditProjectsModal";
 
 type PublicProfile = {
   id: string;
@@ -146,7 +147,13 @@ export default async function ProfilePage({
 
         {/* Portfólio ordenado por impacto */}
         <section className="mt-12 mb-20">
-          <SectionLabel>projects, by impact</SectionLabel>
+          <div className="flex items-center gap-3">
+            <span className="font-lato text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              projects, by impact
+            </span>
+            {isOwner && <EditProjectsModal profileId={profile.id} />}
+            <span className="flex-1 h-px bg-[var(--color-border)]" />
+          </div>
           {selectedRepos.length === 0 ? (
             <p className="mt-4 text-sm text-[var(--color-text-faint)] font-mono">
               nenhum projeto selecionado ainda.

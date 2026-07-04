@@ -43,6 +43,7 @@ export default function ConnectPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [repos, setRepos] = useState<DbRepo[]>([]);
   const [githubUsername, setGithubUsername] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
   const startedRef = useRef(false);
 
   // Anima os steps de "terminal" enquanto a sincronização real acontece em paralelo.
@@ -109,6 +110,24 @@ export default function ConnectPage() {
   };
 
   const selectedCount = repos.filter((r) => r.is_selected).length;
+
+  const handleGenerate = async () => {
+    if (!githubUsername) return;
+    setGenerating(true);
+
+    // Marca que essa pessoa já passou pelo onboarding, independente de ter
+    // selecionado algum projeto ou não — assim login de retorno não fica
+    // preso voltando pro /connect quando ela não tem nenhum repositório.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      await supabase.from("profiles").update({ onboarding_completed: true }).eq("id", user.id);
+    }
+
+    router.push(`/${githubUsername}`);
+  };
 
   if (phase === "error") {
     return (
@@ -230,11 +249,11 @@ export default function ConnectPage() {
             {selectedCount !== 1 ? "s" : ""}
           </span>
           <button
-            onClick={() => githubUsername && router.push(`/${githubUsername}`)}
-            disabled={selectedCount === 0 || !githubUsername}
-            className="rounded-md bg-[var(--color-accent)] px-6 py-3 font-mono text-sm text-[var(--color-ink)] transition-opacity disabled:opacity-30 hover:opacity-90 cursor-pointer"
+            onClick={handleGenerate}
+            disabled={!githubUsername || generating}
+            className="rounded-md bg-[var(--color-accent)] px-6 py-3 font-mono text-sm text-[var(--color-ink)] transition-opacity disabled:opacity-30 hover:opacity-90"
           >
-            Generate my Folio →
+            {generating ? "Gerando..." : "Generate my Folio →"}
           </button>
         </div>
       </div>

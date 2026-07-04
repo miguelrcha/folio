@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { GithubIcon } from "@/components/GithubIcon";
 import { createClient } from "@/lib/supabase/client";
 
-const GITHUB_DEFAULT_AVATAR = "https://github.com/ArthurOscar.png"; // Placeholder avatar for users without a custom avatar
+const GITHUB_DEFAULT_AVATAR = "https://github.com/ArthurOscar.png";
+const GITHUB_DEFAULT_AVATAR2 = "https://github.com/Iago-KK.png";
 const MY_AVATAR = "https://github.com/miguelrcha.png";
 const SPOUK_AVATAR = "https://github.com/spoukhs.png";
 
 function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
-  const avatars = [MY_AVATAR, SPOUK_AVATAR, GITHUB_DEFAULT_AVATAR, GITHUB_DEFAULT_AVATAR];
-  const extra = totalCount === null ? null : Math.max(totalCount - avatars.length, 0);
+  const avatars = [MY_AVATAR, SPOUK_AVATAR, GITHUB_DEFAULT_AVATAR, GITHUB_DEFAULT_AVATAR2];
+  const displayCount = totalCount === null ? null : totalCount;
 
   return (
     <div className="mt-10 flex flex-col items-center gap-3">
@@ -31,8 +32,8 @@ function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
           style={{ zIndex: 0 }}
         >
           <span className="text-xs font-mono text-[var(--color-text-muted)]">
-            {extra === null ? "—" : `+${extra}`}
-          </span>
+  {displayCount === null ? "+" : `+${Math.abs(displayCount - avatars.length)}`}
+</span>
         </div>
       </div>
       <p className="text-sm font-mono text-[var(--color-text-muted)]">
@@ -57,32 +58,58 @@ export default function SignInPage() {
   // Se já tiver sessão ativa, pula direto pro perfil em vez de mostrar o botão de novo
   useEffect(() => {
     const supabase = createClient();
+    let settled = false;
+
+    const finish = () => {
+      if (!settled) {
+        settled = true;
+        setCheckingSession(false);
+      }
+    };
 
     const checkSession = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        setCheckingSession(false);
-        return;
-      }
+        if (!user) {
+          finish();
+          return;
+        }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("github_username")
-        .eq("id", user.id)
-        .single();
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("github_username, onboarding_completed")
+          .eq("id", user.id)
+          .single();
 
-      if (profile?.github_username) {
-        router.replace(`/${profile.github_username}`);
-      } else {
-        // já autenticou mas ainda não sincronizou os repos
-        router.replace("/connect");
+        if (profileError || !profile?.github_username) {
+          // já autenticou mas o perfil ainda nem foi salvo direito
+          router.replace("/connect");
+          return;
+        }
+
+        // Já completou o onboarding antes (mesmo sem nenhum repo)? Pula direto pro perfil.
+        if (profile.onboarding_completed) {
+          router.replace(`/${profile.github_username}`);
+        } else {
+          router.replace("/connect");
+        }
+      } catch (err) {
+        console.error("Erro ao checar sessão existente:", err);
+        // nunca deixa a tela travada em branco — libera pra mostrar o login normal
+        finish();
       }
     };
 
     checkSession();
+
+    // Rede de segurança: se por qualquer motivo a checagem nunca resolver,
+    // libera a tela de login depois de alguns segundos em vez de travar pra sempre.
+    const safetyTimeout = setTimeout(finish, 4000);
+
+    return () => clearTimeout(safetyTimeout);
   }, [router]);
 
   const handleSignIn = async () => {

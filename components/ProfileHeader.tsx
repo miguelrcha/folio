@@ -271,5 +271,5 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </header>
-  );
+  )
 }

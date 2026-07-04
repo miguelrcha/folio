@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       const githubToken = data.session.provider_token;
       const user = data.session.user;
 
-      await supabase.from("profiles").upsert({
+      const { error: upsertError } = await supabase.from("profiles").upsert({
         id: user.id,
         github_username: user.user_metadata.user_name,
         avatar_url: user.user_metadata.avatar_url,
@@ -21,7 +21,30 @@ export async function GET(request: Request) {
         updated_at: new Date().toISOString(),
       });
 
+      if (upsertError) {
+        console.error("Falha ao salvar perfil:", upsertError.message);
+        return NextResponse.redirect(
+          `${origin}/login?error=profile_save_failed&reason=${encodeURIComponent(upsertError.message)}`
+        );
+      }
+
+      // Se essa pessoa já completou o onboarding antes (login de retorno),
+      // pula direto pro perfil — mesmo que ela não tenha nenhum repositório.
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", user.id)
+        .single();
+
+      if (existingProfile?.onboarding_completed) {
+        return NextResponse.redirect(`${origin}/${user.user_metadata.user_name}`);
+      }
+
       return NextResponse.redirect(`${origin}/connect`);
+    }
+
+    if (error) {
+      console.error("Falha ao trocar código pela sessão:", error.message);
     }
   }
 
