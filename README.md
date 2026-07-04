@@ -1,5 +1,5 @@
 
-![Folio](/imgs/bannerFolio.png)
+![Folio](/imgs/banner_folio.png)
 
 [Folio]() is a developer-first platform that transforms your GitHub activity into a professional portfolio and an ATS-optimized resume — always up to date, always ready to share.
 
