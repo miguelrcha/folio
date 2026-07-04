@@ -1,8 +1,21 @@
-import Link from "next/link";
+"use client";
+
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
 import { GithubIcon } from "@/components/GithubIcon";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+
+  const handleViewProfile = (e: FormEvent) => {
+    e.preventDefault();
+    const cleaned = username.trim().replace(/^@/, "").replace(/^https?:\/\/github\.com\//, "");
+    if (!cleaned) return;
+    router.push(`/${cleaned}`);
+  };
+
   return (
     <main className="animate-fade-up relative z-10 min-h-screen overflow-hidden">
       <div className="hero-glow" />
@@ -23,19 +36,29 @@ export default function LoginPage() {
           resume, always up-to-date and ready to send.
         </p>
 
-        {/* CTA composta: campo informativo + botão real, ecoando a referência */}
-        <div className="mt-10 flex w-full max-w-md flex-col sm:flex-row items-stretch gap-3">
-          <div className="flex-1 flex items-center gap-2.5 rounded-lg border border-[var(--color-border-bright)] bg-[var(--color-surface)] px-4 py-3.5 font-lato font-semibold text-sm text-[var(--color-text-faint)]">
-            <GithubIcon className="h-4 w-4 shrink-0" />
-            <span className="truncate">github.com/@username</span>
+        {/* CTA composta: input real de username + botão que navega pro perfil */}
+        <form
+          onSubmit={handleViewProfile}
+          className="mt-10 flex w-full max-w-md flex-col sm:flex-row items-stretch gap-3"
+        >
+          <div className="flex-1 flex items-center gap-2.5 rounded-lg border border-[var(--color-border-bright)] bg-[var(--color-surface)] px-4 py-3.5 font-lato font-semibold text-sm focus-within:border-white/30 transition-colors">
+            <GithubIcon className="h-4 w-4 shrink-0 text-[var(--color-text-faint)]" />
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="github.com/@username"
+              className="w-full bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none truncate"
+            />
           </div>
-          <Link
-            href="/login"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-sm font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85 whitespace-nowrap"
+          <button
+            type="submit"
+            disabled={!username.trim()}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-sm font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85 disabled:opacity-40 whitespace-nowrap"
           >
             View Profile on Folio
-          </Link>
-        </div>
+          </button>
+        </form>
 
         <p className="mt-5 text-xs text-[var(--color-text-faint)] font-mono">
           read-only · no write access to your repositories
