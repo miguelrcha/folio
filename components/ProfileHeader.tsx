@@ -260,7 +260,9 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
         {/* Desktop bar — mesma estrutura de colunas da landing, pra manter o logo no mesmo X */}
         <div className="mx-auto hidden h-[58px] w-full items-center md:flex">
           <div className="flex flex-1 items-center gap-4 lg:w-[320px]">
-            <Logo size="md" />
+            <Link href="/">
+              <Logo size="md" />
+            </Link>
           </div>
 
           <div className="flex flex-1 justify-end items-center gap-3">
