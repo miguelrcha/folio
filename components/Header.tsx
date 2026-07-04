@@ -101,9 +101,21 @@ export function Header() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.rpc("get_total_profiles").then(({ data, error }) => {
-      if (!error && typeof data === "number") setProfileCount(data);
-    });
+
+    const loadCount = async () => {
+      try {
+        const { data, error } = await supabase.rpc("get_total_profiles");
+        if (error) {
+          console.error("Header: erro ao buscar contagem de perfis:", error.message);
+          return;
+        }
+        if (typeof data === "number") setProfileCount(data);
+      } catch (err) {
+        console.error("Header: falha inesperada ao buscar contagem de perfis:", err);
+      }
+    };
+
+    loadCount();
   }, []);
 
   // Checa se tem sessão ativa e, se sim, busca avatar + username pra mostrar no header
@@ -111,23 +123,37 @@ export function Header() {
     const supabase = createClient();
 
     const loadSession = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        setLoggedInUser(null);
-        return;
-      }
+        if (userError) {
+          console.error("Header: erro ao buscar usuário logado:", userError.message);
+        }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("github_username, avatar_url")
-        .eq("id", user.id)
-        .single();
+        if (!user) {
+          setLoggedInUser(null);
+          return;
+        }
 
-      if (profile?.github_username) {
-        setLoggedInUser(profile);
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("github_username, avatar_url")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Header: erro ao buscar perfil:", profileError.message);
+          return;
+        }
+
+        if (profile?.github_username) {
+          setLoggedInUser(profile);
+        }
+      } catch (err) {
+        console.error("Header: falha inesperada ao checar sessão:", err);
       }
     };
 
