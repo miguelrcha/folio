@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
 import { EditTextSectionModal } from "@/components/EditTextSectionModal";
+import { EditExperiencesModal, formatExperienceRange, type ExperienceEntry } from "@/components/EditExperiencesModal";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 
 type PublicProfile = {
@@ -20,6 +21,7 @@ type PublicProfile = {
   followers: number | null;
   top_stack: { name: string; percentage: number }[] | null;
   experiences: string | null;
+  experiences_json: ExperienceEntry[] | null;
   certifications: string | null;
   languages: string | null;
 };
@@ -146,25 +148,34 @@ export default async function ProfilePage({
             </span>
             {isOwner && (
               <>
-                <EditTextSectionModal
+                <EditExperiencesModal
                   profileId={profile.id}
-                  field="experiences"
-                  modalTitle="Editar experiências"
-                  initialValue={profile.experiences ?? ""}
-                  placeholder="Ex: Estágio em TI — Empresa X (2024–atual)"
+                  initialEntries={profile.experiences_json ?? []}
                 />
                 <ConnectLinkedInButton />
               </>
             )}
             <span className="flex-1 h-px bg-[var(--color-border)]" />
           </div>
-          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
-            {profile.experiences || (
-              <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                nenhuma experiência adicionada ainda.
-              </span>
-            )}
-          </p>
+          {profile.experiences_json && profile.experiences_json.length > 0 ? (
+            <div className="mt-4 space-y-4">
+              {profile.experiences_json.map((exp, i) => (
+                <div key={i} className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-mono text-sm text-[var(--color-text)]">{exp.title}</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">{exp.company}</p>
+                  </div>
+                  <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
+                    {formatExperienceRange(exp)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
+              nenhuma experiência adicionada ainda.
+            </p>
+          )}
         </section>
 
         {/* Stack real */}
