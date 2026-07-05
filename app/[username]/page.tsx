@@ -6,6 +6,8 @@ import { SignOutButton } from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
+import { EditTextSectionModal } from "@/components/EditTextSectionModal";
+import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 
 type PublicProfile = {
   id: string;
@@ -17,6 +19,9 @@ type PublicProfile = {
   public_repos: number | null;
   followers: number | null;
   top_stack: { name: string; percentage: number }[] | null;
+  experiences: string | null;
+  certifications: string | null;
+  languages: string | null;
 };
 
 type Repo = {
@@ -101,8 +106,8 @@ export default async function ProfilePage({
           {[
             { label: "seguidores", value: profile.followers ?? 0 },
             { label: "repositórios públicos", value: profile.public_repos ?? 0 },
-            { label: "projetos no folio", value: selectedRepos.length },
             { label: "estrelas nos projetos", value: totalStars },
+            { label: "estrelas no folio", value: selectedRepos.length },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
               <div className="font-mono text-2xl text-[var(--color-accent)]">{stat.value}</div>
@@ -133,6 +138,35 @@ export default async function ProfilePage({
           </section>
         )}
 
+        {/* Experiences */}
+        <section className="mt-12">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              experiences
+            </span>
+            {isOwner && (
+              <>
+                <EditTextSectionModal
+                  profileId={profile.id}
+                  field="experiences"
+                  modalTitle="Editar experiências"
+                  initialValue={profile.experiences ?? ""}
+                  placeholder="Ex: Estágio em TI — Empresa X (2024–atual)"
+                />
+                <ConnectLinkedInButton />
+              </>
+            )}
+            <span className="flex-1 h-px bg-[var(--color-border)]" />
+          </div>
+          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
+            {profile.experiences || (
+              <span className="text-[var(--color-text-faint)] font-mono text-sm">
+                nenhuma experiência adicionada ainda.
+              </span>
+            )}
+          </p>
+        </section>
+
         {/* Stack real */}
         {profile.top_stack && profile.top_stack.length > 0 && (
           <section className="mt-12">
@@ -158,8 +192,37 @@ export default async function ProfilePage({
           </section>
         )}
 
-        {/* Portfólio ordenado por impacto */}
-        <section className="mt-12 mb-20">
+        {/* Certificados */}
+        <section className="mt-12">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              certificados
+            </span>
+            {isOwner && (
+              <>
+                <EditTextSectionModal
+                  profileId={profile.id}
+                  field="certifications"
+                  modalTitle="Editar certificados"
+                  initialValue={profile.certifications ?? ""}
+                  placeholder="Ex: AWS Certified Cloud Practitioner — 2024"
+                />
+                <ConnectLinkedInButton />
+              </>
+            )}
+            <span className="flex-1 h-px bg-[var(--color-border)]" />
+          </div>
+          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
+            {profile.certifications || (
+              <span className="text-[var(--color-text-faint)] font-mono text-sm">
+                nenhum certificado adicionado ainda.
+              </span>
+            )}
+          </p>
+        </section>
+
+        {/* Portfólio ordenado por impacto — como já estava, sem mudanças */}
+        <section className="mt-12">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
               projects, by impact
@@ -216,6 +279,32 @@ export default async function ProfilePage({
               ))}
             </ol>
           )}
+        </section>
+
+        {/* Languages */}
+        <section className="mt-12 mb-20">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              languages
+            </span>
+            {isOwner && (
+              <EditTextSectionModal
+                profileId={profile.id}
+                field="languages"
+                modalTitle="Editar idiomas"
+                initialValue={profile.languages ?? ""}
+                placeholder="Ex: Português (nativo), Inglês (B1)"
+              />
+            )}
+            <span className="flex-1 h-px bg-[var(--color-border)]" />
+          </div>
+          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
+            {profile.languages || (
+              <span className="text-[var(--color-text-faint)] font-mono text-sm">
+                nenhum idioma adicionado ainda.
+              </span>
+            )}
+          </p>
         </section>
 
         <footer className="pb-10 flex items-center justify-between text-xs font-mono text-[var(--color-text-faint)]">
