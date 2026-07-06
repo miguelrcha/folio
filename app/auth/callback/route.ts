@@ -17,6 +17,7 @@ export async function GET(request: Request) {
       const { error: upsertError } = await supabase.from("profiles").upsert({
         id: user.id,
         github_username: user.user_metadata.user_name,
+        full_name: user.user_metadata.full_name ?? null,
         avatar_url: user.user_metadata.avatar_url,
         github_access_token: githubToken ? encrypt(githubToken) : null,
         updated_at: new Date().toISOString(),

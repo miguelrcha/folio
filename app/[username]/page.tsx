@@ -13,6 +13,7 @@ import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 type PublicProfile = {
   id: string;
   github_username: string;
+  full_name: string | null;
   avatar_url: string | null;
   bio: string | null;
   location: string | null;
@@ -89,8 +90,11 @@ export default async function ProfilePage({
             <div className="h-24 w-24 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-bright)] shrink-0" />
           )}
           <div>
-            <h1 className="text-3xl md:text-4xl font-mono text-[var(--color-text)]">
-              @{profile.github_username}
+            <h1 className="text-3xl md:text-4xl font-mono text-[var(--color-text)] flex flex-wrap items-baseline gap-x-2.5">
+              {profile.full_name && <span>{profile.full_name}</span>}
+              <span className={profile.full_name ? "text-[var(--color-text-muted)] text-xl md:text-2xl" : ""}>
+                @{profile.github_username}
+              </span>
             </h1>
             {profile.location && (
               <p className="mt-1 text-[var(--color-text-muted)]">{profile.location}</p>
@@ -108,8 +112,8 @@ export default async function ProfilePage({
           {[
             { label: "seguidores", value: profile.followers ?? 0 },
             { label: "repositórios públicos", value: profile.public_repos ?? 0 },
-            { label: "estrelas no folio", value: selectedRepos.length },
-            { label: "estrelas no folio", value: selectedRepos.length },
+            { label: "estrelas nos projetos", value: totalStars },
+            { label: "projetos no folio", value: selectedRepos.length },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
               <div className="font-mono text-2xl text-[var(--color-accent)]">{stat.value}</div>
@@ -150,23 +154,29 @@ export default async function ProfilePage({
               <>
                 <EditExperiencesModal
                   profileId={profile.id}
-                  initialEntries={profile.experiences_json ?? []}
+                  initialEntries={Array.isArray(profile.experiences_json) ? profile.experiences_json : []}
                 />
                 <ConnectLinkedInButton />
               </>
             )}
             <span className="flex-1 h-px bg-[var(--color-border)]" />
           </div>
-          {profile.experiences_json && profile.experiences_json.length > 0 ? (
+          {Array.isArray(profile.experiences_json) && profile.experiences_json.length > 0 ? (
             <div className="mt-4 space-y-4">
               {profile.experiences_json.map((exp, i) => (
                 <div key={i} className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-mono text-sm text-[var(--color-text)]">{exp.title}</p>
-                    <p className="text-sm text-[var(--color-text-muted)]">{exp.company}</p>
+                    <p className="font-mono text-sm text-[var(--color-text)]">{exp?.title ?? ""}</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">{exp?.company ?? ""}</p>
                   </div>
                   <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
-                    {formatExperienceRange(exp)}
+                    {(() => {
+                      try {
+                        return formatExperienceRange(exp);
+                      } catch {
+                        return "";
+                      }
+                    })()}
                   </span>
                 </div>
               ))}

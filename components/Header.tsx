@@ -118,34 +118,27 @@ export function Header() {
     loadCount();
   }, []);
 
-  // Checa se tem sessão ativa e, se sim, busca avatar + username pra mostrar no header
+  // Detecta sessão via onAuthStateChange, que dispara sozinho com o evento
+  // INITIAL_SESSION assim que o client termina de restaurar a sessão salva
+  // (cookies). Isso evita a race condition de chamar getUser() manualmente
+  // antes do client terminar essa restauração — que era a causa do header
+  // "esquecer" que você tava logado ao voltar no site.
   useEffect(() => {
     const supabase = createClient();
+    let cancelled = false;
 
-    const loadSession = async () => {
+    const loadProfile = async (userId: string) => {
       try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError) {
-          console.error("Header: erro ao buscar usuário logado:", userError.message);
-        }
-
-        if (!user) {
-          setLoggedInUser(null);
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile, error } = await supabase
           .from("profiles")
           .select("github_username, avatar_url")
-          .eq("id", user.id)
+          .eq("id", userId)
           .single();
 
-        if (profileError) {
-          console.error("Header: erro ao buscar perfil:", profileError.message);
+        if (cancelled) return;
+
+        if (error) {
+          console.error("Header: erro ao buscar perfil:", error.message);
           return;
         }
 
@@ -153,18 +146,25 @@ export function Header() {
           setLoggedInUser(profile);
         }
       } catch (err) {
-        console.error("Header: falha inesperada ao checar sessão:", err);
+        if (!cancelled) console.error("Header: falha inesperada ao buscar perfil:", err);
       }
     };
 
-    loadSession();
-
-    // Atualiza automaticamente se o usuário logar/deslogar em outra aba/ação
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => loadSession());
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user;
+      if (!user) {
+        setLoggedInUser(null);
+        return;
+      }
+      loadProfile(user.id);
+    });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

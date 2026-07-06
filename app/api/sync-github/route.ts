@@ -192,6 +192,7 @@ export async function POST() {
     .from("profiles")
     .update({
       bio: githubUser.bio,
+      full_name: githubUser.name ?? null,
       location: githubUser.location,
       public_repos: githubUser.public_repos,
       followers: githubUser.followers,
