@@ -108,7 +108,7 @@ export default async function ProfilePage({
           {[
             { label: "seguidores", value: profile.followers ?? 0 },
             { label: "repositórios públicos", value: profile.public_repos ?? 0 },
-            { label: "estrelas nos projetos", value: totalStars },
+            { label: "estrelas no folio", value: selectedRepos.length },
             { label: "estrelas no folio", value: selectedRepos.length },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
@@ -203,35 +203,6 @@ export default async function ProfilePage({
           </section>
         )}
 
-        {/* Certificados */}
-        <section className="mt-12">
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-              certificados
-            </span>
-            {isOwner && (
-              <>
-                <EditTextSectionModal
-                  profileId={profile.id}
-                  field="certifications"
-                  modalTitle="Editar certificados"
-                  initialValue={profile.certifications ?? ""}
-                  placeholder="Ex: AWS Certified Cloud Practitioner — 2024"
-                />
-                <ConnectLinkedInButton />
-              </>
-            )}
-            <span className="flex-1 h-px bg-[var(--color-border)]" />
-          </div>
-          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
-            {profile.certifications || (
-              <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                nenhum certificado adicionado ainda.
-              </span>
-            )}
-          </p>
-        </section>
-
         {/* Portfólio ordenado por impacto — como já estava, sem mudanças */}
         <section className="mt-12">
           <div className="flex items-center gap-3">
@@ -290,6 +261,35 @@ export default async function ProfilePage({
               ))}
             </ol>
           )}
+        </section>
+
+        {/* Certificados */}
+        <section className="mt-12">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              certificates
+            </span>
+            {isOwner && (
+              <>
+                <EditTextSectionModal
+                  profileId={profile.id}
+                  field="certifications"
+                  modalTitle="Editar certificados"
+                  initialValue={profile.certifications ?? ""}
+                  placeholder="Ex: AWS Certified Cloud Practitioner — 2024"
+                />
+                <ConnectLinkedInButton />
+              </>
+            )}
+            <span className="flex-1 h-px bg-[var(--color-border)]" />
+          </div>
+          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
+            {profile.certifications || (
+              <span className="text-[var(--color-text-faint)] font-mono text-sm">
+                nenhum certificado adicionado ainda.
+              </span>
+            )}
+          </p>
         </section>
 
         {/* Languages */}
