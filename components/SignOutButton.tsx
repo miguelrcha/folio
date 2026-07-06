@@ -24,7 +24,7 @@ export function SignOutButton() {
   return (
     <button
       onClick={handleSignOut}
-      className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold cursor-pointer"
+      className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-xs h-9 px-4 font-semibold cursor-pointer"
     >
       Logout
       <Kbd>L</Kbd>
