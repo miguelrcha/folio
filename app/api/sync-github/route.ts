@@ -475,6 +475,18 @@ export async function POST() {
   );
   const repos = await reposRes.json();
 
+  // 2.1 Seleções já feitas pela pessoa dona do perfil — um re-sync (ex: ao
+  // abrir "editar projetos" pra puxar repositórios novos) não pode resetar
+  // os projetos que ela já tinha escolhido pra aparecer no portfólio.
+  const { data: existingRepos } = await supabase
+    .from("repos")
+    .select("github_repo_id, is_selected")
+    .eq("profile_id", user.id);
+
+  const existingSelection = new Map(
+    (existingRepos ?? []).map((r) => [r.github_repo_id, r.is_selected])
+  );
+
   // 3. Linguagens por repo (bytes), em paralelo — usadas tanto pro card do
   // repo quanto pra agregação da stack geral do perfil
   const languageBytesTotal: Record<string, number> = {};
@@ -498,7 +510,7 @@ export async function POST() {
         forks: repo.forks_count,
         commits: 0,
         impact_score: impactScore(repo),
-        is_selected: false,
+        is_selected: existingSelection.get(repo.id) ?? false,
       };
     })
   );

@@ -19,20 +19,37 @@ export function EditProjectsModal({ profileId }: { profileId: string }) {
   const supabase = createClient();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [syncError, setSyncError] = useState(false);
   const [repos, setRepos] = useState<DbRepo[]>([]);
 
   useEffect(() => {
     if (!open) return;
+
+    let cancelled = false;
     setLoading(true);
-    supabase
-      .from("repos")
-      .select("id, name, description, stack, stars, impact_score, is_selected")
-      .eq("profile_id", profileId)
-      .order("impact_score", { ascending: false })
-      .then(({ data }) => {
-        setRepos(data ?? []);
-        setLoading(false);
-      });
+    setSyncError(false);
+
+    const run = async () => {
+      // Puxa repositórios novos/atualizados do GitHub antes de listar, pra
+      // quem acabou de criar um repo não precisar esperar outro sync manual.
+      const syncRes = await fetch("/api/sync-github", { method: "POST" });
+      if (!syncRes.ok && !cancelled) setSyncError(true);
+
+      const { data } = await supabase
+        .from("repos")
+        .select("id, name, description, stack, stars, impact_score, is_selected")
+        .eq("profile_id", profileId)
+        .order("impact_score", { ascending: false });
+
+      if (cancelled) return;
+      setRepos(data ?? []);
+      setLoading(false);
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
   }, [open, profileId, supabase]);
 
   const toggleRepo = async (id: string) => {
@@ -81,7 +98,14 @@ export function EditProjectsModal({ profileId }: { profileId: string }) {
 
             <div className="overflow-y-auto px-3 py-3 space-y-2">
               {loading && (
-                <p className="text-center text-sm text-[var(--color-text-faint)] font-mono py-6">carregando...</p>
+                <p className="text-center text-sm text-[var(--color-text-faint)] font-mono py-6">
+                  sincronizando com o github...
+                </p>
+              )}
+              {!loading && syncError && (
+                <p className="text-center text-xs text-[var(--color-text-faint)] font-mono pb-2">
+                  não deu pra atualizar com o github agora, mostrando a última versão salva.
+                </p>
               )}
               {!loading && repos.length === 0 && (
                 <p className="text-center text-sm text-[var(--color-text-faint)] font-mono py-6">
