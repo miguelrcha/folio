@@ -187,7 +187,7 @@ export default async function ProfilePage({
             </div>
           ) : (
             <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
-              nenhuma experiência adicionada ainda.
+              No professional experience added yet.
             </p>
           )}
         </section>
@@ -228,7 +228,7 @@ export default async function ProfilePage({
           </div>
           {selectedRepos.length === 0 ? (
             <p className="mt-4 text-sm text-[var(--color-text-faint)] font-mono">
-              nenhum projeto selecionado ainda.
+              No projects selected yet.
             </p>
           ) : (
             <ol className="mt-4 space-y-4">
@@ -300,7 +300,7 @@ export default async function ProfilePage({
           <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
             {profile.certifications || (
               <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                nenhum certificado adicionado ainda.
+                No certifications added yet.
               </span>
             )}
           </p>
@@ -326,14 +326,14 @@ export default async function ProfilePage({
           <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
             {profile.languages || (
               <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                nenhum idioma adicionado ainda.
+                No languages added yet.
               </span>
             )}
           </p>
         </section>
 
         <footer className="pb-10 flex items-center justify-between text-xs font-mono text-[var(--color-text-faint)]">
-          <span>gerado automaticamente a partir do github · folio.dev/@{profile.github_username}</span>
+          <span>generated automatically from github · folio.dev/@{profile.github_username}</span>
           <a
             href={`https://github.com/${profile.github_username}`}
             className="inline-flex items-center gap-1.5 hover:text-[var(--color-text-muted)] transition-colors"
