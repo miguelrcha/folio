@@ -1,4 +1,6 @@
 import type { ExperienceEntry } from "@/lib/experience";
+import type { CertificationEntry } from "@/lib/certification";
+import type { LanguageEntry } from "@/lib/language";
 
 export type PublicProfile = {
   id: string;
@@ -12,10 +14,9 @@ export type PublicProfile = {
   followers: number | null;
   top_stack: { name: string; percentage: number; manual?: boolean }[] | null;
   github_created_at: string | null;
-  experiences: string | null;
   experiences_json: ExperienceEntry[] | null;
-  certifications: string | null;
-  languages: string | null;
+  certifications_json: CertificationEntry[] | null;
+  languages_json: LanguageEntry[] | null;
 };
 
 export type Repo = {

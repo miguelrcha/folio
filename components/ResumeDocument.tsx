@@ -1,5 +1,7 @@
 import { GithubIcon } from "@/components/GithubIcon";
 import { formatExperienceRange } from "@/lib/experience";
+import { formatCertificationRange } from "@/lib/certification";
+import { formatLanguageEntry } from "@/lib/language";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 function ResumeSectionTitle({ children }: { children: React.ReactNode }) {
@@ -33,13 +35,12 @@ export function ResumeDocument({
   totalStars: number;
   githubSinceYear: number | null;
 }) {
-  const languageLines = (profile.languages ?? "")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-
   const stacks = profile.top_stack ?? [];
   const experiences = Array.isArray(profile.experiences_json) ? profile.experiences_json : [];
+  const certifications = Array.isArray(profile.certifications_json)
+    ? profile.certifications_json
+    : [];
+  const languageEntries = Array.isArray(profile.languages_json) ? profile.languages_json : [];
 
   return (
     <div className="hidden print:block bg-white text-[#111827]" style={{ fontFamily: "var(--font-sans)" }}>
@@ -104,23 +105,14 @@ export function ResumeDocument({
             </div>
           )}
 
-          {languageLines.length > 0 && (
+          {languageEntries.length > 0 && (
             <div>
               <ResumeSectionTitle>Languages</ResumeSectionTitle>
-              <ul className="space-y-[2pt] text-[8.5pt] text-[#374151]">
-                {languageLines.map((line, i) => (
-                  <li key={i}>{line}</li>
+              <div className="flex flex-wrap gap-[4pt]">
+                {languageEntries.map((entry, i) => (
+                  <ResumeTag key={i}>{formatLanguageEntry(entry)}</ResumeTag>
                 ))}
-              </ul>
-            </div>
-          )}
-
-          {profile.certifications && (
-            <div>
-              <ResumeSectionTitle>Certifications</ResumeSectionTitle>
-              <p className="text-[8.5pt] text-[#374151] leading-snug whitespace-pre-line">
-                {profile.certifications}
-              </p>
+              </div>
             </div>
           )}
         </div>
@@ -146,6 +138,25 @@ export function ResumeDocument({
                     </div>
                     <span className="shrink-0 text-[7.5pt] text-[#6b7280] whitespace-nowrap">
                       {formatExperienceRange(exp)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {certifications.length > 0 && (
+            <div>
+              <ResumeSectionTitle>Certifications</ResumeSectionTitle>
+              <div className="space-y-[6pt]">
+                {certifications.map((cert, i) => (
+                  <div key={i} className="flex items-baseline justify-between gap-[8pt]">
+                    <div>
+                      <p className="text-[9pt] font-semibold text-[#0a0a0a]">{cert?.name ?? ""}</p>
+                      <p className="text-[8.5pt] text-[#4b5563]">{cert?.issuer ?? ""}</p>
+                    </div>
+                    <span className="shrink-0 text-[7.5pt] text-[#6b7280] whitespace-nowrap">
+                      {formatCertificationRange(cert)}
                     </span>
                   </div>
                 ))}

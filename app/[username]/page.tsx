@@ -6,11 +6,14 @@ import { SignOutButton } from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
-import { EditTextSectionModal } from "@/components/EditTextSectionModal";
 import { EditExperiencesModal } from "@/components/EditExperiencesModal";
 import { EditStacksModal } from "@/components/EditStacksModal";
+import { EditCertificationsModal } from "@/components/EditCertificationsModal";
+import { EditLanguagesModal } from "@/components/EditLanguagesModal";
 import { ResumeDocument } from "@/components/ResumeDocument";
 import { formatExperienceRange } from "@/lib/experience";
+import { formatCertificationRange } from "@/lib/certification";
+import { formatLanguageEntry } from "@/lib/language";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
@@ -261,25 +264,36 @@ export default async function ProfilePage({
             </span>
             {isOwner && (
               <>
-                <EditTextSectionModal
+                <EditCertificationsModal
                   profileId={profile.id}
-                  field="certifications"
-                  modalTitle="Editar certificados"
-                  initialValue={profile.certifications ?? ""}
-                  placeholder="Ex: AWS Certified Cloud Practitioner — 2024"
+                  initialEntries={
+                    Array.isArray(profile.certifications_json) ? profile.certifications_json : []
+                  }
                 />
                 <ConnectLinkedInButton />
               </>
             )}
             <span className="flex-1 h-px bg-[var(--color-border)]" />
           </div>
-          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
-            {profile.certifications || (
-              <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                No certifications added yet.
-              </span>
-            )}
-          </p>
+          {Array.isArray(profile.certifications_json) && profile.certifications_json.length > 0 ? (
+            <div className="mt-4 space-y-4">
+              {profile.certifications_json.map((cert, i) => (
+                <div key={i} className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-mono text-sm text-[var(--color-text)]">{cert?.name ?? ""}</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">{cert?.issuer ?? ""}</p>
+                  </div>
+                  <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
+                    {formatCertificationRange(cert)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
+              No certifications added yet.
+            </p>
+          )}
         </section>
 
         {/* Languages */}
@@ -289,23 +303,29 @@ export default async function ProfilePage({
               languages
             </span>
             {isOwner && (
-              <EditTextSectionModal
+              <EditLanguagesModal
                 profileId={profile.id}
-                field="languages"
-                modalTitle="Editar idiomas"
-                initialValue={profile.languages ?? ""}
-                placeholder="Ex: Português (nativo), Inglês (B1)"
+                initialEntries={Array.isArray(profile.languages_json) ? profile.languages_json : []}
               />
             )}
             <span className="flex-1 h-px bg-[var(--color-border)]" />
           </div>
-          <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl whitespace-pre-line">
-            {profile.languages || (
-              <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                No languages added yet.
-              </span>
-            )}
-          </p>
+          {Array.isArray(profile.languages_json) && profile.languages_json.length > 0 ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {profile.languages_json.map((entry, i) => (
+                <span
+                  key={i}
+                  className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2.5 py-1 font-mono text-xs text-[var(--color-text)]"
+                >
+                  {formatLanguageEntry(entry)}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
+              No languages added yet.
+            </p>
+          )}
         </section>
 
         <footer className="pb-10 flex items-center justify-between text-xs font-mono text-[var(--color-text-faint)]">
