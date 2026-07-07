@@ -28,9 +28,9 @@
   --color-accent-dim: var(--color-accent-dim);
   --color-green-commit: var(--color-green-commit);
   --color-green-commit-bright: var(--color-green-commit-bright);
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas,
-    monospace;
-  --font-sans: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", "Cascadia Code", Menlo,
+    Consolas, monospace;
+  --font-sans: var(--font-inter), -apple-system, "Segoe UI", system-ui, sans-serif;
 }
 
 * {
@@ -76,11 +76,16 @@ body {
   }
 }
 
-/* Folha de estilos dedicada para o botão "baixar cv (pdf)" (window.print).
-   Simples e funcional sem precisar de um serviço extra; se depois vocês
-   quiserem um layout de PDF mais controlado (multi-coluna, fontes
-   embutidas, etc.), um microserviço Python com pandas + weasyprint/reportlab
-   pode substituir isso chamando um endpoint tipo /api/resume/[username]. */
+/* CV em PDF: o botão "View CV" chama window.print(). A página de perfil
+   (#resume-content) fica escondida via print:hidden e, no lugar dela, entra
+   o <ResumeDocument> (components/ResumeDocument.tsx) — um layout dedicado de
+   1 página A4, com sua própria tipografia clara, pensado pra impressão em
+   vez de ser um retrato da UI escura do site. */
+@page {
+  size: A4;
+  margin: 14mm 16mm;
+}
+
 @media print {
   .grain {
     display: none;
@@ -90,17 +95,6 @@ body {
   }
   body {
     background: #ffffff;
-    color: #111111;
-  }
-  #resume-content {
-    max-width: 100% !important;
-    padding: 0 !important;
-    color: #111111;
-  }
-  #resume-content * {
-    color: #111111 !important;
-    border-color: #cccccc !important;
-    background: #ffffff !important;
   }
 }
 

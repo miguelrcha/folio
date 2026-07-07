@@ -9,36 +9,10 @@ import { EditOverviewModal } from "@/components/EditOverviewModal";
 import { EditTextSectionModal } from "@/components/EditTextSectionModal";
 import { EditExperiencesModal } from "@/components/EditExperiencesModal";
 import { EditStacksModal } from "@/components/EditStacksModal";
-import { formatExperienceRange, type ExperienceEntry } from "@/lib/experience";
+import { ResumeDocument } from "@/components/ResumeDocument";
+import { formatExperienceRange } from "@/lib/experience";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
-
-type PublicProfile = {
-  id: string;
-  github_username: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  bio: string | null;
-  location: string | null;
-  summary: string | null;
-  public_repos: number | null;
-  followers: number | null;
-  top_stack: { name: string; percentage: number; manual?: boolean }[] | null;
-  github_created_at: string | null;
-  experiences: string | null;
-  experiences_json: ExperienceEntry[] | null;
-  certifications: string | null;
-  languages: string | null;
-};
-
-type Repo = {
-  id: string;
-  name: string;
-  description: string | null;
-  stack: string[] | null;
-  stars: number;
-  forks: number;
-  impact_score: number;
-};
+import type { PublicProfile, Repo } from "@/lib/profile";
 
 export default async function ProfilePage({
   params,
@@ -82,7 +56,7 @@ export default async function ProfilePage({
         <DownloadCvButton username={profile.github_username} />
       </ProfileHeader>
 
-      <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14">
+      <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
         {/* Hero */}
         <section className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
           {profile.avatar_url ? (
@@ -345,6 +319,13 @@ export default async function ProfilePage({
           </a>
         </footer>
       </main>
+
+      <ResumeDocument
+        profile={profile}
+        repos={selectedRepos}
+        totalStars={totalStars}
+        githubSinceYear={githubSinceYear}
+      />
     </div>
   );
 }
