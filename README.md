@@ -40,8 +40,8 @@ Folio is built for developers who want:
 ## Contributing
 We are actively building Folio and welcome feedback, ideas, and bug reports.
 
-- Report issues: https://github.com/foliohq/folio/issues  
-- Open pull requests: https://github.com/foliohq/folio/pulls  
+- Report issues: https://github.com/miguelrcha/folio/issues  
+- Open pull requests: https://github.com/miguelrcha/folio/pulls  
 
 ---
 
