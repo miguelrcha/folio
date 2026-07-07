@@ -50,8 +50,10 @@ export function EditExperiencesModal({
   const [open, setOpen] = useState(false);
   const [entries, setEntries] = useState<ExperienceEntry[]>(initialEntries);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleOpen = () => {
+    setError(null);
     setEntries(initialEntries.length > 0 ? initialEntries : [emptyEntry()]);
     setOpen(true);
   };
@@ -65,16 +67,28 @@ export function EditExperiencesModal({
 
   const handleSave = async () => {
     setSaving(true);
+    setError(null);
     const cleaned = entries.filter((e) => e.title.trim() || e.company.trim());
-    const { error } = await supabase
-      .from("profiles")
-      .update({ experiences_json: cleaned })
-      .eq("id", profileId);
-    setSaving(false);
 
-    if (!error) {
+    try {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ experiences_json: cleaned })
+        .eq("id", profileId);
+
+      if (updateError) {
+        console.error("EditExperiencesModal: erro ao salvar:", updateError.message);
+        setError(updateError.message);
+        return;
+      }
+
       setOpen(false);
       router.refresh();
+    } catch (err) {
+      console.error("EditExperiencesModal: falha inesperada ao salvar:", err);
+      setError(err instanceof Error ? err.message : "Erro inesperado ao salvar.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -216,20 +230,27 @@ export function EditExperiencesModal({
               </button>
             </div>
 
-            <div className="px-5 py-4 border-t border-[var(--color-border)] flex justify-end gap-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50"
-              >
-                {saving ? "Salvando..." : "Salvar"}
-              </button>
+            <div className="px-5 py-4 border-t border-[var(--color-border)]">
+              {error && (
+                <p className="mb-3 text-xs font-mono text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                  {error}
+                </p>
+              )}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setOpen(false)}
+                  className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50"
+                >
+                  {saving ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
