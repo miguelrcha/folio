@@ -29,6 +29,351 @@ function hashSeed(seed: string): number {
   return hash;
 }
 
+// Mapeia os códigos curtos usados pelo skillicons.dev (ex: "?i=js,ts,react")
+// pro nome legível da tecnologia.
+const SKILLICONS_NAMES: Record<string, string> = {
+  js: "JavaScript",
+  ts: "TypeScript",
+  react: "React",
+  nextjs: "Next.js",
+  vue: "Vue.js",
+  nuxtjs: "Nuxt.js",
+  angular: "Angular",
+  svelte: "Svelte",
+  gatsby: "Gatsby",
+  html: "HTML",
+  css: "CSS",
+  sass: "Sass",
+  less: "Less",
+  tailwind: "Tailwind CSS",
+  bootstrap: "Bootstrap",
+  bulma: "Bulma",
+  materialui: "Material UI",
+  nodejs: "Node.js",
+  deno: "Deno",
+  bun: "Bun",
+  express: "Express",
+  nestjs: "NestJS",
+  php: "PHP",
+  laravel: "Laravel",
+  django: "Django",
+  flask: "Flask",
+  fastapi: "FastAPI",
+  spring: "Spring",
+  dotnet: ".NET",
+  cs: "C#",
+  cpp: "C++",
+  c: "C",
+  java: "Java",
+  kotlin: "Kotlin",
+  swift: "Swift",
+  rust: "Rust",
+  go: "Go",
+  python: "Python",
+  ruby: "Ruby",
+  rails: "Ruby on Rails",
+  scala: "Scala",
+  haskell: "Haskell",
+  elixir: "Elixir",
+  erlang: "Erlang",
+  perl: "Perl",
+  r: "R",
+  julia: "Julia",
+  lua: "Lua",
+  dart: "Dart",
+  flutter: "Flutter",
+  androidstudio: "Android Studio",
+  xcode: "Xcode",
+  unity: "Unity",
+  unrealengine: "Unreal Engine",
+  mysql: "MySQL",
+  postgres: "PostgreSQL",
+  mongodb: "MongoDB",
+  redis: "Redis",
+  sqlite: "SQLite",
+  mariadb: "MariaDB",
+  cassandra: "Cassandra",
+  oracle: "Oracle",
+  firebase: "Firebase",
+  supabase: "Supabase",
+  git: "Git",
+  github: "GitHub",
+  gitlab: "GitLab",
+  bitbucket: "Bitbucket",
+  docker: "Docker",
+  kubernetes: "Kubernetes",
+  aws: "AWS",
+  gcp: "Google Cloud",
+  azure: "Azure",
+  heroku: "Heroku",
+  vercel: "Vercel",
+  netlify: "Netlify",
+  digitalocean: "DigitalOcean",
+  nginx: "Nginx",
+  apache: "Apache",
+  linux: "Linux",
+  ubuntu: "Ubuntu",
+  debian: "Debian",
+  arch: "Arch Linux",
+  windows: "Windows",
+  apple: "Apple",
+  bash: "Bash",
+  vim: "Vim",
+  vscode: "VS Code",
+  figma: "Figma",
+  blender: "Blender",
+  threejs: "Three.js",
+  webpack: "Webpack",
+  vite: "Vite",
+  babel: "Babel",
+  eslint: "ESLint",
+  jest: "Jest",
+  cypress: "Cypress",
+  selenium: "Selenium",
+  postman: "Postman",
+  graphql: "GraphQL",
+  redux: "Redux",
+  electron: "Electron",
+  tensorflow: "TensorFlow",
+  pytorch: "PyTorch",
+  opencv: "OpenCV",
+  numpy: "NumPy",
+  pandas: "Pandas",
+  matlab: "MATLAB",
+  arduino: "Arduino",
+  solidity: "Solidity",
+};
+
+// Mapeia os slugs do simple-icons usados no parâmetro `logo=` dos badges do
+// shields.io (ex: https://img.shields.io/badge/Python-3776AB?logo=python)
+// pro nome legível da tecnologia.
+const SHIELDS_LOGO_NAMES: Record<string, string> = {
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  react: "React",
+  "next.js": "Next.js",
+  nextdotjs: "Next.js",
+  "vue.js": "Vue.js",
+  vuedotjs: "Vue.js",
+  nuxtdotjs: "Nuxt.js",
+  angular: "Angular",
+  svelte: "Svelte",
+  gatsby: "Gatsby",
+  html5: "HTML",
+  css3: "CSS",
+  sass: "Sass",
+  less: "Less",
+  tailwindcss: "Tailwind CSS",
+  bootstrap: "Bootstrap",
+  "node.js": "Node.js",
+  nodedotjs: "Node.js",
+  deno: "Deno",
+  express: "Express",
+  nestjs: "NestJS",
+  php: "PHP",
+  laravel: "Laravel",
+  django: "Django",
+  flask: "Flask",
+  fastapi: "FastAPI",
+  spring: "Spring",
+  springboot: "Spring Boot",
+  dotnet: ".NET",
+  csharp: "C#",
+  cplusplus: "C++",
+  c: "C",
+  java: "Java",
+  kotlin: "Kotlin",
+  swift: "Swift",
+  rust: "Rust",
+  go: "Go",
+  python: "Python",
+  ruby: "Ruby",
+  rubyonrails: "Ruby on Rails",
+  scala: "Scala",
+  haskell: "Haskell",
+  elixir: "Elixir",
+  dart: "Dart",
+  flutter: "Flutter",
+  mysql: "MySQL",
+  postgresql: "PostgreSQL",
+  mongodb: "MongoDB",
+  redis: "Redis",
+  sqlite: "SQLite",
+  mariadb: "MariaDB",
+  firebase: "Firebase",
+  supabase: "Supabase",
+  git: "Git",
+  github: "GitHub",
+  gitlab: "GitLab",
+  docker: "Docker",
+  kubernetes: "Kubernetes",
+  amazonaws: "AWS",
+  googlecloud: "Google Cloud",
+  microsoftazure: "Azure",
+  heroku: "Heroku",
+  vercel: "Vercel",
+  netlify: "Netlify",
+  digitalocean: "DigitalOcean",
+  nginx: "Nginx",
+  linux: "Linux",
+  ubuntu: "Ubuntu",
+  graphql: "GraphQL",
+  redux: "Redux",
+  electron: "Electron",
+  tensorflow: "TensorFlow",
+  pytorch: "PyTorch",
+  numpy: "NumPy",
+  pandas: "Pandas",
+  solidity: "Solidity",
+  figma: "Figma",
+};
+
+// Mapeia os slugs de pasta usados pelo devicon (ex:
+// .../devicon/icons/java/java-original.svg) pro nome legível da tecnologia —
+// esse é o formato mais comum em README gerado à mão, geralmente via
+// <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/{slug}/...">.
+const DEVICON_NAMES: Record<string, string> = {
+  java: "Java",
+  spring: "Spring",
+  springboot: "Spring Boot",
+  typescript: "TypeScript",
+  javascript: "JavaScript",
+  react: "React",
+  go: "Go",
+  golang: "Go",
+  postgresql: "PostgreSQL",
+  mysql: "MySQL",
+  docker: "Docker",
+  git: "Git",
+  github: "GitHub",
+  gitlab: "GitLab",
+  bitbucket: "Bitbucket",
+  python: "Python",
+  html5: "HTML",
+  css3: "CSS",
+  nodejs: "Node.js",
+  express: "Express",
+  nestjs: "NestJS",
+  mongodb: "MongoDB",
+  kubernetes: "Kubernetes",
+  amazonwebservices: "AWS",
+  azure: "Azure",
+  flutter: "Flutter",
+  dart: "Dart",
+  kotlin: "Kotlin",
+  swift: "Swift",
+  rust: "Rust",
+  php: "PHP",
+  laravel: "Laravel",
+  django: "Django",
+  flask: "Flask",
+  csharp: "C#",
+  cplusplus: "C++",
+  c: "C",
+  ruby: "Ruby",
+  rails: "Ruby on Rails",
+  scala: "Scala",
+  haskell: "Haskell",
+  elixir: "Elixir",
+  graphql: "GraphQL",
+  redux: "Redux",
+  sass: "Sass",
+  less: "Less",
+  tailwindcss: "Tailwind CSS",
+  bootstrap: "Bootstrap",
+  vuejs: "Vue.js",
+  angularjs: "Angular",
+  nextjs: "Next.js",
+  nuxtjs: "Nuxt.js",
+  svelte: "Svelte",
+  figma: "Figma",
+  linux: "Linux",
+  ubuntu: "Ubuntu",
+  debian: "Debian",
+  nginx: "Nginx",
+  apache: "Apache",
+  firebase: "Firebase",
+  heroku: "Heroku",
+  vercel: "Vercel",
+  netlify: "Netlify",
+  digitalocean: "DigitalOcean",
+  jenkins: "Jenkins",
+  vscode: "VS Code",
+  vim: "Vim",
+  bash: "Bash",
+  googlecloud: "Google Cloud",
+  materialui: "Material UI",
+  electron: "Electron",
+  webpack: "Webpack",
+  babel: "Babel",
+  jest: "Jest",
+  eslint: "ESLint",
+  npm: "npm",
+  yarn: "Yarn",
+  redis: "Redis",
+  sqlite: "SQLite",
+  mariadb: "MariaDB",
+  oracle: "Oracle",
+  cassandra: "Cassandra",
+  unity: "Unity",
+  unrealengine: "Unreal Engine",
+  selenium: "Selenium",
+  pandas: "Pandas",
+  numpy: "NumPy",
+  tensorflow: "TensorFlow",
+  pytorch: "PyTorch",
+  opencv: "OpenCV",
+  arduino: "Arduino",
+  raspberrypi: "Raspberry Pi",
+  swagger: "Swagger",
+  postman: "Postman",
+  android: "Android",
+};
+
+// Extrai os nomes das tecnologias a partir dos ícones/badges usados no README
+// de perfil (github.com/usuario/usuario). Cobre os formatos mais comuns:
+// skillicons.dev (?i=js,ts,react), badges do shields.io (?logo=python) e
+// ícones do devicon/simple-icons embutidos via <img src="...">, que é o
+// padrão mais comum em README montado à mão. Sempre deriva o nome do
+// slug/URL do ícone, nunca do atributo alt — que na prática costuma vir
+// copiado e colado errado de um ícone pro outro.
+function extractReadmeStacks(markdown: string): string[] {
+  const names = new Set<string>();
+
+  const skillIconsRegex = /skillicons\.dev\/icons\?i=([a-z0-9,+-]+)/gi;
+  let match: RegExpExecArray | null;
+  while ((match = skillIconsRegex.exec(markdown))) {
+    for (const code of match[1].split(",")) {
+      const name = SKILLICONS_NAMES[code.trim().toLowerCase()];
+      if (name) names.add(name);
+    }
+  }
+
+  const deviconRegex = /devicon(?:-[a-z]+)?\/icons\/([a-z0-9]+)\//gi;
+  while ((match = deviconRegex.exec(markdown))) {
+    const name = DEVICON_NAMES[match[1].toLowerCase()];
+    if (name) names.add(name);
+  }
+
+  const simpleIconsRegex = /cdn\.simpleicons\.org\/([a-zA-Z0-9-]+)/gi;
+  while ((match = simpleIconsRegex.exec(markdown))) {
+    const name = SHIELDS_LOGO_NAMES[match[1].toLowerCase()];
+    if (name) names.add(name);
+  }
+
+  const shieldsBadgeRegex = /https?:\/\/img\.shields\.io\/badge\/[^\s)"'\]]+/gi;
+  const badges = markdown.match(shieldsBadgeRegex) ?? [];
+  for (const badge of badges) {
+    const logoMatch = badge.match(/logo=([a-zA-Z0-9._+-]+)/i);
+    if (!logoMatch) continue;
+    const slug = decodeURIComponent(logoMatch[1]).toLowerCase();
+    const name = SHIELDS_LOGO_NAMES[slug];
+    if (name) names.add(name);
+  }
+
+  return Array.from(names);
+}
+
 function joinStack(names: string[]): string {
   if (names.length === 0) return "múltiplas tecnologias";
   if (names.length === 1) return names[0];
@@ -168,15 +513,39 @@ export async function POST() {
     .sort((a, b) => b.percentage - a.percentage)
     .slice(0, 5);
 
+  // 4.1 Ícones de stack do README de perfil (github.com/usuario/usuario) —
+  // repo opcional, então um 404 aqui é esperado pra quem não tem um.
+  let readmeStackNames: string[] = [];
+  try {
+    const readmeRes = await fetch(
+      `https://api.github.com/repos/${githubUser.login}/${githubUser.login}/readme`,
+      { headers: { ...githubHeaders, Accept: "application/vnd.github.raw+json" } }
+    );
+    if (readmeRes.ok) {
+      const readmeContent = await readmeRes.text();
+      readmeStackNames = extractReadmeStacks(readmeContent);
+    }
+  } catch {
+    // Falha ao buscar/parsear o README não deve travar o resto do sync.
+  }
+
+  const readmeStack = readmeStackNames
+    .filter((name) => !githubStack.some((g) => g.name.toLowerCase() === name.toLowerCase()))
+    .map((name) => ({ name, percentage: 0 }));
+
   // Stacks adicionadas manualmente pela pessoa dona do perfil não devem ser
-  // apagadas a cada sync — preserva as que não vieram do GitHub dessa vez.
+  // apagadas a cada sync — preserva as que não vieram do GitHub nem do README
+  // dessa vez.
   const existingTopStack =
     (profile.top_stack as { name: string; percentage: number; manual?: boolean }[] | null) ?? [];
   const manualStacks = existingTopStack.filter(
-    (s) => s.manual && !githubStack.some((g) => g.name.toLowerCase() === s.name.toLowerCase())
+    (s) =>
+      s.manual &&
+      !githubStack.some((g) => g.name.toLowerCase() === s.name.toLowerCase()) &&
+      !readmeStack.some((r) => r.name.toLowerCase() === s.name.toLowerCase())
   );
 
-  const topStack = [...githubStack, ...manualStacks];
+  const topStack = [...githubStack, ...readmeStack, ...manualStacks];
 
   const activeRepos = repos.filter(
     (r: any) => Date.now() - new Date(r.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90
