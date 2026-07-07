@@ -184,7 +184,7 @@ export function Header() {
           </div>
           <div className="flex items-center gap-3">
             <a
-              href="https://github.com"
+              href="https://github.com/miguelrcha/folio"
               className="flex items-center gap-1 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors duration-150"
             >
               <GithubIcon className="w-4.5 h-4.5" />
@@ -252,7 +252,7 @@ export function Header() {
           <div className="flex flex-1 items-center gap-4 lg:w-[320px]">
             <Logo size="md" />
             <a
-              href="https://github.com"
+              href="https://github.com/miguelrcha/folio"
               className="hidden lg:flex items-center gap-1.5 px-2 py-1 ml-6 hover:opacity-80 transition-opacity duration-200 group"
             >
               <GithubIcon className="w-5 h-5 text-[var(--color-text)] group-hover:text-[var(--color-text-muted)] transition-colors duration-200" />
