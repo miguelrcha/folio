@@ -114,10 +114,10 @@ export default async function ProfilePage({
         {/* Stats */}
         <section className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--color-border)] rounded-lg overflow-hidden">
           {[
-            { label: "seguidores", value: profile.followers ?? 0 },
-            { label: "repositórios públicos", value: profile.public_repos ?? 0 },
-            { label: "estrelas nos projetos", value: totalStars },
-            { label: "no github desde", value: githubSinceYear ?? "—" },
+            { label: "followers", value: profile.followers ?? 0 },
+            { label: "public repositories", value: profile.public_repos ?? 0 },
+            { label: "stars in projects", value: totalStars },
+            { label: "on github since", value: githubSinceYear ?? "—" },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
               <div className="font-mono text-2xl text-[var(--color-accent)]">{stat.value}</div>
