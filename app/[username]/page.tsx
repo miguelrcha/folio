@@ -21,6 +21,7 @@ type PublicProfile = {
   public_repos: number | null;
   followers: number | null;
   top_stack: { name: string; percentage: number }[] | null;
+  github_created_at: string | null;
   experiences: string | null;
   experiences_json: ExperienceEntry[] | null;
   certifications: string | null;
@@ -68,6 +69,9 @@ export default async function ProfilePage({
 
   const selectedRepos = repos ?? [];
   const totalStars = selectedRepos.reduce((sum, r) => sum + r.stars, 0);
+  const githubSinceYear = profile.github_created_at
+    ? new Date(profile.github_created_at).getFullYear()
+    : null;
 
   return (
     <div className="relative z-10 min-h-screen">
@@ -113,7 +117,7 @@ export default async function ProfilePage({
             { label: "seguidores", value: profile.followers ?? 0 },
             { label: "repositórios públicos", value: profile.public_repos ?? 0 },
             { label: "estrelas nos projetos", value: totalStars },
-            { label: "projetos no folio", value: selectedRepos.length },
+            { label: "no github desde", value: githubSinceYear ?? "—" },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
               <div className="font-mono text-2xl text-[var(--color-accent)]">{stat.value}</div>

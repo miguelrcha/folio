@@ -196,6 +196,7 @@ export async function POST() {
       location: githubUser.location,
       public_repos: githubUser.public_repos,
       followers: githubUser.followers,
+      github_created_at: githubUser.created_at ?? null,
       top_stack: topStack,
       summary: buildSummary({
         username: githubUser.login,
