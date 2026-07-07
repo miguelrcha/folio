@@ -25,7 +25,7 @@ export function ConnectLinkedInButton() {
         className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1 text-xs font-mono text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:border-[var(--color-border-bright)] transition-colors cursor-pointer"
       >
         <LinkedInIcon className="h-3 w-3" />
-        importar do LinkedIn
+        import from LinkedIn
       </button>
 
       {showNotice && (
