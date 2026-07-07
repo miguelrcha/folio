@@ -1,3 +1,6 @@
+<div align="center">
+  <h1>Folio</h1>
+</div>
 
 ![Folio](/imgs/banner_folio.png)
 
