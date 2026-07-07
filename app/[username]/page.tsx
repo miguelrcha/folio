@@ -7,7 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
 import { EditTextSectionModal } from "@/components/EditTextSectionModal";
-import { EditExperiencesModal, formatExperienceRange, type ExperienceEntry } from "@/components/EditExperiencesModal";
+import { EditExperiencesModal } from "@/components/EditExperiencesModal";
+import { formatExperienceRange, type ExperienceEntry } from "@/lib/experience";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 
 type PublicProfile = {
@@ -174,13 +175,7 @@ export default async function ProfilePage({
                     <p className="text-sm text-[var(--color-text-muted)]">{exp?.company ?? ""}</p>
                   </div>
                   <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
-                    {(() => {
-                      try {
-                        return formatExperienceRange(exp);
-                      } catch {
-                        return "";
-                      }
-                    })()}
+                    {formatExperienceRange(exp)}
                   </span>
                 </div>
               ))}
