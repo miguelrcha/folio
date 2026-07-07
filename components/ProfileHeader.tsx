@@ -263,10 +263,10 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
             <Link href="/">
               <Logo size="md" />
             </Link>
+            <SearchUsers className="w-56" />
           </div>
 
           <div className="flex flex-1 justify-end items-center gap-3">
-            <SearchUsers />
             {loggedInUser && <LoggedInChip user={loggedInUser} />}
             {children}
           </div>
