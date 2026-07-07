@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +21,8 @@ export function SignOutButton() {
     router.push("/");
     router.refresh();
   };
+
+  useKeyboardShortcut("l", handleSignOut);
 
   return (
     <button

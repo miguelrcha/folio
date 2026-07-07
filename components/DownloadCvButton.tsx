@@ -1,5 +1,7 @@
 "use client";
 
+import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
+
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
     <kbd className="inline-flex items-center justify-center size-5 rounded-[4px] bg-black/[0.16] text-[11px] font-medium text-[var(--color-ink)] border border-black/[0.12] tracking-[-0.01em]">
@@ -9,6 +11,8 @@ function Kbd({ children }: { children: React.ReactNode }) {
 }
 
 export function DownloadCvButton({ username }: { username: string }) {
+  useKeyboardShortcut("d", () => window.print());
+
   return (
     <button
       onClick={() => window.print()}

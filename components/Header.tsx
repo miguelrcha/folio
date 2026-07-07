@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { GithubIcon } from "@/components/GithubIcon";
 import { createClient } from "@/lib/supabase/client";
+import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 
 const NAV_LINKS = [
   { label: "Examples", href: "#" },
@@ -86,11 +88,18 @@ function LoggedInChip({
 }
 
 export function Header() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [profileCount, setProfileCount] = useState<number | null>(null);
   const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
+  const examplesLinkRef = useRef<HTMLAnchorElement>(null);
+
+  useKeyboardShortcut("e", () => examplesLinkRef.current?.click());
+  useKeyboardShortcut("g", () => {
+    if (!loggedInUser) router.push("/loading");
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -324,6 +333,7 @@ export function Header() {
 
           <div className="flex flex-1 justify-end gap-4">
             <a
+              ref={examplesLinkRef}
               href="#"
               className="hidden lg:inline-flex items-center gap-2.5 rounded-2xl px-4 h-10 text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition ease-in-out duration-200"
             >
