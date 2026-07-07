@@ -14,7 +14,7 @@ const NAV_LINKS = [
 ];
 
 const RESOURCE_LINKS = [
-  { label: "Public Profile", desc: "folio.dev/@your-username" },
+  { label: "Public Profile", desc: "meufolio.dev/@your-username" },
   { label: "Resume in PDF", desc: "ready to send to companies" },
   { label: "Automatic Selection", desc: "best projects, by impact" },
 ];

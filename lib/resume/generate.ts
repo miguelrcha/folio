@@ -100,7 +100,7 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
   const contactLine = [
     data.location ?? undefined,
     `github.com/${data.githubUsername}`,
-    `folio.dev/${data.githubUsername}`,
+    `meufolio.dev/${data.githubUsername}`,
   ]
     .filter(Boolean)
     .join("  |  ");
@@ -216,7 +216,7 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
             alignment: AlignmentType.CENTER,
             children: [
               new TextRun({
-                text: `folio.dev/${data.githubUsername}`,
+                text: `meufolio.dev/${data.githubUsername}`,
                 size: 15,
                 color: "999999",
                 font: "Georgia",

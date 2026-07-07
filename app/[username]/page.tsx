@@ -329,7 +329,7 @@ export default async function ProfilePage({
         </section>
 
         <footer className="pb-10 flex items-center justify-between text-xs font-mono text-[var(--color-text-faint)]">
-          <span>generated automatically from github · folio.dev/@{profile.github_username}</span>
+          <span>generated automatically from github · meufolio.dev/@{profile.github_username}</span>
           <a
             href={`https://github.com/${profile.github_username}`}
             className="inline-flex items-center gap-1.5 hover:text-[var(--color-text-muted)] transition-colors"

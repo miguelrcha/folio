@@ -67,7 +67,7 @@ export function ResumeDocument({
               <GithubIcon className="h-[8pt] w-[8pt]" />
               github.com/{profile.github_username}
             </span>
-            <span>folio.dev/@{profile.github_username}</span>
+            <span>meufolio.dev/@{profile.github_username}</span>
           </div>
         </div>
       </div>
@@ -195,7 +195,7 @@ export function ResumeDocument({
       </div>
 
       <div className="mt-[14pt] pt-[6pt] border-t border-[#e5e7eb] text-[7.5pt] text-[#9ca3af]">
-        generated automatically from github · folio.dev/@{profile.github_username}
+        generated automatically from github · meufolio.dev/@{profile.github_username}
       </div>
     </div>
   );
