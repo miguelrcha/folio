@@ -91,7 +91,7 @@ export async function POST() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("github_access_token")
+    .select("github_access_token, top_stack")
     .eq("id", user.id)
     .single();
 
@@ -160,13 +160,23 @@ export async function POST() {
 
   // 4. Agrega a stack geral em percentuais
   const totalBytes = Object.values(languageBytesTotal).reduce((a, b) => a + b, 0);
-  const topStack = Object.entries(languageBytesTotal)
+  const githubStack = Object.entries(languageBytesTotal)
     .map(([name, bytes]) => ({
       name,
       percentage: totalBytes > 0 ? Math.round((bytes / totalBytes) * 100) : 0,
     }))
     .sort((a, b) => b.percentage - a.percentage)
     .slice(0, 5);
+
+  // Stacks adicionadas manualmente pela pessoa dona do perfil não devem ser
+  // apagadas a cada sync — preserva as que não vieram do GitHub dessa vez.
+  const existingTopStack =
+    (profile.top_stack as { name: string; percentage: number; manual?: boolean }[] | null) ?? [];
+  const manualStacks = existingTopStack.filter(
+    (s) => s.manual && !githubStack.some((g) => g.name.toLowerCase() === s.name.toLowerCase())
+  );
+
+  const topStack = [...githubStack, ...manualStacks];
 
   const activeRepos = repos.filter(
     (r: any) => Date.now() - new Date(r.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90

@@ -8,6 +8,7 @@ import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
 import { EditTextSectionModal } from "@/components/EditTextSectionModal";
 import { EditExperiencesModal } from "@/components/EditExperiencesModal";
+import { EditStacksModal } from "@/components/EditStacksModal";
 import { formatExperienceRange, type ExperienceEntry } from "@/lib/experience";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 
@@ -21,7 +22,7 @@ type PublicProfile = {
   summary: string | null;
   public_repos: number | null;
   followers: number | null;
-  top_stack: { name: string; percentage: number }[] | null;
+  top_stack: { name: string; percentage: number; manual?: boolean }[] | null;
   github_created_at: string | null;
   experiences: string | null;
   experiences_json: ExperienceEntry[] | null;
@@ -188,27 +189,33 @@ export default async function ProfilePage({
         </section>
 
         {/* Stack real */}
-        {profile.top_stack && profile.top_stack.length > 0 && (
+        {((profile.top_stack && profile.top_stack.length > 0) || isOwner) && (
           <section className="mt-12">
-            <SectionLabel>stacks</SectionLabel>
-            <div className="mt-4 space-y-2.5 max-w-xl">
-              {profile.top_stack.map((s) => (
-                <div key={s.name} className="flex items-center gap-3">
-                  <span className="w-24 shrink-0 font-mono text-sm text-[var(--color-text-muted)]">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+                stacks
+              </span>
+              {isOwner && (
+                <EditStacksModal profileId={profile.id} initialStacks={profile.top_stack ?? []} />
+              )}
+              <span className="flex-1 h-px bg-[var(--color-border)]" />
+            </div>
+            {profile.top_stack && profile.top_stack.length > 0 ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {profile.top_stack.map((s) => (
+                  <span
+                    key={s.name}
+                    className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2.5 py-1 font-mono text-xs text-[var(--color-text)]"
+                  >
                     {s.name}
                   </span>
-                  <div className="flex-1 h-2 rounded-full bg-[var(--color-surface-raised)] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-[var(--color-accent)]"
-                      style={{ width: `${s.percentage}%` }}
-                    />
-                  </div>
-                  <span className="w-10 text-right font-mono text-xs text-[var(--color-text-faint)]">
-                    {s.percentage}%
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
+                No stacks added yet.
+              </p>
+            )}
           </section>
         )}
 
@@ -338,17 +345,6 @@ export default async function ProfilePage({
           </a>
         </footer>
       </main>
-    </div>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-        {children}
-      </span>
-      <span className="flex-1 h-px bg-[var(--color-border)]" />
     </div>
   );
 }
