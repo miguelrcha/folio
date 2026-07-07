@@ -4,6 +4,9 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
 import { GithubIcon } from "@/components/GithubIcon";
+import { XIcon } from "@/components/XIcon";
+import { LinkedInIcon } from "@/components/LinkedInIcon";
+import { DiscordIcon } from "@/components/DiscordIcon";
 
 export default function LoginPage() {
   const router = useRouter();
