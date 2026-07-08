@@ -222,7 +222,7 @@ export function Header() {
 
         {mobileOpen && (
           <div className="md:hidden pb-5 flex flex-col gap-1 font-mono text-sm">
-            <BetaBadge className="self-start mb-2" />
+            
             {RESOURCE_LINKS.map((r) => (
               <a
                 key={r.label}
@@ -270,7 +270,7 @@ export function Header() {
               </span>
               <span className="text-[var(--color-accent)] text-xs"></span>
             </a>
-            <BetaBadge className="hidden lg:inline-flex" />
+            
           </div>
 
           <nav className="flex items-center">

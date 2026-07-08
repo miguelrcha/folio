@@ -1,16 +1,23 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
 import { GithubIcon } from "@/components/GithubIcon";
-import { XIcon } from "@/components/XIcon";
-import { LinkedInIcon } from "@/components/LinkedInIcon";
-import { DiscordIcon } from "@/components/DiscordIcon";
+import { FeatureShowcase } from "@/components/FeatureShowcase";
+import { CTASection } from "@/components/CTASection";
+import { Footer } from "@/components/Footer";
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleViewProfile = (e: FormEvent) => {
     e.preventDefault();
@@ -20,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="animate-fade-up relative z-10 min-h-screen overflow-hidden">
+    <main className="animate-fade-up relative z-10 min-h-screen overflow-x-hidden">
       <div className="hero-glow" />
       <Header />
 
@@ -28,7 +35,7 @@ export default function LoginPage() {
       {/* Hero */}
       <section className="relative flex flex-col items-center text-center px-6 pt-20 md:pt-32 pb-20">
         <h1 className="font-sans tracking-tight text-5xl sm:text-6xl md:text-7xl leading-[1.05]">
-          <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent mb-2">
             Build your Github portfolio in minutes
           </span>
         </h1>
@@ -39,7 +46,7 @@ export default function LoginPage() {
           resume, always up-to-date and ready to send.
         </p>
 
-        {/* CTA composta: input real de username + botão que navega pro perfil */}
+        {/* Composite CTA: real username input + button that navigates to the profile */}
         <form
           onSubmit={handleViewProfile}
           className="mt-10 flex w-full max-w-md flex-col sm:flex-row items-stretch gap-3"
@@ -50,7 +57,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="github.com/@username"
+              placeholder="github.com/miguelrcha"
               className="w-full bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none truncate"
             />
           </div>
@@ -62,24 +69,13 @@ export default function LoginPage() {
             View Profile on Folio
           </button>
         </form>
-
-        <p className="mt-5 text-xs text-[var(--color-text-faint)] font-mono">
-          read-only · no write access to your repositories
-        </p>
-
-        {/* Trust row, no lugar dos logos de clientes — honesto em vez de inventar marcas */}
-        <div className="mt-10 flex flex-wrap justify-center gap-4 text-[var(--color-text-faint)] text-sm font-mono">
-          <span>built with ❤️ by</span>
-          <a
-            href="https://github.com/miguelrcha"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-[var(--color-text)] transition-colors"
-          >
-          miguelrcha
-          </a>
-        </div>
+        {/* Trust row, in place of client logos — honest instead of making up brands */}
+        
       </section>
+
+      <FeatureShowcase />
+      <CTASection />
+      <Footer />
     </main>
   );
 }
