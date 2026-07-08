@@ -32,8 +32,8 @@ function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
           style={{ zIndex: 0 }}
         >
           <span className="text-xs font-mono text-[var(--color-text-muted)]">
-  {displayCount === null ? "+" : `+${Math.abs(displayCount - avatars.length)}`}
-</span>
+            {displayCount ?? "—"}
+          </span>
         </div>
       </div>
       <p className="text-sm font-mono text-[var(--color-text-muted)]">
