@@ -93,6 +93,7 @@ body {
   header {
     display: none !important;
   }
+  html,
   body {
     background: #ffffff;
   }

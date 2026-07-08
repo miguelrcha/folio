@@ -12,11 +12,15 @@ function ResumeSectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ResumeTag({ children }: { children: React.ReactNode }) {
+function ResumeBulletList({ items }: { items: string[] }) {
   return (
-    <span className="inline-block rounded-[3pt] border border-[#d1d5db] px-[5pt] py-[1.5pt] text-[7.5pt] text-[#374151] leading-none">
-      {children}
-    </span>
+    <ul className="space-y-[2pt] pl-[10pt]">
+      {items.map((item, i) => (
+        <li key={i} className="text-[8.5pt] text-[#374151] leading-relaxed list-disc">
+          {item}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -24,15 +28,17 @@ function ResumeTag({ children }: { children: React.ReactNode }) {
 // @media print (ver .resume-print no globals.css + hidden print:block aqui).
 // Independente da UI escura interativa do resto do site: tipografia clara,
 // compacta, pensada pra caber numa página só com os dados reais do GitHub.
+// De propósito, texto e bullets em todas as seções — sem tags/cards — e sem
+// nenhum cargo/título fixo abaixo do nome, só o que vem do GitHub.
 export function ResumeDocument({
   profile,
   repos,
-  totalStars,
+  totalCommits,
   githubSinceYear,
 }: {
   profile: PublicProfile;
   repos: Repo[];
-  totalStars: number;
+  totalCommits: number;
   githubSinceYear: number | null;
 }) {
   const stacks = profile.top_stack ?? [];
@@ -43,25 +49,28 @@ export function ResumeDocument({
   const languageEntries = Array.isArray(profile.languages_json) ? profile.languages_json : [];
 
   return (
-    <div className="hidden print:block bg-white text-[#111827]" style={{ fontFamily: "var(--font-sans)" }}>
-      {/* Header */}
-      <div className="flex items-start gap-[12pt]">
-        {profile.avatar_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={profile.avatar_url}
-            alt={profile.github_username}
-            className="h-[46pt] w-[46pt] rounded-full object-cover shrink-0 border border-[#d1d5db]"
-          />
-        )}
-        <div className="flex-1 min-w-0">
-          <h1 className="text-[19pt] font-bold leading-tight text-[#0a0a0a]">
+    <div
+      className="hidden print:flex flex-col items-center bg-white text-[#111827]"
+      style={{ fontFamily: "var(--font-sans)" }}
+    >
+      <div className="w-full max-w-[440pt]">
+        {/* Header */}
+        <div className="flex flex-col items-center text-center">
+          {profile.avatar_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.avatar_url}
+              alt={profile.github_username}
+              className="h-[46pt] w-[46pt] rounded-full object-cover border border-[#d1d5db]"
+            />
+          )}
+          <h1 className="mt-[6pt] text-[19pt] font-bold leading-tight text-[#0a0a0a]">
             {profile.full_name || `@${profile.github_username}`}
           </h1>
           {profile.bio && (
             <p className="mt-[2pt] text-[9pt] text-[#4b5563] leading-snug">{profile.bio}</p>
           )}
-          <div className="mt-[5pt] flex flex-wrap gap-x-[10pt] gap-y-[2pt] text-[8pt] text-[#4b5563]">
+          <div className="mt-[5pt] flex flex-wrap justify-center gap-x-[10pt] gap-y-[2pt] text-[8pt] text-[#4b5563]">
             {profile.location && <span>{profile.location}</span>}
             <span className="inline-flex items-center gap-[3pt]">
               <GithubIcon className="h-[8pt] w-[8pt]" />
@@ -70,55 +79,9 @@ export function ResumeDocument({
             <span>meufolio.dev/@{profile.github_username}</span>
           </div>
         </div>
-      </div>
 
-      {/* Stats */}
-      <div className="mt-[10pt] flex gap-[16pt] text-[8pt] text-[#4b5563] border-y border-[#e5e7eb] py-[6pt]">
-        <span>
-          <strong className="text-[#0a0a0a]">{profile.followers ?? 0}</strong> followers
-        </span>
-        <span>
-          <strong className="text-[#0a0a0a]">{profile.public_repos ?? 0}</strong> public repos
-        </span>
-        <span>
-          <strong className="text-[#0a0a0a]">{totalStars}</strong> stars
-        </span>
-        {githubSinceYear && (
-          <span>
-            on GitHub since <strong className="text-[#0a0a0a]">{githubSinceYear}</strong>
-          </span>
-        )}
-      </div>
-
-      {/* Body: two columns */}
-      <div className="mt-[12pt] grid grid-cols-[1fr_2.1fr] gap-[18pt]">
-        {/* Left column */}
-        <div className="space-y-[12pt]">
-          {stacks.length > 0 && (
-            <div>
-              <ResumeSectionTitle>Stack</ResumeSectionTitle>
-              <div className="flex flex-wrap gap-[4pt]">
-                {stacks.map((s) => (
-                  <ResumeTag key={s.name}>{s.name}</ResumeTag>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {languageEntries.length > 0 && (
-            <div>
-              <ResumeSectionTitle>Languages</ResumeSectionTitle>
-              <div className="flex flex-wrap gap-[4pt]">
-                {languageEntries.map((entry, i) => (
-                  <ResumeTag key={i}>{formatLanguageEntry(entry)}</ResumeTag>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-[12pt]">
+        {/* Body: one column, sections stacked */}
+        <div className="mt-[12pt] space-y-[9pt]">
           {profile.summary && (
             <div>
               <ResumeSectionTitle>Overview</ResumeSectionTitle>
@@ -128,74 +91,81 @@ export function ResumeDocument({
 
           {experiences.length > 0 && (
             <div>
-              <ResumeSectionTitle>Experience</ResumeSectionTitle>
-              <div className="space-y-[6pt]">
-                {experiences.map((exp, i) => (
-                  <div key={i} className="flex items-baseline justify-between gap-[8pt]">
-                    <div>
-                      <p className="text-[9pt] font-semibold text-[#0a0a0a]">{exp?.title ?? ""}</p>
-                      <p className="text-[8.5pt] text-[#4b5563]">{exp?.company ?? ""}</p>
-                    </div>
-                    <span className="shrink-0 text-[7.5pt] text-[#6b7280] whitespace-nowrap">
-                      {formatExperienceRange(exp)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <ResumeSectionTitle>Experiences</ResumeSectionTitle>
+              <ResumeBulletList
+                items={experiences.map((exp) => {
+                  const range = formatExperienceRange(exp);
+                  const parts = [exp?.title ?? "", exp?.company ?? ""].filter(Boolean).join(" — ");
+                  return range ? `${parts} (${range})` : parts;
+                })}
+              />
             </div>
           )}
 
-          {certifications.length > 0 && (
+          {stacks.length > 0 && (
             <div>
-              <ResumeSectionTitle>Certifications</ResumeSectionTitle>
-              <div className="space-y-[6pt]">
-                {certifications.map((cert, i) => (
-                  <div key={i} className="flex items-baseline justify-between gap-[8pt]">
-                    <div>
-                      <p className="text-[9pt] font-semibold text-[#0a0a0a]">{cert?.name ?? ""}</p>
-                      <p className="text-[8.5pt] text-[#4b5563]">{cert?.issuer ?? ""}</p>
-                    </div>
-                    <span className="shrink-0 text-[7.5pt] text-[#6b7280] whitespace-nowrap">
-                      {formatCertificationRange(cert)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <ResumeSectionTitle>Stacks</ResumeSectionTitle>
+              <p className="text-[8.5pt] text-[#374151] leading-relaxed">
+                {stacks.map((s) => s.name).join("  ·  ")}
+              </p>
             </div>
           )}
 
           {repos.length > 0 && (
             <div>
               <ResumeSectionTitle>Projects, by impact</ResumeSectionTitle>
-              <div className="space-y-[7pt]">
+              <ul className="space-y-[5pt] pl-[10pt]">
                 {repos.map((repo) => (
-                  <div key={repo.id}>
-                    <div className="flex items-baseline justify-between gap-[8pt]">
-                      <span className="text-[9pt] font-semibold text-[#0a0a0a]">{repo.name}</span>
-                      <span className="shrink-0 text-[7.5pt] text-[#6b7280] whitespace-nowrap">
-                        ★ {repo.stars} · {repo.forks} forks
-                      </span>
-                    </div>
-                    {repo.description && (
-                      <p className="text-[8.5pt] text-[#4b5563] leading-snug">{repo.description}</p>
-                    )}
+                  <li key={repo.id} className="text-[8.5pt] text-[#374151] leading-relaxed list-disc">
+                    <span className="font-semibold text-[#0a0a0a]">{repo.name}</span>
+                    {repo.description ? `  —  ${repo.description}` : ""}
                     {repo.stack && repo.stack.length > 0 && (
-                      <div className="mt-[3pt] flex flex-wrap gap-[3pt]">
-                        {repo.stack.slice(0, 6).map((s) => (
-                          <ResumeTag key={s}>{s}</ResumeTag>
-                        ))}
+                      <div className="text-[7.5pt] text-[#6b7280]">
+                        {repo.stack.slice(0, 6).join(", ")}
                       </div>
                     )}
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
-        </div>
-      </div>
 
-      <div className="mt-[14pt] pt-[6pt] border-t border-[#e5e7eb] text-[7.5pt] text-[#9ca3af]">
-        generated automatically from github · meufolio.dev/@{profile.github_username}
+          {certifications.length > 0 && (
+            <div>
+              <ResumeSectionTitle>Certificates</ResumeSectionTitle>
+              <ResumeBulletList
+                items={certifications.map((cert) => {
+                  const range = formatCertificationRange(cert);
+                  const parts = [cert?.name ?? "", cert?.issuer ?? ""].filter(Boolean).join(" — ");
+                  return range ? `${parts} (${range})` : parts;
+                })}
+              />
+            </div>
+          )}
+
+          {languageEntries.length > 0 && (
+            <div>
+              <ResumeSectionTitle>Languages</ResumeSectionTitle>
+              <ResumeBulletList items={languageEntries.map((entry) => formatLanguageEntry(entry))} />
+            </div>
+          )}
+
+          <div>
+            <ResumeSectionTitle>GitHub</ResumeSectionTitle>
+            <ResumeBulletList
+              items={[
+                `${profile.public_repos ?? 0} repositórios públicos`,
+                `${totalCommits} commits totais`,
+                ...(githubSinceYear ? [`no github desde ${githubSinceYear}`] : []),
+                `${profile.followers ?? 0} followers`,
+              ]}
+            />
+          </div>
+        </div>
+
+        <div className="mt-[14pt] pt-[6pt] border-t border-[#e5e7eb] text-[7.5pt] text-[#9ca3af] text-center">
+          generated automatically from github · meufolio.dev/@{profile.github_username}
+        </div>
       </div>
     </div>
   );

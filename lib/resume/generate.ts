@@ -13,13 +13,23 @@ import {
   ImageRun,
   VerticalAlign,
 } from "docx";
+import type { ExperienceEntry } from "@/lib/experience";
+import { formatExperienceRange } from "@/lib/experience";
+import type { CertificationEntry } from "@/lib/certification";
+import { formatCertificationRange } from "@/lib/certification";
+import type { LanguageEntry } from "@/lib/language";
+import { formatLanguageEntry } from "@/lib/language";
 
 export type ResumeRepo = {
   name: string;
   description?: string | null;
   stack?: string[] | null;
-  stars: number;
-  forks: number;
+};
+
+export type ResumeStats = {
+  publicRepos: number;
+  totalCommits: number;
+  githubSinceYear: number | null;
 };
 
 export type ResumeData = {
@@ -29,7 +39,11 @@ export type ResumeData = {
   bio?: string | null;
   summary?: string | null;
   topStack: { name: string; percentage: number }[];
+  experiences: ExperienceEntry[];
+  certifications: CertificationEntry[];
+  languages: LanguageEntry[];
   repos: ResumeRepo[];
+  stats: ResumeStats;
   /** bytes da foto (avatar do GitHub), já baixados. Se omitido, o cabeçalho fica só com o texto. */
   photo?: { data: Buffer; type: "jpg" | "png" | "gif" | "bmp" } | null;
 };
@@ -56,44 +70,85 @@ function sectionHeading(text: string) {
   });
 }
 
+function bulletText(text: string) {
+  return new Paragraph({
+    bullet: { level: 0 },
+    spacing: { after: 40 },
+    children: [new TextRun({ text, size: 21, font: "Georgia" })],
+  });
+}
+
+function experienceParagraph(exp: ExperienceEntry) {
+  const range = formatExperienceRange(exp);
+  return new Paragraph({
+    bullet: { level: 0 },
+    spacing: { after: 60 },
+    children: [
+      new TextRun({ text: exp.title || "", bold: true, size: 21, font: "Georgia" }),
+      ...(exp.company
+        ? [new TextRun({ text: `  —  ${exp.company}`, size: 21, font: "Georgia" })]
+        : []),
+      ...(range ? [new TextRun({ text: `  (${range})`, size: 18, color: MUTED, font: "Georgia" })] : []),
+    ],
+  });
+}
+
+function certificationParagraph(cert: CertificationEntry) {
+  const range = formatCertificationRange(cert);
+  return new Paragraph({
+    bullet: { level: 0 },
+    spacing: { after: 60 },
+    children: [
+      new TextRun({ text: cert.name || "", bold: true, size: 21, font: "Georgia" }),
+      ...(cert.issuer
+        ? [new TextRun({ text: `  —  ${cert.issuer}`, size: 21, font: "Georgia" })]
+        : []),
+      ...(range ? [new TextRun({ text: `  (${range})`, size: 18, color: MUTED, font: "Georgia" })] : []),
+    ],
+  });
+}
+
 function projectParagraphs(repo: ResumeRepo) {
   const stackLine = (repo.stack ?? []).slice(0, 6).join(", ");
 
   return [
     new Paragraph({
-      spacing: { before: 160 },
-      tabStops: [{ type: TabStopType.RIGHT, position: 9638 }],
+      bullet: { level: 0 },
+      spacing: { before: 100, after: stackLine ? 20 : 60 },
       children: [
-        new TextRun({ text: repo.name, bold: true, italics: true, size: 22, font: "Georgia" }),
-        new TextRun({ text: "\t" }),
-        new TextRun({ text: `★ ${repo.stars}   ⑂ ${repo.forks}`, size: 18, color: MUTED }),
-      ],
-    }),
-    ...(repo.description
-      ? [
-          new Paragraph({
-            spacing: { after: 30 },
-            children: [
+        new TextRun({ text: repo.name, bold: true, size: 21, font: "Georgia" }),
+        ...(repo.description
+          ? [
               new TextRun({
-                text: repo.description,
+                text: `  —  ${repo.description}`,
                 italics: true,
                 size: 20,
                 color: "333333",
                 font: "Georgia",
               }),
-            ],
-          }),
-        ]
-      : []),
+            ]
+          : []),
+      ],
+    }),
     ...(stackLine
       ? [
           new Paragraph({
-            spacing: { after: 40 },
+            indent: { left: 340 },
+            spacing: { after: 80 },
             children: [new TextRun({ text: stackLine, size: 18, color: MUTED, font: "Georgia" })],
           }),
         ]
       : []),
   ];
+}
+
+function githubStatsParagraphs(stats: ResumeStats) {
+  const lines = [
+    `${stats.publicRepos} repositórios públicos`,
+    `${stats.totalCommits} commits totais`,
+  ];
+  if (stats.githubSinceYear) lines.push(`no github desde ${stats.githubSinceYear}`);
+  return lines.map(bulletText);
 }
 
 export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
@@ -124,8 +179,9 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
     }),
   ];
 
-  // Cabeçalho: foto à esquerda (se disponível) + nome/cargo/contato à direita,
-  // igual ao layout de referência. Sem foto, o bloco de texto ocupa a largura toda.
+  // Cabeçalho: foto à esquerda (se disponível) + nome/contato à direita.
+  // De propósito, sem cargo/título fixo abaixo do nome — esse texto é só
+  // o que vem do GitHub, sem inventar um título de vaga.
   const headerChildren = data.photo
     ? [
         new Table({
@@ -193,22 +249,28 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
               ]
             : []),
 
+          ...(data.experiences.length > 0
+            ? [sectionHeading("Experiences"), ...data.experiences.map(experienceParagraph)]
+            : []),
+
           ...(data.topStack.length > 0
-            ? [
-                sectionHeading("Skills"),
-                ...data.topStack.map(
-                  (s) =>
-                    new Paragraph({
-                      bullet: { level: 0 },
-                      spacing: { after: 20 },
-                      children: [new TextRun({ text: s.name, size: 21, font: "Georgia" })],
-                    })
-                ),
-              ]
+            ? [sectionHeading("Stacks"), ...data.topStack.map((s) => bulletText(s.name))]
             : []),
 
           ...(data.repos.length > 0
-            ? [sectionHeading("Projects"), ...data.repos.flatMap(projectParagraphs)]
+            ? [sectionHeading("Projects, by impact"), ...data.repos.flatMap(projectParagraphs)]
+            : []),
+
+          ...(data.certifications.length > 0
+            ? [sectionHeading("Certificates"), ...data.certifications.map(certificationParagraph)]
+            : []),
+
+          ...(data.languages.length > 0
+            ? [sectionHeading("Languages"), ...data.languages.map((l) => bulletText(formatLanguageEntry(l)))]
+            : []),
+
+          ...(data.stats.publicRepos > 0 || data.stats.totalCommits > 0
+            ? [sectionHeading("GitHub"), ...githubStatsParagraphs(data.stats)]
             : []),
 
           new Paragraph({

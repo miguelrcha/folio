@@ -47,7 +47,6 @@ export default async function ProfilePage({
   const isOwner = currentUser?.id === profile.id;
 
   const selectedRepos = repos ?? [];
-  const totalStars = selectedRepos.reduce((sum, r) => sum + r.stars, 0);
   const githubSinceYear = profile.github_created_at
     ? new Date(profile.github_created_at).getFullYear()
     : null;
@@ -343,7 +342,7 @@ export default async function ProfilePage({
       <ResumeDocument
         profile={profile}
         repos={selectedRepos}
-        totalStars={totalStars}
+        totalCommits={profile.total_commits ?? 0}
         githubSinceYear={githubSinceYear}
       />
     </div>
