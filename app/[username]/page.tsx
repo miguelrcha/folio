@@ -12,7 +12,6 @@ import { EditCertificationsModal } from "@/components/EditCertificationsModal";
 import { EditLanguagesModal } from "@/components/EditLanguagesModal";
 import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
-import { CopyEmailButton } from "@/components/CopyEmailButton";
 import { ResumeDocument } from "@/components/ResumeDocument";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
@@ -87,9 +86,13 @@ export default async function ProfilePage({
                 {(profile.contact_email || isOwner) && (
                   <span className="inline-flex items-center gap-1.5">
                     {profile.contact_email && (
-                      <CopyEmailButton
-                        encodedEmail={Buffer.from(profile.contact_email).toString("base64")}
-                      />
+                      <a
+                        href={`mailto:${profile.contact_email}`}
+                        className="inline-flex items-center gap-1.5 hover:text-[var(--color-text)] transition-colors"
+                      >
+                        <MailIcon className="h-4 w-4" />
+                        {profile.contact_email}
+                      </a>
                     )}
                     {!profile.contact_email && isOwner && <MailIcon className="h-4 w-4" />}
                     {isOwner && (
