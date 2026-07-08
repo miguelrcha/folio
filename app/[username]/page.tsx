@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import type { Metadata } from "next";
 import { GithubIcon } from "@/components/GithubIcon";
 import { ProfileHeader } from "@/components/ProfileHeader";
@@ -19,6 +20,7 @@ import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
+import { syncProfileIfStale } from "@/lib/github-sync";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 export async function generateMetadata({
@@ -45,6 +47,13 @@ export default async function ProfilePage({
     .single<PublicProfile>();
 
   if (!profile) notFound();
+
+  // Mantém foto, nome, bio, followers e commits em dia a cada visita/refresh
+  // do perfil, sem travar o carregamento da página nem estourar o rate
+  // limit do GitHub — roda em background após a resposta ser enviada, e só
+  // de fato sincroniza se o último sync tiver mais de 1h (ver
+  // syncProfileIfStale).
+  after(() => syncProfileIfStale(username));
 
   const { data: repos } = await supabase
     .from("repos")

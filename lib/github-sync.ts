@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { decrypt } from "@/lib/crypto";
 
 export class SyncError extends Error {
   status: number;
@@ -648,6 +650,7 @@ export async function syncGithubProfile(
   const profileUpdate: Record<string, unknown> = {
     bio: githubUser.bio,
     full_name: githubUser.name ?? null,
+    avatar_url: githubUser.avatar_url ?? null,
     location: githubUser.location,
     public_repos: githubUser.public_repos,
     followers: githubUser.followers,
@@ -678,4 +681,59 @@ export async function syncGithubProfile(
   }
 
   return { synced: enriched.length, totalCommits };
+}
+
+const VISIT_SYNC_TTL_MS = 60 * 60 * 1000; // 1h
+
+// Disparado a cada visita/refresh de `folio.dev/{username}` (ver
+// app/[username]/page.tsx) pra manter foto, nome, bio, followers e commits
+// em dia sem depender de a pessoa abrir "editar projetos". Um visitante
+// anônimo não tem sessão nem token próprio, então isso roda com o client
+// admin usando o token do dono do perfil, salvo no onboarding.
+//
+// Gated por `profiles.updated_at`: só resincroniza se o último sync tiver
+// mais de 1h, pra não estourar o rate limit do GitHub em perfis muito
+// visitados. Antes de rodar o sync completo (que faz várias chamadas
+// sequenciais à API do GitHub e pode levar alguns segundos), "reserva" o
+// slot atualizando updated_at com um optimistic lock — se duas visitas
+// concorrentes caírem na mesma janela, só a primeira ganha a corrida e
+// dispara o sync de verdade.
+export async function syncProfileIfStale(githubUsername: string): Promise<void> {
+  const supabase = createAdminClient();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, github_access_token, updated_at")
+    .eq("github_username", githubUsername)
+    .single();
+
+  if (!profile?.github_access_token) return;
+
+  const lastSyncedAt = profile.updated_at ? new Date(profile.updated_at).getTime() : 0;
+  if (Date.now() - lastSyncedAt < VISIT_SYNC_TTL_MS) return;
+
+  const { data: claimed } = await supabase
+    .from("profiles")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", profile.id)
+    .eq("updated_at", profile.updated_at)
+    .select("id");
+
+  if (!claimed || claimed.length === 0) return;
+
+  let accessToken: string;
+  try {
+    accessToken = decrypt(profile.github_access_token as string);
+  } catch {
+    // Token salvo antes da criptografia entrar em vigor (texto puro) — não
+    // dá pra sincronizar em background, a pessoa precisa logar de novo.
+    return;
+  }
+
+  try {
+    await syncGithubProfile(supabase, profile.id, accessToken);
+  } catch {
+    // Sync em background: uma falha aqui (rate limit, token revogado etc.)
+    // não deve derrubar nada, só deixa pro próximo visit/TTL tentar de novo.
+  }
 }
