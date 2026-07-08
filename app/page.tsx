@@ -7,10 +7,24 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { FeatureShowcase } from "@/components/FeatureShowcase";
 import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
+import { createClient } from "@/lib/supabase/client";
+
+// Aceita "@user", "github.com/user", "https://github.com/user" (com ou sem
+// www./barra final) e extrai só o username.
+function cleanGithubUsername(raw: string) {
+  return raw
+    .trim()
+    .replace(/^@/, "")
+    .replace(/^(https?:\/\/)?(www\.)?github\.com\//i, "")
+    .split(/[/?#]/)[0]
+    .trim();
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [notFoundUser, setNotFoundUser] = useState<string | null>(null);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -19,11 +33,29 @@ export default function LoginPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleViewProfile = (e: FormEvent) => {
+  const handleViewProfile = async (e: FormEvent) => {
     e.preventDefault();
-    const cleaned = username.trim().replace(/^@/, "").replace(/^https?:\/\/github\.com\//, "");
-    if (!cleaned) return;
-    router.push(`/${cleaned}`);
+    const cleaned = cleanGithubUsername(username);
+    if (!cleaned || checking) return;
+
+    setChecking(true);
+    setNotFoundUser(null);
+
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("public_profiles")
+      .select("github_username")
+      .ilike("github_username", cleaned)
+      .maybeSingle();
+
+    setChecking(false);
+
+    if (!data) {
+      setNotFoundUser(cleaned);
+      return;
+    }
+
+    router.push(`/${data.github_username}`);
   };
 
   return (
@@ -56,21 +88,34 @@ export default function LoginPage() {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (notFoundUser) setNotFoundUser(null);
+              }}
               placeholder="github.com/miguelrcha"
               className="w-full bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none truncate"
             />
           </div>
           <button
             type="submit"
-            disabled={!username.trim()}
+            disabled={!username.trim() || checking}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-sm font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85 disabled:opacity-40 whitespace-nowrap"
           >
-            View Profile on Folio
+            {checking ? "Checking…" : "View Profile on Folio"}
           </button>
         </form>
+
+        {notFoundUser && (
+          <div className="mt-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.06] px-4 py-2.5 text-sm text-red-300/90 font-lato max-w-md w-full">
+            <span className="shrink-0">⚠️</span>
+            <span>
+              <span className="font-semibold">@{notFoundUser}</span> isn&apos;t registered on Folio yet.
+            </span>
+          </div>
+        )}
+
         {/* Trust row, in place of client logos — honest instead of making up brands */}
-        
+
       </section>
 
       <FeatureShowcase />

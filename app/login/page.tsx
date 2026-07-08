@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { GithubIcon } from "@/components/GithubIcon";
 import { createClient } from "@/lib/supabase/client";
 
-const GITHUB_DEFAULT_AVATAR = "https://github.com/alterionsai.png";
+const GITHUB_DEFAULT_AVATAR = "https://github.com/Braian-de-Liz.png";
 const GITHUB_DEFAULT_AVATAR2 = "https://github.com/hemkdev.png";
 const MY_AVATAR = "https://github.com/miguelrcha.png";
 const SPOUK_AVATAR = "https://github.com/spoukhs.png";
