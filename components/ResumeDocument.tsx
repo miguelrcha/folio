@@ -1,4 +1,5 @@
 import { GithubIcon } from "@/components/GithubIcon";
+import { ObfuscatedText } from "@/components/ObfuscatedText";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
@@ -68,7 +69,9 @@ export function ResumeDocument({
           )}
           <div className="mt-[5pt] flex flex-wrap justify-center gap-x-[10pt] gap-y-[2pt] text-[8pt] text-[#4b5563]">
             {profile.location && <span>{profile.location}</span>}
-            {profile.contact_email && <span>{profile.contact_email}</span>}
+            {profile.contact_email && (
+              <ObfuscatedText encoded={Buffer.from(profile.contact_email).toString("base64")} />
+            )}
             <span className="inline-flex items-center gap-[3pt]">
               <GithubIcon className="h-[8pt] w-[8pt]" />
               github.com/{profile.github_username}
