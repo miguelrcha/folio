@@ -21,3 +21,23 @@ Folio turns a GitHub profile into a public portfolio/resume site. A user signs i
 **CV export:** the "View CV" button just calls `window.print()` against a dedicated print-only component (`components/ResumeDocument.tsx`, `hidden print:block`), styled to fit a single A4 page (`@page` rule in `app/globals.css`). There's no server-side PDF rendering (no puppeteer/headless-chromium) — deliberately, to keep the project deployable as a plain Next.js app.
 
 **Commit convention:** emoji-prefixed Conventional Commits in English — `✨ feat:`, `🐛 fix:`, `🚧 chore:`, `✅ test:`, `✏️ docs:`.
+
+# Non-negotiables
+
+The few rules that already bite if broken (each is explained in the sections above):
+
+- **Never render `profiles` to a visitor.** Anything public-facing reads the `public_profiles` view. Adding a public field means appending a column to that view in the existing order — reordering throws Postgres `42P16`.
+- **Never use the admin/service-role client (`lib/supabase/admin.ts`) in a request that responds to a visitor.** It bypasses RLS; it's only for no-session contexts like the cron.
+- **The GitHub access token is encrypted at rest** (`lib/crypto.ts`); never store or log it in plaintext.
+- **Secrets come from env only** — never commit `.env.local`.
+- **English-only** — never mix languages within a file.
+
+# Contribution workflow (read `CONTRIBUTING.md` for the full version)
+
+This repo uses a controlled, issue-driven flow — nothing lands on `main` directly:
+
+- **English-only.** Code, comments, UI strings, commits and docs are all in English; never mix languages in a file.
+- **Issue → branch → PR.** One branch per issue, named `<type>/<issue#>-<slug>` (e.g. `fix/123-pinned-header`). Merge to `main` happens through the PR, never by pushing to `main`.
+- **Atomic commits.** One responsibility per commit — split `feat`/`fix`/`docs`/`chore` instead of mixing them.
+- **Green before PR.** `npm run build` and `npm run lint` must pass (there is no test suite; `build` is also the type check). Render print/PDF changes visually; include exact SQL for any schema change.
+- **Never auto-push.** Agents/tools must not push or open PRs on their own — only when the maintainer explicitly asks.
