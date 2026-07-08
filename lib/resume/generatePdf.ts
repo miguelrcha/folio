@@ -46,6 +46,18 @@ const MUTED: [number, number, number] = [75, 85, 99];
 const BODY: [number, number, number] = [55, 65, 81];
 const RULE: [number, number, number] = [209, 213, 219];
 
+const FONT = "times";
+const NAME_SIZE = 22;
+const BIO_SIZE = 11;
+const BIO_LINE = 4.8;
+const CONTACT_SIZE = 9.5;
+const HEADING_SIZE = 10.5;
+const BODY_SIZE = 10;
+const BODY_LINE = 4.7;
+const SUBTEXT_SIZE = 9;
+const SUBTEXT_LINE = 4.3;
+const FOOTER_SIZE = 8.5;
+
 // As fontes padrão do jsPDF (Helvetica/Times/Courier) só cobrem WinAnsi
 // (Latin-1) — bom o bastante pra acentos do português, mas emoji (as
 // bandeirinhas de idioma, por exemplo) viram caixinhas quebradas. Corta
@@ -88,23 +100,23 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     }
   }
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
+  doc.setFont(FONT, "bold");
+  doc.setFontSize(NAME_SIZE);
   doc.setTextColor(...INK);
   doc.text(clean(data.name || data.githubUsername), PAGE_WIDTH / 2, y, { align: "center" });
-  y += 6;
+  y += 7.5;
 
   if (data.bio) {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9.5);
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(BIO_SIZE);
     doc.setTextColor(...MUTED);
     const lines = doc.splitTextToSize(clean(data.bio), CONTENT_WIDTH);
     doc.text(lines, PAGE_WIDTH / 2, y, { align: "center" });
-    y += lines.length * 4.2 + 2;
+    y += lines.length * BIO_LINE + 2;
   }
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
+  doc.setFont(FONT, "normal");
+  doc.setFontSize(CONTACT_SIZE);
   doc.setTextColor(...MUTED);
   const contactLine = [
     data.location ?? undefined,
@@ -118,38 +130,38 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
   y += 9;
 
   const sectionHeading = (title: string) => {
-    ensureSpace(10);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
+    ensureSpace(11);
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(HEADING_SIZE);
     doc.setTextColor(...INK);
     doc.text(title.toUpperCase(), MARGIN, y);
-    y += 1.5;
+    y += 1.8;
     doc.setDrawColor(...RULE);
     doc.setLineWidth(0.2);
     doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
-    y += 5;
+    y += 5.5;
   };
 
   const paragraph = (text: string) => {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(BODY_SIZE);
     doc.setTextColor(...BODY);
     const lines = doc.splitTextToSize(clean(text), CONTENT_WIDTH);
-    ensureSpace(lines.length * 4);
+    ensureSpace(lines.length * BODY_LINE);
     doc.text(lines, MARGIN, y);
-    y += lines.length * 4 + 5;
+    y += lines.length * BODY_LINE + 5;
   };
 
   const bulletList = (items: string[]) => {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(BODY_SIZE);
     doc.setTextColor(...BODY);
     items.filter(Boolean).forEach((item) => {
       const lines = doc.splitTextToSize(clean(item), CONTENT_WIDTH - 5);
-      ensureSpace(lines.length * 4 + 1);
+      ensureSpace(lines.length * BODY_LINE + 1);
       doc.text("•", MARGIN, y);
       doc.text(lines, MARGIN + 4, y);
-      y += lines.length * 4 + 1.5;
+      y += lines.length * BODY_LINE + 1.5;
     });
     y += 3.5;
   };
@@ -179,21 +191,21 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     sectionHeading("Projects, by impact");
     data.repos.forEach((repo) => {
       const stackLine = (repo.stack ?? []).slice(0, 6).join(", ");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.5);
+      doc.setFont(FONT, "bold");
+      doc.setFontSize(BODY_SIZE);
       doc.setTextColor(...INK);
       const titleText = repo.description ? `${repo.name}  —  ${repo.description}` : repo.name;
       const titleLines = doc.splitTextToSize(clean(titleText), CONTENT_WIDTH - 5);
-      ensureSpace(titleLines.length * 4 + (stackLine ? 4 : 0) + 2);
+      ensureSpace(titleLines.length * BODY_LINE + (stackLine ? SUBTEXT_LINE : 0) + 2);
       doc.text("•", MARGIN, y);
       doc.text(titleLines, MARGIN + 4, y);
-      y += titleLines.length * 4;
+      y += titleLines.length * BODY_LINE;
       if (stackLine) {
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(7.5);
+        doc.setFont(FONT, "normal");
+        doc.setFontSize(SUBTEXT_SIZE);
         doc.setTextColor(...MUTED);
         doc.text(clean(stackLine), MARGIN + 4, y);
-        y += 4;
+        y += SUBTEXT_LINE;
       }
       y += 2;
     });
@@ -224,8 +236,8 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     `${data.stats.followers} followers`,
   ]);
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
+  doc.setFont(FONT, "normal");
+  doc.setFontSize(FOOTER_SIZE);
   doc.setTextColor(...MUTED);
   ensureSpace(6);
   doc.text(
