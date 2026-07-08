@@ -509,12 +509,17 @@ export async function syncGithubProfile(
   }
   const githubUser = await userRes.json();
 
-  // 2. Repositórios
+  // 2. Repositórios. Repos privados nunca devem virar cards/seleções no
+  // portfólio público — quem visitar o perfil não tem acesso a eles e o link
+  // pro GitHub dá 404. As contribuições desses repos já entram no total de
+  // commits separadamente, via GraphQL (ver fetchTotalCommits), então
+  // descartamos os privados aqui sem perder esse número.
   const reposRes = await fetch(
     "https://api.github.com/user/repos?per_page=100&sort=pushed&affiliation=owner",
     { headers: githubHeaders }
   );
-  const repos = await reposRes.json();
+  const allRepos = await reposRes.json();
+  const repos = allRepos.filter((repo: any) => !repo.private);
 
   // 2.1 Seleções já feitas pela pessoa dona do perfil — um re-sync (ex: ao
   // abrir "editar projetos" pra puxar repositórios novos) não pode resetar
@@ -527,6 +532,21 @@ export async function syncGithubProfile(
   const existingSelection = new Map(
     (existingRepos ?? []).map((r) => [r.github_repo_id, r.is_selected])
   );
+
+  // 2.2 Remove da tabela qualquer repo que não veio nessa leva pública (ficou
+  // privado depois de já ter sido sincronizado, ou foi apagado no GitHub) —
+  // sem isso, um repo selecionado antes de virar privado continuaria
+  // aparecendo com link quebrado no portfólio pra sempre.
+  const currentRepoIds = repos.map((repo: any) => repo.id);
+  if (currentRepoIds.length > 0) {
+    await supabase
+      .from("repos")
+      .delete()
+      .eq("profile_id", userId)
+      .not("github_repo_id", "in", `(${currentRepoIds.join(",")})`);
+  } else {
+    await supabase.from("repos").delete().eq("profile_id", userId);
+  }
 
   // 3. Linguagens por repo (bytes), em paralelo — usadas tanto pro card do
   // repo quanto pra agregação da stack geral do perfil
