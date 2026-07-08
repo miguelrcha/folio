@@ -17,6 +17,7 @@ export type PublicProfile = {
   experiences_json: ExperienceEntry[] | null;
   certifications_json: CertificationEntry[] | null;
   languages_json: LanguageEntry[] | null;
+  total_commits: number | null;
 };
 
 export type Repo = {

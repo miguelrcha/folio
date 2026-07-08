@@ -95,7 +95,7 @@ export default async function ProfilePage({
           {[
             { label: "followers", value: profile.followers ?? 0 },
             { label: "public repositories", value: profile.public_repos ?? 0 },
-            { label: "stars in projects", value: totalStars },
+            { label: "total commits", value: profile.total_commits ?? 0 },
             { label: "on github since", value: githubSinceYear ?? "—" },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
