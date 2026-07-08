@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"), // alterar para dominio real quando for deployar
+  metadataBase: new URL("https://meufolio.dev"),
 
   title: "Folio - Turn your GitHub into a professional resume with AI",
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "Folio",
     description:
       "Turn your GitHub into a professional resume with AI.",
-    url: "http://localhost:3000", // alterar para dominio real quando for deployar
+    url: "https://meufolio.dev",
     siteName: "Folio",
     images: [
       {
