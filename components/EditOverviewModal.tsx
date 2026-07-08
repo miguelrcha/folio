@@ -26,7 +26,7 @@ export function EditOverviewModal({
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ summary: text.trim() })
+      .update({ summary: text.trim(), summary_manual: true })
       .eq("id", profileId);
     setSaving(false);
 

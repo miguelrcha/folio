@@ -493,7 +493,7 @@ export async function syncGithubProfile(
 ) {
   const { data: profile } = await supabase
     .from("profiles")
-    .select("top_stack")
+    .select("top_stack, summary_manual")
     .eq("id", userId)
     .single();
 
@@ -623,27 +623,34 @@ export async function syncGithubProfile(
   }
 
   // 7. Atualiza o perfil com os dados agregados
+  // O resumo (overview) editado manualmente pela pessoa dona do perfil não
+  // deve ser sobrescrito a cada sync — mesma lógica já aplicada ao top_stack.
+  const profileUpdate: Record<string, unknown> = {
+    bio: githubUser.bio,
+    full_name: githubUser.name ?? null,
+    location: githubUser.location,
+    public_repos: githubUser.public_repos,
+    followers: githubUser.followers,
+    github_created_at: githubUser.created_at ?? null,
+    top_stack: topStack,
+    total_commits: totalCommits,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (!profile?.summary_manual) {
+    profileUpdate.summary = buildSummary({
+      username: githubUser.login,
+      topStack,
+      publicRepos: githubUser.public_repos,
+      activeRepos,
+      totalStars,
+      topRepoName,
+    });
+  }
+
   const { error: profileError } = await supabase
     .from("profiles")
-    .update({
-      bio: githubUser.bio,
-      full_name: githubUser.name ?? null,
-      location: githubUser.location,
-      public_repos: githubUser.public_repos,
-      followers: githubUser.followers,
-      github_created_at: githubUser.created_at ?? null,
-      top_stack: topStack,
-      total_commits: totalCommits,
-      summary: buildSummary({
-        username: githubUser.login,
-        topStack,
-        publicRepos: githubUser.public_repos,
-        activeRepos,
-        totalStars,
-        topRepoName,
-      }),
-      updated_at: new Date().toISOString(),
-    })
+    .update(profileUpdate)
     .eq("id", userId);
 
   if (profileError) {
