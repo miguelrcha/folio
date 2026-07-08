@@ -12,7 +12,7 @@ const SPOUK_AVATAR = "https://github.com/spoukhs.png";
 
 function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
   const avatars = [MY_AVATAR, GITHUB_DEFAULT_AVATAR2, SPOUK_AVATAR, GITHUB_DEFAULT_AVATAR,];
-  const displayCount = totalCount === null ? null : totalCount;
+  const displayCount = totalCount === null ? null : `+${totalCount}`;
 
   return (
     <div className="mt-10 flex flex-col items-center gap-3">
