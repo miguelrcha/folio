@@ -166,6 +166,34 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     y += 3.5;
   };
 
+  // Cada experiência: uma linha principal (cargo — empresa (período)) e,
+  // logo abaixo, sub-bullets menores e recuados com o que foi feito.
+  const experienceList = (items: { headline: string; bullets: string[] }[]) => {
+    items.forEach(({ headline, bullets }) => {
+      doc.setFont(FONT, "normal");
+      doc.setFontSize(BODY_SIZE);
+      doc.setTextColor(...BODY);
+      const headlineLines = doc.splitTextToSize(clean(headline), CONTENT_WIDTH - 5);
+      ensureSpace(headlineLines.length * BODY_LINE + 1);
+      doc.text("•", MARGIN, y);
+      doc.text(headlineLines, MARGIN + 4, y);
+      y += headlineLines.length * BODY_LINE + 1;
+
+      doc.setFont(FONT, "normal");
+      doc.setFontSize(SUBTEXT_SIZE);
+      doc.setTextColor(...MUTED);
+      bullets.filter(Boolean).forEach((bullet) => {
+        const lines = doc.splitTextToSize(clean(bullet), CONTENT_WIDTH - 10);
+        ensureSpace(lines.length * SUBTEXT_LINE + 0.5);
+        doc.text("–", MARGIN + 6, y);
+        doc.text(lines, MARGIN + 10, y);
+        y += lines.length * SUBTEXT_LINE + 0.5;
+      });
+      y += 2;
+    });
+    y += 1.5;
+  };
+
   if (data.summary) {
     sectionHeading("Overview");
     paragraph(data.summary);
@@ -173,11 +201,11 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
 
   if (data.experiences.length > 0) {
     sectionHeading("Experiences");
-    bulletList(
+    experienceList(
       data.experiences.map((exp) => {
         const range = formatExperienceRange(exp);
         const parts = [exp?.title ?? "", exp?.company ?? ""].filter(Boolean).join(" — ");
-        return range ? `${parts} (${range})` : parts;
+        return { headline: range ? `${parts} (${range})` : parts, bullets: exp?.bullets ?? [] };
       })
     );
   }

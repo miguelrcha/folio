@@ -6,6 +6,8 @@ export type ExperienceEntry = {
   endMonth: number | null; // null se "atual"
   endYear: number | null;
   current: boolean;
+  /** Linhas curtas do que foi feito nessa experiência (stack, responsabilidades). */
+  bullets?: string[];
 };
 
 export const MONTHS = [
@@ -46,5 +48,6 @@ export function emptyExperienceEntry(): ExperienceEntry {
     endMonth: null,
     endYear: null,
     current: true,
+    bullets: [],
   };
 }

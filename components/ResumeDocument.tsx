@@ -93,13 +93,27 @@ export function ResumeDocument({
           {experiences.length > 0 && (
             <div>
               <ResumeSectionTitle>Experiences</ResumeSectionTitle>
-              <ResumeBulletList
-                items={experiences.map((exp) => {
+              <ul className="space-y-[5pt] pl-[10pt]">
+                {experiences.map((exp, i) => {
                   const range = formatExperienceRange(exp);
                   const parts = [exp?.title ?? "", exp?.company ?? ""].filter(Boolean).join(" — ");
-                  return range ? `${parts} (${range})` : parts;
+                  const headline = range ? `${parts} (${range})` : parts;
+                  return (
+                    <li key={i} className="text-[8.5pt] text-[#374151] leading-relaxed list-disc">
+                      {headline}
+                      {Array.isArray(exp?.bullets) && exp.bullets.length > 0 && (
+                        <ul className="mt-[2pt] space-y-[1.5pt] pl-[10pt]">
+                          {exp.bullets.map((bullet, bi) => (
+                            <li key={bi} className="text-[7.5pt] text-[#6b7280] leading-snug list-disc">
+                              {bullet}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
                 })}
-              />
+              </ul>
             </div>
           )}
 

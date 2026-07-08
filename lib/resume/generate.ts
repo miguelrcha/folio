@@ -79,19 +79,31 @@ function bulletText(text: string) {
   });
 }
 
-function experienceParagraph(exp: ExperienceEntry) {
+function experienceParagraphs(exp: ExperienceEntry) {
   const range = formatExperienceRange(exp);
-  return new Paragraph({
-    bullet: { level: 0 },
-    spacing: { after: 60 },
-    children: [
-      new TextRun({ text: exp.title || "", bold: true, size: 21, font: "Georgia" }),
-      ...(exp.company
-        ? [new TextRun({ text: `  —  ${exp.company}`, size: 21, font: "Georgia" })]
-        : []),
-      ...(range ? [new TextRun({ text: `  (${range})`, size: 18, color: MUTED, font: "Georgia" })] : []),
-    ],
-  });
+  const bullets = exp.bullets ?? [];
+  return [
+    new Paragraph({
+      bullet: { level: 0 },
+      spacing: { after: bullets.length > 0 ? 20 : 60 },
+      children: [
+        new TextRun({ text: exp.title || "", bold: true, size: 21, font: "Georgia" }),
+        ...(exp.company
+          ? [new TextRun({ text: `  —  ${exp.company}`, size: 21, font: "Georgia" })]
+          : []),
+        ...(range ? [new TextRun({ text: `  (${range})`, size: 18, color: MUTED, font: "Georgia" })] : []),
+      ],
+    }),
+    ...bullets.map(
+      (bullet) =>
+        new Paragraph({
+          bullet: { level: 1 },
+          spacing: { after: 20 },
+          children: [new TextRun({ text: bullet, size: 18, color: MUTED, font: "Georgia" })],
+        })
+    ),
+    ...(bullets.length > 0 ? [new Paragraph({ spacing: { after: 40 }, children: [] })] : []),
+  ];
 }
 
 function certificationParagraph(cert: CertificationEntry) {
@@ -252,7 +264,7 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
             : []),
 
           ...(data.experiences.length > 0
-            ? [sectionHeading("Experiences"), ...data.experiences.map(experienceParagraph)]
+            ? [sectionHeading("Experiences"), ...data.experiences.flatMap(experienceParagraphs)]
             : []),
 
           ...(data.topStack.length > 0

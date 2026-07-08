@@ -171,14 +171,25 @@ export default async function ProfilePage({
           {Array.isArray(profile.experiences_json) && profile.experiences_json.length > 0 ? (
             <div className="mt-4 space-y-4">
               {profile.experiences_json.map((exp, i) => (
-                <div key={i} className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-mono text-sm text-[var(--color-text)]">{exp?.title ?? ""}</p>
-                    <p className="text-sm text-[var(--color-text-muted)]">{exp?.company ?? ""}</p>
+                <div key={i}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-mono text-sm text-[var(--color-text)]">{exp?.title ?? ""}</p>
+                      <p className="text-sm text-[var(--color-text-muted)]">{exp?.company ?? ""}</p>
+                    </div>
+                    <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
+                      {formatExperienceRange(exp)}
+                    </span>
                   </div>
-                  <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
-                    {formatExperienceRange(exp)}
-                  </span>
+                  {Array.isArray(exp?.bullets) && exp.bullets.length > 0 && (
+                    <ul className="mt-2 space-y-1 pl-4">
+                      {exp.bullets.map((bullet, bi) => (
+                        <li key={bi} className="text-sm text-[var(--color-text-muted)] list-disc leading-relaxed">
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>

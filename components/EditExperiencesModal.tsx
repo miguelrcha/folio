@@ -39,7 +39,12 @@ export function EditExperiencesModal({
   const handleSave = async () => {
     setSaving(true);
     setError(null);
-    const cleaned = entries.filter((e) => e.title.trim() || e.company.trim());
+    const cleaned = entries
+      .filter((e) => e.title.trim() || e.company.trim())
+      .map((e) => ({
+        ...e,
+        bullets: (e.bullets ?? []).map((b) => b.trim()).filter(Boolean),
+      }));
 
     try {
       const { error: updateError } = await supabase
@@ -190,6 +195,21 @@ export function EditExperiencesModal({
                     />
                     No momento (trabalho atual)
                   </label>
+
+                  <div>
+                    <label className="text-xs font-mono text-[var(--color-text-faint)]">
+                      O que você fez (uma linha por bullet)
+                    </label>
+                    <textarea
+                      value={(entry.bullets ?? []).join("\n")}
+                      onChange={(e) => updateEntry(i, { bullets: e.target.value.split("\n") })}
+                      rows={5}
+                      placeholder={
+                        "Developed internal software used by engineering and operations teams.\nBuilt REST APIs and backend services.\nWorked with PostgreSQL and SQL Server."
+                      }
+                      className="mt-1 w-full resize-none rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none focus:border-white/20"
+                    />
+                  </div>
                 </div>
               ))}
 
