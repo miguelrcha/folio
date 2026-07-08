@@ -40,6 +40,8 @@ Folio is built for developers who want:
 ## Contributing
 We are actively building Folio and welcome feedback, ideas, and bug reports.
 
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup, project structure, and the branch/PR workflow.
+
 - Report issues: https://github.com/miguelrcha/folio/issues  
 - Open pull requests: https://github.com/miguelrcha/folio/pulls  
 
