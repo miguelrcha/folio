@@ -178,9 +178,9 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b transition-colors duration-200 ease-in-out ${
+      className={`fixed top-0 inset-x-0 z-40 border-b transition-colors duration-200 ease-in-out ${
         scrolled
-          ? "border-white/[0.08] bg-neutral-900/70 backdrop-blur-xl backdrop-saturate-150"
+          ? "border-white/[0.08] bg-black/80 backdrop-blur-xl backdrop-saturate-150"
           : "border-transparent"
       }`}
       aria-label="Main"

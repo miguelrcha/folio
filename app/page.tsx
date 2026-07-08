@@ -59,11 +59,13 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="animate-fade-up relative z-10 min-h-screen overflow-x-hidden">
-      <div className="hero-glow" />
+    <>
       <Header />
+      <main className="animate-fade-up relative z-10 min-h-screen overflow-x-hidden">
+        <div className="hero-glow" />
+        <div className="h-[60px] md:h-[58px]" />
 
-      <br /><br />
+        <br /><br />
       {/* Hero */}
       <section className="relative flex flex-col items-center text-center px-6 pt-20 md:pt-32 pb-20">
         <h1 className="font-sans tracking-tight text-5xl sm:text-6xl md:text-7xl leading-[1.05]">
@@ -118,9 +120,10 @@ export default function LoginPage() {
 
       </section>
 
-      <FeatureShowcase />
-      <CTASection />
-      <Footer />
-    </main>
+        <FeatureShowcase />
+        <CTASection />
+        <Footer />
+      </main>
+    </>
   );
 }
