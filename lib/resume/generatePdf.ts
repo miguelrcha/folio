@@ -9,14 +9,8 @@ import { formatLanguageEntry } from "@/lib/language";
 export type ResumePdfRepo = {
   name: string;
   description?: string | null;
+  summary?: string | null;
   stack?: string[] | null;
-};
-
-export type ResumePdfStats = {
-  publicRepos: number;
-  totalCommits: number;
-  githubSinceYear: number | null;
-  followers: number;
 };
 
 export type ResumePdfData = {
@@ -31,7 +25,6 @@ export type ResumePdfData = {
   certifications: CertificationEntry[];
   languages: LanguageEntry[];
   repos: ResumePdfRepo[];
-  stats: ResumePdfStats;
   /** Data URL (data:image/...;base64,...) já carregada. Se omitido, some do cabeçalho. */
   photoDataUrl?: string | null;
 };
@@ -219,19 +212,32 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     sectionHeading("Projects, by impact");
     data.repos.forEach((repo) => {
       const stackLine = (repo.stack ?? []).slice(0, 6).join(", ");
-      doc.setFont(FONT, "bold");
+      doc.setFont(FONT, "normal");
       doc.setFontSize(BODY_SIZE);
       doc.setTextColor(...INK);
       const titleText = repo.description ? `${repo.name}  —  ${repo.description}` : repo.name;
       const titleLines = doc.splitTextToSize(clean(titleText), CONTENT_WIDTH - 5);
-      ensureSpace(titleLines.length * BODY_LINE + (stackLine ? SUBTEXT_LINE : 0) + 2);
+      ensureSpace(titleLines.length * BODY_LINE + 2);
       doc.text("•", MARGIN, y);
       doc.text(titleLines, MARGIN + 4, y);
       y += titleLines.length * BODY_LINE;
+
+      if (repo.summary) {
+        doc.setFont(FONT, "normal");
+        doc.setFontSize(SUBTEXT_SIZE);
+        doc.setTextColor(...MUTED);
+        const summaryLines = doc.splitTextToSize(clean(repo.summary), CONTENT_WIDTH - 10);
+        ensureSpace(summaryLines.length * SUBTEXT_LINE + 0.5);
+        doc.text("–", MARGIN + 6, y);
+        doc.text(summaryLines, MARGIN + 10, y);
+        y += summaryLines.length * SUBTEXT_LINE + 0.5;
+      }
+
       if (stackLine) {
         doc.setFont(FONT, "normal");
         doc.setFontSize(SUBTEXT_SIZE);
         doc.setTextColor(...MUTED);
+        ensureSpace(SUBTEXT_LINE);
         doc.text(clean(stackLine), MARGIN + 4, y);
         y += SUBTEXT_LINE;
       }
@@ -255,14 +261,6 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     sectionHeading("Languages");
     bulletList(data.languages.map((entry) => formatLanguageEntry(entry)));
   }
-
-  sectionHeading("GitHub");
-  bulletList([
-    `${data.stats.publicRepos} repositórios públicos`,
-    `${data.stats.totalCommits} commits totais`,
-    ...(data.stats.githubSinceYear ? [`no github desde ${data.stats.githubSinceYear}`] : []),
-    `${data.stats.followers} followers`,
-  ]);
 
   doc.setFont(FONT, "normal");
   doc.setFontSize(FOOTER_SIZE);

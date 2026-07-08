@@ -23,13 +23,8 @@ import { formatLanguageEntry } from "@/lib/language";
 export type ResumeRepo = {
   name: string;
   description?: string | null;
+  summary?: string | null;
   stack?: string[] | null;
-};
-
-export type ResumeStats = {
-  publicRepos: number;
-  totalCommits: number;
-  githubSinceYear: number | null;
 };
 
 export type ResumeData = {
@@ -44,7 +39,6 @@ export type ResumeData = {
   certifications: CertificationEntry[];
   languages: LanguageEntry[];
   repos: ResumeRepo[];
-  stats: ResumeStats;
   /** bytes da foto (avatar do GitHub), já baixados. Se omitido, o cabeçalho fica só com o texto. */
   photo?: { data: Buffer; type: "jpg" | "png" | "gif" | "bmp" } | null;
 };
@@ -127,9 +121,9 @@ function projectParagraphs(repo: ResumeRepo) {
   return [
     new Paragraph({
       bullet: { level: 0 },
-      spacing: { before: 100, after: stackLine ? 20 : 60 },
+      spacing: { before: 100, after: repo.summary || stackLine ? 20 : 60 },
       children: [
-        new TextRun({ text: repo.name, bold: true, size: 21, font: "Georgia" }),
+        new TextRun({ text: repo.name, size: 21, font: "Georgia" }),
         ...(repo.description
           ? [
               new TextRun({
@@ -143,6 +137,15 @@ function projectParagraphs(repo: ResumeRepo) {
           : []),
       ],
     }),
+    ...(repo.summary
+      ? [
+          new Paragraph({
+            bullet: { level: 1 },
+            spacing: { after: stackLine ? 20 : 80 },
+            children: [new TextRun({ text: repo.summary, size: 18, color: MUTED, font: "Georgia" })],
+          }),
+        ]
+      : []),
     ...(stackLine
       ? [
           new Paragraph({
@@ -153,15 +156,6 @@ function projectParagraphs(repo: ResumeRepo) {
         ]
       : []),
   ];
-}
-
-function githubStatsParagraphs(stats: ResumeStats) {
-  const lines = [
-    `${stats.publicRepos} repositórios públicos`,
-    `${stats.totalCommits} commits totais`,
-  ];
-  if (stats.githubSinceYear) lines.push(`no github desde ${stats.githubSinceYear}`);
-  return lines.map(bulletText);
 }
 
 export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
@@ -281,10 +275,6 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
 
           ...(data.languages.length > 0
             ? [sectionHeading("Languages"), ...data.languages.map((l) => bulletText(formatLanguageEntry(l)))]
-            : []),
-
-          ...(data.stats.publicRepos > 0 || data.stats.totalCommits > 0
-            ? [sectionHeading("GitHub"), ...githubStatsParagraphs(data.stats)]
             : []),
 
           new Paragraph({

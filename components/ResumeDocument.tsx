@@ -33,13 +33,9 @@ function ResumeBulletList({ items }: { items: string[] }) {
 export function ResumeDocument({
   profile,
   repos,
-  totalCommits,
-  githubSinceYear,
 }: {
   profile: PublicProfile;
   repos: Repo[];
-  totalCommits: number;
-  githubSinceYear: number | null;
 }) {
   const stacks = profile.top_stack ?? [];
   const experiences = Array.isArray(profile.experiences_json) ? profile.experiences_json : [];
@@ -132,8 +128,15 @@ export function ResumeDocument({
               <ul className="space-y-[5pt] pl-[10pt]">
                 {repos.map((repo) => (
                   <li key={repo.id} className="text-[8.5pt] text-[#374151] leading-relaxed list-disc">
-                    <span className="font-semibold text-[#0a0a0a]">{repo.name}</span>
+                    {repo.name}
                     {repo.description ? `  —  ${repo.description}` : ""}
+                    {repo.summary && (
+                      <ul className="mt-[2pt] space-y-[1.5pt] pl-[10pt]">
+                        <li className="text-[7.5pt] text-[#6b7280] leading-snug list-disc">
+                          {repo.summary}
+                        </li>
+                      </ul>
+                    )}
                     {repo.stack && repo.stack.length > 0 && (
                       <div className="text-[7.5pt] text-[#6b7280]">
                         {repo.stack.slice(0, 6).join(", ")}
@@ -164,18 +167,6 @@ export function ResumeDocument({
               <ResumeBulletList items={languageEntries.map((entry) => formatLanguageEntry(entry))} />
             </div>
           )}
-
-          <div>
-            <ResumeSectionTitle>GitHub</ResumeSectionTitle>
-            <ResumeBulletList
-              items={[
-                `${profile.public_repos ?? 0} repositórios públicos`,
-                `${totalCommits} commits totais`,
-                ...(githubSinceYear ? [`no github desde ${githubSinceYear}`] : []),
-                `${profile.followers ?? 0} followers`,
-              ]}
-            />
-          </div>
         </div>
 
         <div className="mt-[14pt] pt-[6pt] border-t border-[#e5e7eb] text-[7.5pt] text-[#9ca3af] text-center">

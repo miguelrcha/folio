@@ -25,6 +25,7 @@ export type Repo = {
   id: string;
   name: string;
   description: string | null;
+  summary: string | null;
   stack: string[] | null;
   stars: number;
   forks: number;

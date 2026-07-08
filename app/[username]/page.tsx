@@ -37,7 +37,7 @@ export default async function ProfilePage({
 
   const { data: repos } = await supabase
     .from("repos")
-    .select("id, name, description, stack, stars, forks, impact_score")
+    .select("id, name, description, summary, stack, stars, forks, impact_score")
     .eq("profile_id", profile.id)
     .eq("is_selected", true)
     .order("impact_score", { ascending: false })
@@ -57,7 +57,7 @@ export default async function ProfilePage({
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
-        <DownloadCvButton profile={profile} repos={selectedRepos} githubSinceYear={githubSinceYear} />
+        <DownloadCvButton profile={profile} repos={selectedRepos} />
       </ProfileHeader>
 
       <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
@@ -375,12 +375,7 @@ export default async function ProfilePage({
         </footer>
       </main>
 
-      <ResumeDocument
-        profile={profile}
-        repos={selectedRepos}
-        totalCommits={profile.total_commits ?? 0}
-        githubSinceYear={githubSinceYear}
-      />
+      <ResumeDocument profile={profile} repos={selectedRepos} />
     </div>
   );
 }

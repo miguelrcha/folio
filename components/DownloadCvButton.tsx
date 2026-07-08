@@ -35,11 +35,9 @@ async function fetchAvatarDataUrl(avatarUrl: string | null): Promise<string | nu
 export function DownloadCvButton({
   profile,
   repos,
-  githubSinceYear,
 }: {
   profile: PublicProfile;
   repos: Repo[];
-  githubSinceYear: number | null;
 }) {
   const [generating, setGenerating] = useState(false);
 
@@ -65,13 +63,12 @@ export function DownloadCvButton({
           ? profile.certifications_json
           : [],
         languages: Array.isArray(profile.languages_json) ? profile.languages_json : [],
-        repos: repos.map((r) => ({ name: r.name, description: r.description, stack: r.stack })),
-        stats: {
-          publicRepos: profile.public_repos ?? 0,
-          totalCommits: profile.total_commits ?? 0,
-          githubSinceYear,
-          followers: profile.followers ?? 0,
-        },
+        repos: repos.map((r) => ({
+          name: r.name,
+          description: r.description,
+          summary: r.summary,
+          stack: r.stack,
+        })),
         photoDataUrl,
       });
       // O Chrome bloqueia navegação de nível superior (location.href) direto
