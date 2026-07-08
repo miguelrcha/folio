@@ -118,7 +118,7 @@ export default function SignInPage() {
       provider: "github",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: "read:user public_repo",
+        scopes: "read:user repo",
       },
     });
   };
