@@ -49,6 +49,10 @@ export default function SignInPage() {
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
+    document.title = "Folio - Sign Up";
+  }, []);
+
+  useEffect(() => {
     const supabase = createClient();
     supabase.rpc("get_total_profiles").then(({ data, error }) => {
       if (!error && typeof data === "number") setTotalCount(data);

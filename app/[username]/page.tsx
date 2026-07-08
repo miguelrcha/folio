@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { GithubIcon } from "@/components/GithubIcon";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { DownloadCvButton } from "@/components/DownloadCvButton";
@@ -19,6 +20,15 @@ import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 import type { PublicProfile, Repo } from "@/lib/profile";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
+  return { title: `Folio - ${username}` };
+}
 
 export default async function ProfilePage({
   params,
