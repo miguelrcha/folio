@@ -10,6 +10,8 @@ import { EditExperiencesModal } from "@/components/EditExperiencesModal";
 import { EditStacksModal } from "@/components/EditStacksModal";
 import { EditCertificationsModal } from "@/components/EditCertificationsModal";
 import { EditLanguagesModal } from "@/components/EditLanguagesModal";
+import { EditEmailModal } from "@/components/EditEmailModal";
+import { MailIcon } from "@/components/MailIcon";
 import { ResumeDocument } from "@/components/ResumeDocument";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
@@ -55,7 +57,7 @@ export default async function ProfilePage({
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
-        <DownloadCvButton username={profile.github_username} />
+        <DownloadCvButton profile={profile} repos={selectedRepos} githubSinceYear={githubSinceYear} />
       </ProfileHeader>
 
       <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
@@ -78,8 +80,31 @@ export default async function ProfilePage({
                 @{profile.github_username}
               </span>
             </h1>
-            {profile.location && (
-              <p className="mt-1 text-[var(--color-text-muted)]">{profile.location}</p>
+            {(profile.location || profile.contact_email || isOwner) && (
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[var(--color-text-muted)]">
+                {profile.location && <span>{profile.location}</span>}
+                {(profile.contact_email || isOwner) && (
+                  <span className="inline-flex items-center gap-1.5">
+                    {profile.contact_email && (
+                      <a
+                        href={`mailto:${profile.contact_email}`}
+                        className="inline-flex items-center gap-1.5 hover:text-[var(--color-text)] transition-colors"
+                      >
+                        <MailIcon className="h-4 w-4" />
+                        {profile.contact_email}
+                      </a>
+                    )}
+                    {!profile.contact_email && isOwner && <MailIcon className="h-4 w-4" />}
+                    {isOwner && (
+                      <EditEmailModal
+                        profileId={profile.id}
+                        initialEmail={profile.contact_email ?? ""}
+                        githubEmail={currentUser?.email ?? null}
+                      />
+                    )}
+                  </span>
+                )}
+              </div>
             )}
             {profile.bio && (
               <p className="mt-3 max-w-xl text-[var(--color-text)] leading-relaxed">

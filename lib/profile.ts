@@ -9,6 +9,7 @@ export type PublicProfile = {
   avatar_url: string | null;
   bio: string | null;
   location: string | null;
+  contact_email: string | null;
   summary: string | null;
   public_repos: number | null;
   followers: number | null;

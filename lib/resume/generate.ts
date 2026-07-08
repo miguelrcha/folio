@@ -36,6 +36,7 @@ export type ResumeData = {
   name: string;
   githubUsername: string;
   location?: string | null;
+  email?: string | null;
   bio?: string | null;
   summary?: string | null;
   topStack: { name: string; percentage: number }[];
@@ -154,6 +155,7 @@ function githubStatsParagraphs(stats: ResumeStats) {
 export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
   const contactLine = [
     data.location ?? undefined,
+    data.email ?? undefined,
     `github.com/${data.githubUsername}`,
     `meufolio.dev/${data.githubUsername}`,
   ]
