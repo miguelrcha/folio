@@ -6,12 +6,12 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { createClient } from "@/lib/supabase/client";
 
 const GITHUB_DEFAULT_AVATAR = "https://github.com/ArthurOscar.png";
-const GITHUB_DEFAULT_AVATAR2 = "https://github.com/Iago-KK.png";
+const GITHUB_DEFAULT_AVATAR2 = "https://github.com/hemkdev.png";
 const MY_AVATAR = "https://github.com/miguelrcha.png";
 const SPOUK_AVATAR = "https://github.com/spoukhs.png";
 
 function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
-  const avatars = [MY_AVATAR, SPOUK_AVATAR, GITHUB_DEFAULT_AVATAR, GITHUB_DEFAULT_AVATAR2];
+  const avatars = [MY_AVATAR, GITHUB_DEFAULT_AVATAR2, SPOUK_AVATAR, GITHUB_DEFAULT_AVATAR,];
   const displayCount = totalCount === null ? null : totalCount;
 
   return (
