@@ -1,0 +1,24 @@
+---
+title: Self-hosting
+description: Folio is a plain Next.js app — no proprietary infra to set up.
+---
+
+Folio is open source and deployable as a standard Next.js app, backed by Supabase for auth and storage.
+
+## Requirements
+
+- A [Supabase](https://supabase.com) project (Postgres + GitHub OAuth).
+- Environment variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TOKEN_ENCRYPTION_KEY`, `CRON_SECRET`.
+
+## Running it
+
+```bash
+npm install
+npm run dev
+```
+
+## Daily sync
+
+A cron job hits `/api/cron/sync-all` once a day to resync every profile. On Vercel this is wired up via `vercel.json`; on another host, point any scheduler at that route with the `CRON_SECRET` bearer token.
+
+Full setup details live in the project's `CONTRIBUTING.md` and `AGENTS.md`.
