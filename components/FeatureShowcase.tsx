@@ -1,4 +1,5 @@
 import { GithubStarsBadge } from "@/components/GithubStarsBadge";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 function CardShell({ children }: { children: React.ReactNode }) {
   return (
@@ -100,7 +101,7 @@ export function FeatureShowcase() {
         }}
       >
       <div className="mx-auto max-w-5xl md:max-w-7xl">
-      <div className="text-center mb-10 md:mb-14">
+      <ScrollReveal className="text-center mb-10 md:mb-14">
         <h2 className="text-[2.25rem] md:text-[4rem] tracking-tighter leading-[120%] mb-2 font-normal">
           <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent">
             Everything from your GitHub
@@ -110,10 +111,11 @@ export function FeatureShowcase() {
           A public profile, a PDF resume, and a curated selection of your best projects —
           all generated from your GitHub, without filling in anything by hand.
         </p>
-      </div>
+      </ScrollReveal>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Card 1 — Public Profile */}
+        <ScrollReveal delay={0}>
         <CardShell>
           <PreviewPanel>
             <div className="w-full overflow-hidden">
@@ -146,8 +148,10 @@ export function FeatureShowcase() {
             </div>
           </div>
         </CardShell>
+        </ScrollReveal>
 
         {/* Card 2 — PDF Resume */}
+        <ScrollReveal delay={120}>
         <CardShell>
           <PreviewPanel>
             <div className="rounded-md border border-white/10 bg-black/30 p-4">
@@ -181,8 +185,10 @@ export function FeatureShowcase() {
             </div>
           </div>
         </CardShell>
+        </ScrollReveal>
 
         {/* Card 3 — Automatic Selection */}
+        <ScrollReveal delay={240}>
         <CardShell>
           <PreviewPanel>
             <div className="w-full overflow-hidden">
@@ -220,6 +226,7 @@ export function FeatureShowcase() {
             </div>
           </div>
         </CardShell>
+        </ScrollReveal>
       </div>
       </div>
       </section>

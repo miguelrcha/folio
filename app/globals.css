@@ -233,6 +233,27 @@ body {
   animation: fade-up 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Scroll-triggered reveal (see components/ScrollReveal.tsx) */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Docs content (Fumadocs prose) — match the site's heading tracking */
 .prose :where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-sans);
