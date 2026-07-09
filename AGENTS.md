@@ -39,5 +39,5 @@ This repo uses a controlled, issue-driven flow — nothing lands on `main` direc
 - **English-only.** Code, comments, UI strings, commits and docs are all in English; never mix languages in a file.
 - **Issue → branch → PR.** One branch per issue, named `<type>/<issue#>-<slug>` (e.g. `fix/123-pinned-header`). Merge to `main` happens through the PR, never by pushing to `main`.
 - **Atomic commits.** One responsibility per commit — split `feat`/`fix`/`docs`/`chore` instead of mixing them.
-- **Green before PR.** `npm run build` and `npm run lint` must pass (there is no test suite; `build` is also the type check). Render print/PDF changes visually; include exact SQL for any schema change.
+- **Green before PR.** `npm run build`, `npm run lint`, and `npm test` must pass (`build` is also the type check; tests run on Vitest + React Testing Library). Render print/PDF changes visually; include exact SQL for any schema change.
 - **Never auto-push.** Agents/tools must not push or open PRs on their own — only when the maintainer explicitly asks.
