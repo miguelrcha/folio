@@ -1,6 +1,4 @@
-<div align="center">
-  <h1>Folio</h1>
-</div>
+<h1>Folio</h1>
 
 ![Folio](/imgs/banner_folio.png)
 
@@ -16,8 +14,8 @@ Folio is built for developers who want:
 ---
 
 ## Getting Started
-<!--- **Web App**: https://folio.dev-->
-- **Repository**: https://github.com/foliohq/folio  
+- **Web App**: https://meufolio.dev
+- **Repository**: https://github.com/miguelrcha/folio  
 
 ---
 
@@ -25,7 +23,7 @@ Folio is built for developers who want:
 - GitHub-powered developer profile
 - ATS-optimized resume generation
 - Real-time sync with repositories and activity
-<!--- Shareable public profile pages (`folio.dev/@username`)-->
+Shareable public profile pages (`meufolio.dev/@username`)
 
 ---
 
