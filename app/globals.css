@@ -68,6 +68,15 @@
   box-sizing: border-box;
 }
 
+/* Docs sidebar reads as a lighter gray box against the near-black page.
+   `@theme inline` bakes --color-fd-card into `var(--color-surface)` at
+   build time (see compiled output), so overriding --color-fd-card here has
+   no effect — --color-surface itself has to be overridden, scoped to the
+   sidebar so callouts/cards/code blocks elsewhere in the docs are untouched. */
+#nd-sidebar {
+  --color-surface: #0a0a0a;
+}
+
 html {
   background: var(--color-ink);
 }
