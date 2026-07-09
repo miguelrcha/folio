@@ -239,8 +239,8 @@ export function Header() {
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden pb-5 flex flex-col gap-1 font-mono text-sm">
-            
+          <div className="md:hidden pb-5 flex flex-col gap-1 font-mono text-sm bg-black/95 backdrop-blur-2xl -mx-6 px-6 rounded-b-2xl">
+
             {RESOURCE_LINKS.map((r) => (
               <Link
                 key={r.label}
