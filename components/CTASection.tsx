@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function CTASection() {
   return (
-    <section className="mx-auto px-4 md:px-6 pt-16 sm:pt-32 pb-28 sm:pb-40 max-w-6xl relative z-10 text-center">
+    <section id="cta" className="mx-auto px-4 md:px-6 pt-16 sm:pt-32 pb-28 sm:pb-40 max-w-6xl relative z-10 text-center">
       <h2 className="text-[2.75rem] md:text-[5rem] tracking-tighter leading-[110%] mb-6 font-normal">
         <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent">
           Start testing in minutes

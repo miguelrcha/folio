@@ -10,13 +10,13 @@ import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 
 const NAV_LINKS = [
   { label: "Examples", href: "#" },
-  { label: "Pricing", href: "#" },
+  { label: "Docs", href: "/docs" },
 ];
 
 const RESOURCE_LINKS = [
-  { label: "Public Profile", desc: "meufolio.dev/@your-username" },
-  { label: "Resume in PDF", desc: "ready to send to companies" },
-  { label: "Automatic Selection", desc: "best projects, by impact" },
+  { label: "Public Profile", href: "/miguelrcha" },
+  { label: "Resume in PDF", href: "/#cta" },
+  { label: "Automatic Selection", href: "/#cta" },
 ];
 
 type LoggedInUser = {
@@ -178,18 +178,23 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-40 border-b transition-colors duration-200 ease-in-out ${
+      className={`fixed top-0 inset-x-0 z-40 border-b transition-all duration-200 ease-in-out ${
         scrolled
-          ? "border-white/[0.08] bg-black/80 backdrop-blur-xl backdrop-saturate-150"
+          ? "border-white/[0.06] bg-black/95 backdrop-blur-2xl backdrop-saturate-[1.8] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_16px_40px_-12px_rgba(0,0,0,0.85)]"
           : "border-transparent"
       }`}
       aria-label="Main"
     >
+      {scrolled && (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.02] via-transparent to-black/[0.2]" />
+      )}
       <div className="mx-auto w-full max-w-7xl px-6 relative">
         {/* Mobile bar */}
         <div className="flex w-full items-center py-4 md:hidden">
           <div className="flex-auto">
-            <Logo size="sm" />
+            <Link href="/">
+              <Logo size="sm" />
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <a
@@ -224,22 +229,22 @@ export function Header() {
           <div className="md:hidden pb-5 flex flex-col gap-1 font-mono text-sm">
             
             {RESOURCE_LINKS.map((r) => (
-              <a
+              <Link
                 key={r.label}
-                href="#"
+                href={r.href}
                 className="rounded-md px-2 py-2.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-white/[0.03]"
               >
                 {r.label}
-              </a>
+              </Link>
             ))}
             {NAV_LINKS.map((l) => (
-              <a
+              <Link
                 key={l.label}
                 href={l.href}
                 className="rounded-md px-2 py-2.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-white/[0.03]"
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
             {loggedInUser ? (
               <div className="mt-3">
@@ -259,7 +264,9 @@ export function Header() {
         {/* Desktop bar */}
         <div className="mx-auto hidden h-[58px] w-full items-center md:flex">
           <div className="flex flex-1 items-center gap-4 lg:w-[320px]">
-            <Logo size="md" />
+            <Link href="/">
+              <Logo size="md" />
+            </Link>
             <a
               href="https://github.com/miguelrcha/folio"
               className="hidden lg:flex items-center gap-1.5 px-2 py-1 ml-6 hover:opacity-80 transition-opacity duration-200 group"
@@ -301,31 +308,37 @@ export function Header() {
                     />
                   </svg>
                 </button>
-                {resourcesOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-72">
-                    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-2xl shadow-black/50">
+                <div
+                  className={`absolute left-1/2 -translate-x-1/2 top-full pt-2 w-64 transition-all duration-200 ease-out ${
+                    resourcesOpen
+                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 -translate-y-1 pointer-events-none"
+                  }`}
+                  aria-hidden={!resourcesOpen}
+                >
+                  <div className="relative overflow-hidden rounded-[20px] border border-white/[0.08] bg-black/70 p-2 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.06)] font-lato">
+                    <div className="relative">
                       {RESOURCE_LINKS.map((r) => (
-                        <a
+                        <Link
                           key={r.label}
-                          href="#"
-                          className="block rounded-lg px-3 py-2.5 hover:bg-white/[0.04] transition-colors"
+                          href={r.href}
+                          className="block rounded-xl px-3.5 py-3 text-lg font-medium text-[var(--color-text-muted)] hover:bg-white/[0.08] hover:text-[var(--color-text)] active:bg-white/[0.05] transition-colors duration-150"
                         >
-                          <div className="text-sm text-[var(--color-text)] font-mono">{r.label}</div>
-                          <div className="text-xs text-[var(--color-text-faint)] mt-0.5">{r.desc}</div>
-                        </a>
+                          {r.label}
+                        </Link>
                       ))}
                     </div>
                   </div>
-                )}
+                </div>
               </li>
               {NAV_LINKS.map((l) => (
                 <li key={l.label}>
-                  <a
+                  <Link
                     href={l.href}
                     className="h-[58px] flex items-center px-3 py-1 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] lg:px-5 transition duration-150 ease-in-out"
                   >
                     {l.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
