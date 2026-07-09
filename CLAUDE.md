@@ -22,7 +22,7 @@ Turns a GitHub profile into a public portfolio/resume site (`folio.dev/{username
 
 ## Environment & infrastructure
 
-Required env vars (no `.env.example` is committed — infer from usage):
+Required env vars (see `.env.example` for the committed template):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — client/server Supabase.
 - `SUPABASE_SERVICE_ROLE_KEY` — service-role client (`lib/supabase/admin.ts`), **bypasses RLS**; used only in no-session contexts like the cron job. Never use it in a route that responds to a visitor.
 - `TOKEN_ENCRYPTION_KEY` — 32-byte base64 key (`openssl rand -base64 32`) for AES-256-GCM encryption of the GitHub access token (`lib/crypto.ts`, format `iv:authTag:ciphertext`).
