@@ -1,0 +1,12 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "getting-started",
+    "public-profile",
+    "pdf-resume",
+    "auto-selection",
+    "customization",
+    "self-hosting",
+    "faq"
+  ]
+}

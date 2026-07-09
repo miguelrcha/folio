@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "fumadocs-ui/css/preset.css";
 
 :root {
   --color-ink: #000000;
@@ -28,9 +29,39 @@
   --color-accent-dim: var(--color-accent-dim);
   --color-green-commit: var(--color-green-commit);
   --color-green-commit-bright: var(--color-green-commit-bright);
+
+  /* Fumadocs UI theme — remapped onto our own tokens instead of the default preset */
+  --color-fd-background: var(--color-ink);
+  --color-fd-foreground: var(--color-text);
+  --color-fd-muted: var(--color-surface);
+  --color-fd-muted-foreground: var(--color-text-muted);
+  --color-fd-popover: var(--color-surface-raised);
+  --color-fd-popover-foreground: var(--color-text);
+  --color-fd-card: var(--color-surface);
+  --color-fd-card-foreground: var(--color-text);
+  --color-fd-border: var(--color-border);
+  --color-fd-primary: var(--color-text);
+  --color-fd-primary-foreground: var(--color-ink);
+  --color-fd-secondary: var(--color-surface);
+  --color-fd-secondary-foreground: var(--color-text);
+  --color-fd-accent: var(--color-surface-raised);
+  --color-fd-accent-foreground: var(--color-text);
+  --color-fd-ring: var(--color-border-bright);
+  --color-fd-overlay: rgba(0, 0, 0, 0.7);
+  --color-fd-info: oklch(62.3% 0.214 259.815);
+  --color-fd-warning: oklch(76.9% 0.188 70.08);
+  --color-fd-error: oklch(63.7% 0.237 25.331);
+  --color-fd-success: oklch(72.3% 0.219 149.579);
+  --color-fd-idea: oklch(70.5% 0.209 60.849);
+  --color-fd-diff-remove: rgba(200, 10, 100, 0.12);
+  --color-fd-diff-remove-symbol: rgb(230, 10, 100);
+  --color-fd-diff-add: rgba(14, 180, 100, 0.1);
+  --color-fd-diff-add-symbol: rgb(10, 200, 100);
+
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", "Cascadia Code", Menlo,
     Consolas, monospace;
   --font-sans: var(--font-inter), -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-lato: var(--font-lato-raw), -apple-system, "Segoe UI", system-ui, sans-serif;
 }
 
 * {
@@ -184,4 +215,10 @@ body {
 
 .animate-fade-up {
   animation: fade-up 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Docs content (Fumadocs prose) — match the site's heading tracking */
+.prose :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-sans);
+  letter-spacing: -0.025em;
 }
