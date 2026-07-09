@@ -58,13 +58,31 @@ Rules:
 - Imperative mood, lowercase after the prefix, no trailing period, keep the
   subject line short (≤ ~72 chars).
 
+## Testing
+
+Tests run on [Vitest](https://vitest.dev) with React Testing Library (jsdom):
+
+- `npm test` — run the suite once (used in CI / before a PR).
+- `npm run test:watch` — re-run on change while developing.
+
+Test files live next to the code they cover, named `*.test.ts` / `*.test.tsx`.
+Config is in `vitest.config.ts`; shared setup (jest-dom matchers, cleanup) is in
+`vitest.setup.ts`. The `@/` import alias works the same as in the app.
+
+Vitest bundles with Vite, not Next/Turbopack, so it covers pure `lib/` helpers and
+React components. Anything that needs Next's runtime (server components, route
+handlers) is out of scope — extract the logic into a testable function and test
+that instead. Coverage is still thin; new PRs should add tests for the logic they
+touch.
+
 ## Before opening a PR
 
-There is **no automated test suite** in this repo yet, so the bar before a PR is:
+The bar before a PR is:
 
 - `npm run build` passes (this is also the type/build check — there's no separate
   `tsc` step).
 - `npm run lint` passes.
+- `npm test` passes.
 - If the change affects print/PDF output (the CV), render it and check visually —
   print CSS is not exercised by the build.
 - If the change touches the DB schema, include the exact SQL in the PR description
