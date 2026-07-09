@@ -65,9 +65,8 @@ export default function LoginPage() {
         <div className="hero-glow" />
         <div className="h-[60px] md:h-[58px]" />
 
-        <br /><br />
-      {/* Hero */}
-      <section className="relative flex flex-col items-center text-center px-6 pt-20 md:pt-32 pb-20">
+      {/* Hero: fills the remaining viewport height so FeatureShowcase starts below the fold */}
+      <section className="relative flex min-h-[calc(100vh-60px)] md:min-h-[calc(100vh-58px)] flex-col items-center justify-center text-center px-6 pb-16">
         <h1 className="font-sans tracking-tight text-5xl sm:text-6xl md:text-7xl leading-[1.05]">
           <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent mb-2">
             Build your Github portfolio in minutes
@@ -119,7 +118,6 @@ export default function LoginPage() {
         {/* Trust row, in place of client logos — honest instead of making up brands */}
 
       </section>
-
         <FeatureShowcase />
         <CTASection />
         <Footer />
