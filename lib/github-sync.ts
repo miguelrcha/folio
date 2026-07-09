@@ -474,10 +474,10 @@ export function extractReadmeStacks(markdown: string): string[] {
 }
 
 export function joinStack(names: string[]): string {
-  if (names.length === 0) return "múltiplas tecnologias";
+  if (names.length === 0) return "multiple technologies";
   if (names.length === 1) return names[0];
-  if (names.length === 2) return `${names[0]} e ${names[1]}`;
-  return `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
 }
 
 export function buildSummary(opts: {
@@ -494,28 +494,28 @@ export function buildSummary(opts: {
   const hasTopRepo = Boolean(opts.topRepoName);
 
   const variants = [
-    `Desenvolvedor(a) com foco em ${stack}, mantendo ${opts.publicRepos} repositórios públicos no GitHub — ${opts.activeRepos} deles com atividade nos últimos 90 dias.`,
+    `Developer focused on ${stack}, maintaining ${opts.publicRepos} public repositories on GitHub — ${opts.activeRepos} of them active in the last 90 days.`,
 
-    `Trabalha principalmente com ${stack}.${
+    `Works mainly with ${stack}.${
       hasStars
-        ? ` No GitHub, soma ${opts.totalStars} estrelas distribuídas entre ${opts.publicRepos} repositórios públicos.`
-        : ` Mantém ${opts.publicRepos} repositórios públicos no GitHub, com foco em qualidade sobre quantidade.`
+        ? ` On GitHub, has ${opts.totalStars} stars spread across ${opts.publicRepos} public repositories.`
+        : ` Maintains ${opts.publicRepos} public repositories on GitHub, favoring quality over quantity.`
     }`,
 
-    `${stack} formam a stack principal.${
+    `${stack} form the main stack.${
       hasTopRepo
-        ? ` O projeto ${opts.topRepoName} é o destaque atual, dentro de um total de ${opts.publicRepos} repositórios públicos.`
-        : ` Mantém uma base de ${opts.publicRepos} repositórios públicos no GitHub.`
+        ? ` The ${opts.topRepoName} project is the current highlight, out of ${opts.publicRepos} public repositories total.`
+        : ` Maintains a base of ${opts.publicRepos} public repositories on GitHub.`
     }`,
 
-    `Constrói principalmente em ${stack}.${
+    `Builds mainly in ${stack}.${
       hasStars
-        ? ` Já acumulou ${opts.totalStars} estrelas em projetos open source`
-        : ` Mantém presença ativa em código aberto`
-    }, com ${opts.activeRepos} repositórios em desenvolvimento nos últimos 90 dias.`,
+        ? ` Has accumulated ${opts.totalStars} stars across open source projects`
+        : ` Maintains an active open source presence`
+    }, with ${opts.activeRepos} repositories in development over the last 90 days.`,
 
-    `Entre ${opts.publicRepos} repositórios públicos no GitHub, ${opts.activeRepos} seguem em desenvolvimento ativo — principalmente em ${stack}${
-      hasTopRepo ? `, com destaque para ${opts.topRepoName}` : ""
+    `Out of ${opts.publicRepos} public repositories on GitHub, ${opts.activeRepos} are still under active development — mainly in ${stack}${
+      hasTopRepo ? `, with ${opts.topRepoName} standing out` : ""
     }.`,
   ];
 

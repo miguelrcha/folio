@@ -61,7 +61,7 @@ export function ContributionGraph({
       width="100%"
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label="Gráfico de contribuições no GitHub"
+      aria-label="GitHub contribution graph"
     >
       {Array.from({ length: weeks }, (_, w) => {
         const isRevealed = mode !== "building" || w < revealedWeeks;

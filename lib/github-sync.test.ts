@@ -118,19 +118,19 @@ describe("extractReadmeStacks", () => {
 
 describe("joinStack", () => {
   it("falls back when there are no names", () => {
-    expect(joinStack([])).toBe("múltiplas tecnologias");
+    expect(joinStack([])).toBe("multiple technologies");
   });
 
   it("returns the single name as-is", () => {
     expect(joinStack(["React"])).toBe("React");
   });
 
-  it("joins two names with 'e'", () => {
-    expect(joinStack(["React", "Vue.js"])).toBe("React e Vue.js");
+  it("joins two names with 'and'", () => {
+    expect(joinStack(["React", "Vue.js"])).toBe("React and Vue.js");
   });
 
-  it("uses a comma list with a trailing 'e' for three or more", () => {
-    expect(joinStack(["React", "Vue.js", "Svelte"])).toBe("React, Vue.js e Svelte");
+  it("uses a comma list with a trailing 'and' for three or more", () => {
+    expect(joinStack(["React", "Vue.js", "Svelte"])).toBe("React, Vue.js and Svelte");
   });
 });
 

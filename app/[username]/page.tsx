@@ -161,7 +161,7 @@ export default async function ProfilePage({
             <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl">
               {profile.summary || (
                 <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                  nenhum resumo ainda.
+                  no summary yet.
                 </span>
               )}
             </p>
@@ -283,7 +283,7 @@ export default async function ProfilePage({
                           <GithubIcon className="h-3 w-3 text-[var(--color-text-faint)] opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         <p className="mt-1.5 text-sm text-[var(--color-text-muted)] max-w-xl">
-                          {repo.description || "sem descrição"}
+                          {repo.description || "no description"}
                         </p>
                         <div className="mt-2.5 flex flex-wrap gap-2">
                           {(repo.stack ?? []).slice(0, 6).map((s) => (
