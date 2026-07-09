@@ -30,7 +30,7 @@ export function ConnectLinkedInButton() {
 
       {showNotice && (
         <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-[var(--color-surface-raised)] border border-[var(--color-border)] px-2.5 py-1 text-xs font-mono text-[var(--color-text-muted)] shadow-lg z-10">
-          em breve — por enquanto, edite manualmente
+          coming soon — for now, edit manually
         </span>
       )}
     </span>

@@ -7,10 +7,10 @@ import { mockUser } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase/client";
 
 const ANALYSIS_STEPS = [
-  "conectando à API do github",
-  "lendo repositórios públicos",
-  "analisando linguagens e stacks",
-  "calculando impacto por projeto",
+  "connecting to the github api",
+  "reading public repositories",
+  "analyzing languages and stacks",
+  "calculating impact per project",
 ];
 
 type DbRepo = {
@@ -134,13 +134,13 @@ export default function ConnectPage() {
       <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
         <FolioWordmark size="lg" />
         <p className="mt-6 text-[var(--color-text-muted)]">
-          Não deu pra sincronizar com o GitHub agora. Tenta de novo?
+          Couldn&apos;t sync with GitHub right now. Try again?
         </p>
         <button
           onClick={() => router.replace("/login")}
           className="mt-6 rounded-md bg-[var(--color-text)] px-5 py-2.5 font-lato text-sm text-[var(--color-ink)]"
         >
-          Voltar ao login
+          Back to login
         </button>
       </main>
     );
@@ -182,16 +182,16 @@ export default function ConnectPage() {
       <div className="w-full max-w-2xl">
         <FolioWordmark size="sm" />
         <h1 className="mt-8 text-2xl md:text-3xl font-mono text-[var(--color-text)]">
-          Escolha o que entra no seu currículo
+          Choose what goes in your resume
         </h1>
         <p className="mt-2 text-[var(--color-text-muted)]">
-          Pré-selecionamos os projetos com maior impacto (estrelas, commits e atividade
-          recente). Ajuste como quiser.
+          We pre-selected the projects with the highest impact (stars, commits, and
+          recent activity). Adjust as you like.
         </p>
 
         {repos.length === 0 && (
           <p className="mt-8 text-sm text-[var(--color-text-faint)] font-mono">
-            Nenhum repositório encontrado nessa conta.
+            No repositories found on this account.
           </p>
         )}
 
@@ -211,11 +211,11 @@ export default function ConnectPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[var(--color-text)]">{repo.name}</span>
                       <span className="text-xs font-mono text-[var(--color-accent)]">
-                        impacto {repo.impact_score}
+                        impact {repo.impact_score}
                       </span>
                     </div>
                     <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                      {repo.description || "sem descrição"}
+                      {repo.description || "no description"}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {(repo.stack ?? []).slice(0, 5).map((s) => (
@@ -245,15 +245,14 @@ export default function ConnectPage() {
 
         <div className="mt-10 flex items-center justify-between">
           <span className="text-sm font-mono text-[var(--color-text-muted)]">
-            {selectedCount} projeto{selectedCount !== 1 ? "s" : ""} selecionado
-            {selectedCount !== 1 ? "s" : ""}
+            {selectedCount} project{selectedCount !== 1 ? "s" : ""} selected
           </span>
           <button
             onClick={handleGenerate}
             disabled={!githubUsername || generating}
             className="rounded-md bg-[var(--color-accent)] px-6 py-3 font-mono text-sm text-[var(--color-ink)] transition-opacity disabled:opacity-30 hover:opacity-90"
           >
-            {generating ? "Gerando..." : "Generate my Folio →"}
+            {generating ? "Generating..." : "Generate my Folio →"}
           </button>
         </div>
       </div>

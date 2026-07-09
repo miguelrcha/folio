@@ -37,7 +37,7 @@ function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
         </div>
       </div>
       <p className="text-sm font-mono text-[var(--color-text-muted)]">
-        Junte-se a diversos outros devs
+        Join several other devs
       </p>
     </div>
   );

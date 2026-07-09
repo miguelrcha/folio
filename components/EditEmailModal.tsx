@@ -31,7 +31,7 @@ export function EditEmailModal({
   const handleSave = async () => {
     const trimmed = email.trim();
     if (trimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError("Email inválido");
+      setError("Invalid email");
       return;
     }
 
@@ -44,7 +44,7 @@ export function EditEmailModal({
     setSaving(false);
 
     if (updateError) {
-      setError("Não foi possível salvar, tenta de novo");
+      setError("Couldn't save, try again");
       return;
     }
 
@@ -56,7 +56,7 @@ export function EditEmailModal({
     <>
       <button
         onClick={handleOpen}
-        aria-label="Editar email"
+        aria-label="Edit email"
         className="inline-flex items-center justify-center h-6 w-6 rounded-md text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-white/[0.06] transition-colors"
       >
         <MailIcon className="h-3.5 w-3.5" />
@@ -67,7 +67,7 @@ export function EditEmailModal({
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="relative w-full max-w-sm flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
-              <h2 className="font-mono text-sm text-[var(--color-text)]">Editar email</h2>
+              <h2 className="font-mono text-sm text-[var(--color-text)]">Edit email</h2>
               <button
                 onClick={() => setOpen(false)}
                 className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
@@ -84,12 +84,12 @@ export function EditEmailModal({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="voce@exemplo.com"
+                placeholder="you@example.com"
                 className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3.5 py-2.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none focus:border-white/20 transition-colors"
               />
               {error && <p className="mt-2 text-xs text-red-400 font-mono">{error}</p>}
               <p className="mt-2 text-xs text-[var(--color-text-faint)] font-mono">
-                aparece no seu perfil público e no CV
+                shown on your public profile and CV
               </p>
             </div>
 
@@ -98,14 +98,14 @@ export function EditEmailModal({
                 onClick={() => setOpen(false)}
                 className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer transition-colors"
               >
-                Cancelar
+                Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className="rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50 cursor-pointer transition-colors"
               >
-                {saving ? "Salvando..." : "Salvar"}
+                {saving ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
