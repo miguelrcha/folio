@@ -10,15 +10,76 @@ export class SyncError extends Error {
   }
 }
 
-function impactScore(repo: {
-  stargazers_count: number;
-  forks_count: number;
-  fork: boolean;
-  pushed_at: string;
-}) {
+type StructureSignals = {
+  hasReadme: boolean;
+  hasTests: boolean;
+  hasCi: boolean;
+  hasLicense: boolean;
+};
+
+// Matches a root-level README (any extension), not nested ones — a README
+// buried three folders deep isn't a signal that the project is documented.
+const README_PATH_REGEX = /^readme(\.[a-z0-9]+)?$/i;
+// Matches common test file/folder conventions across JS/TS, Python, Go, etc.
+const TEST_PATH_REGEX = /(^|\/)(__tests__|tests?|spec)(\/|$)|\.(test|spec)\.[a-z]+$/i;
+
+// Best-effort repo structure signals, used only to nudge impact_score — a
+// fetch failure or a truncated tree (very large repos) just yields no bonus,
+// it never fails the sync.
+async function fetchStructureSignals(
+  repo: { owner: { login: string }; name: string; default_branch: string; license: unknown },
+  headers: Record<string, string>
+): Promise<StructureSignals> {
+  let hasReadme = false;
+  let hasTests = false;
+  let hasCi = false;
+
+  try {
+    const treeRes = await fetch(
+      `https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`,
+      { headers }
+    );
+    if (treeRes.ok) {
+      const treeJson = await treeRes.json();
+      const paths: string[] = Array.isArray(treeJson.tree)
+        ? treeJson.tree.map((entry: { path: string }) => entry.path)
+        : [];
+      hasReadme = paths.some((p) => README_PATH_REGEX.test(p));
+      hasTests = paths.some((p) => TEST_PATH_REGEX.test(p));
+      hasCi = paths.some((p) => p.startsWith(".github/workflows/"));
+    }
+  } catch {
+    // Network/parse failure — leave signals at their false defaults.
+  }
+
+  return { hasReadme, hasTests, hasCi, hasLicense: Boolean(repo.license) };
+}
+
+function impactScore(
+  repo: {
+    stargazers_count: number;
+    forks_count: number;
+    fork: boolean;
+    pushed_at: string;
+  },
+  signals: StructureSignals
+) {
   const recencyBoost =
     Date.now() - new Date(repo.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90 ? 10 : 0;
-  return repo.stargazers_count * 3 + repo.forks_count * 2 + (repo.fork ? -20 : 10) + recencyBoost;
+  // Free, metadata-only signals of project structure/health — a cheaper
+  // stand-in for the AI-based analysis tracked in issue #4, until that lands.
+  const structureBoost =
+    (signals.hasReadme ? 5 : 0) +
+    (signals.hasTests ? 8 : 0) +
+    (signals.hasCi ? 8 : 0) +
+    (signals.hasLicense ? 3 : 0);
+  return (
+    repo.stargazers_count * 3 +
+    repo.forks_count * 2 +
+    (repo.fork ? -20 : 10) +
+    recencyBoost +
+    structureBoost
+  );
 }
 
 // Resumo gerado automaticamente a partir dos dados reais (sem IA por trás,
@@ -556,7 +617,10 @@ export async function syncGithubProfile(
 
   const enriched = await Promise.all(
     repos.map(async (repo: any) => {
-      const langRes = await fetch(repo.languages_url, { headers: githubHeaders });
+      const [langRes, structureSignals] = await Promise.all([
+        fetch(repo.languages_url, { headers: githubHeaders }),
+        fetchStructureSignals(repo, githubHeaders),
+      ]);
       const languages: Record<string, number> = await langRes.json();
 
       for (const [lang, bytes] of Object.entries(languages)) {
@@ -572,7 +636,7 @@ export async function syncGithubProfile(
         stars: repo.stargazers_count,
         forks: repo.forks_count,
         commits: 0,
-        impact_score: impactScore(repo),
+        impact_score: impactScore(repo, structureSignals),
         is_selected: existingSelection.get(repo.id) ?? false,
       };
     })
