@@ -5,7 +5,6 @@ import {
   TextRun,
   AlignmentType,
   BorderStyle,
-  TabStopType,
   Table,
   TableRow,
   TableCell,
