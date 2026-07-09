@@ -14,7 +14,12 @@ type StructureSignals = {
   hasReadme: boolean;
   hasTests: boolean;
   hasCi: boolean;
-  hasLicense: boolean;
+};
+
+const NO_STRUCTURE_SIGNALS: StructureSignals = {
+  hasReadme: false,
+  hasTests: false,
+  hasCi: false,
 };
 
 // Matches a root-level README (any extension), not nested ones — a README
@@ -22,37 +27,59 @@ type StructureSignals = {
 const README_PATH_REGEX = /^readme(\.[a-z0-9]+)?$/i;
 // Matches common test file/folder conventions across JS/TS, Python, Go, etc.
 const TEST_PATH_REGEX = /(^|\/)(__tests__|tests?|spec)(\/|$)|\.(test|spec)\.[a-z]+$/i;
+// Excludes vendored/third-party subtrees from the test-path match above —
+// a dependency's bundled tests aren't a signal about the repo owner's work.
+const VENDOR_PATH_REGEX = /(^|\/)(node_modules|vendor|third_party|\.venv|venv)\//i;
+
+// Repos at or above this size (GitHub's `size` field, in KB) are skipped:
+// their recursive tree is likely to hit GitHub's ~100k-entries/~7MB
+// truncation limit anyway, which would make path-presence checks unreliable,
+// and pulling a tree that large per sync just to answer 3 booleans is wasteful.
+const MAX_REPO_SIZE_KB_FOR_STRUCTURE_SCAN = 200_000;
 
 // Best-effort repo structure signals, used only to nudge impact_score — a
-// fetch failure or a truncated tree (very large repos) just yields no bonus,
-// it never fails the sync.
+// fetch failure, an oversized repo, or a truncated tree all just yield no
+// bonus, never fail the sync. Forks are skipped too: they already take a
+// flat penalty in impactScore below and rarely compete for top repo, so the
+// extra fetch isn't worth it. One fetch answers all three checks, instead of
+// one lightweight call per check, to keep this to a single extra request per
+// repo in the common case.
 async function fetchStructureSignals(
-  repo: { owner: { login: string }; name: string; default_branch: string; license: unknown },
+  repo: {
+    owner: { login: string };
+    name: string;
+    default_branch: string;
+    fork: boolean;
+    size: number;
+  },
   headers: Record<string, string>
 ): Promise<StructureSignals> {
-  let hasReadme = false;
-  let hasTests = false;
-  let hasCi = false;
+  if (repo.fork || repo.size >= MAX_REPO_SIZE_KB_FOR_STRUCTURE_SCAN) {
+    return NO_STRUCTURE_SIGNALS;
+  }
 
   try {
     const treeRes = await fetch(
       `https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`,
       { headers }
     );
-    if (treeRes.ok) {
-      const treeJson = await treeRes.json();
-      const paths: string[] = Array.isArray(treeJson.tree)
-        ? treeJson.tree.map((entry: { path: string }) => entry.path)
-        : [];
-      hasReadme = paths.some((p) => README_PATH_REGEX.test(p));
-      hasTests = paths.some((p) => TEST_PATH_REGEX.test(p));
-      hasCi = paths.some((p) => p.startsWith(".github/workflows/"));
-    }
-  } catch {
-    // Network/parse failure — leave signals at their false defaults.
-  }
+    if (!treeRes.ok) return NO_STRUCTURE_SIGNALS;
 
-  return { hasReadme, hasTests, hasCi, hasLicense: Boolean(repo.license) };
+    const treeJson = await treeRes.json();
+    // A truncated tree is missing an unknown, non-deterministic subset of
+    // paths — not reliable enough to trust an absence signal from, so treat
+    // it the same as a failed fetch instead of scoring off partial data.
+    if (treeJson.truncated || !Array.isArray(treeJson.tree)) return NO_STRUCTURE_SIGNALS;
+
+    const paths: string[] = treeJson.tree.map((entry: { path: string }) => entry.path);
+    return {
+      hasReadme: paths.some((p) => README_PATH_REGEX.test(p)),
+      hasTests: paths.some((p) => !VENDOR_PATH_REGEX.test(p) && TEST_PATH_REGEX.test(p)),
+      hasCi: paths.some((p) => p.startsWith(".github/workflows/")),
+    };
+  } catch {
+    return NO_STRUCTURE_SIGNALS;
+  }
 }
 
 function impactScore(
@@ -61,6 +88,7 @@ function impactScore(
     forks_count: number;
     fork: boolean;
     pushed_at: string;
+    license: unknown;
   },
   signals: StructureSignals
 ) {
@@ -68,11 +96,13 @@ function impactScore(
     Date.now() - new Date(repo.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90 ? 10 : 0;
   // Free, metadata-only signals of project structure/health — a cheaper
   // stand-in for the AI-based analysis tracked in issue #4, until that lands.
+  // hasLicense comes straight off the repo object (already fetched, no extra
+  // request), unlike the other three signals which need the tree fetch above.
   const structureBoost =
     (signals.hasReadme ? 5 : 0) +
     (signals.hasTests ? 8 : 0) +
     (signals.hasCi ? 8 : 0) +
-    (signals.hasLicense ? 3 : 0);
+    (repo.license ? 3 : 0);
   return (
     repo.stargazers_count * 3 +
     repo.forks_count * 2 +
