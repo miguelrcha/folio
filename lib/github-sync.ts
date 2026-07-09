@@ -82,7 +82,7 @@ async function fetchStructureSignals(
   }
 }
 
-function impactScore(
+export function impactScore(
   repo: {
     stargazers_count: number;
     forks_count: number;
@@ -436,7 +436,7 @@ const DEVICON_NAMES: Record<string, string> = {
 // padrão mais comum em README montado à mão. Sempre deriva o nome do
 // slug/URL do ícone, nunca do atributo alt — que na prática costuma vir
 // copiado e colado errado de um ícone pro outro.
-function extractReadmeStacks(markdown: string): string[] {
+export function extractReadmeStacks(markdown: string): string[] {
   const names = new Set<string>();
 
   const skillIconsRegex = /skillicons\.dev\/icons\?i=([a-z0-9,+-]+)/gi;
@@ -473,14 +473,14 @@ function extractReadmeStacks(markdown: string): string[] {
   return Array.from(names);
 }
 
-function joinStack(names: string[]): string {
+export function joinStack(names: string[]): string {
   if (names.length === 0) return "múltiplas tecnologias";
   if (names.length === 1) return names[0];
   if (names.length === 2) return `${names[0]} e ${names[1]}`;
   return `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
 }
 
-function buildSummary(opts: {
+export function buildSummary(opts: {
   username: string;
   topStack: { name: string; percentage: number }[];
   publicRepos: number;
