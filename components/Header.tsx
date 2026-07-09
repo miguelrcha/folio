@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { GithubIcon } from "@/components/GithubIcon";
@@ -89,6 +89,7 @@ function LoggedInChip({
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
@@ -100,6 +101,18 @@ export function Header() {
   useKeyboardShortcut("g", () => {
     if (!loggedInUser) router.push("/loading");
   });
+
+  // On the landing page itself, clicking the logo should smoothly scroll
+  // back up to the hero instead of a no-op same-route navigation.
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== "/") return;
+    e.preventDefault();
+    setMobileOpen(false);
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
+    window.scrollTo({ top: 0, behavior });
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -192,7 +205,7 @@ export function Header() {
         {/* Mobile bar */}
         <div className="flex w-full items-center py-4 md:hidden">
           <div className="flex-auto">
-            <Link href="/">
+            <Link href="/" onClick={handleLogoClick}>
               <Logo size="sm" />
             </Link>
           </div>
@@ -264,7 +277,7 @@ export function Header() {
         {/* Desktop bar */}
         <div className="mx-auto hidden h-[58px] w-full items-center md:flex">
           <div className="flex flex-1 items-center gap-4 lg:w-[320px]">
-            <Link href="/">
+            <Link href="/" onClick={handleLogoClick}>
               <Logo size="md" />
             </Link>
             <a
