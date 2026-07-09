@@ -111,7 +111,7 @@ export default function LoginPage() {
           <div className="mt-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.06] px-4 py-2.5 text-sm text-red-300/90 font-lato max-w-md w-full">
             <span className="shrink-0">⚠️</span>
             <span>
-              <span className="font-semibold">@{notFoundUser}</span> isn&apos;t registered on Folio yet.
+              <span className="font-semibold">@{notFoundUser}</span>  isn&apos;t registered on Folio yet.
             </span>
           </div>
         )}
