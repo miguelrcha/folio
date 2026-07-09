@@ -67,7 +67,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-[var(--color-text-faint)] font-lato">
+          <p className="text-md text-[var(--color-text-faint)] font-lato">
             © {new Date().getFullYear()} Folio. All rights reserved.
           </p>
           
