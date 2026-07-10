@@ -89,6 +89,10 @@ The bar before a PR is:
   (schema changes are applied manually in the Supabase SQL Editor — there's no
   migration tooling wired into the repo).
 
+CI (`.github/workflows/ci.yml`) runs the same three commands on every PR as the
+`verify` check, so a red PR is never a surprise — run them locally first. The
+build in CI uses placeholder Supabase env vars; it never sees real secrets.
+
 ## Pushing
 
 Do **not** push to `origin/main`. Push your feature branch and open a PR. Automated
