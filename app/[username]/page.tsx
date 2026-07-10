@@ -5,6 +5,7 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { DownloadCvButton } from "@/components/DownloadCvButton";
 import { SignOutButton } from "@/components/SignOutButton";
+import { DeleteAccountButton } from "@/components/DeleteAccountButton";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
@@ -382,13 +383,16 @@ export default async function ProfilePage({
 
         <footer className="pb-10 flex items-center justify-between text-xs font-mono text-[var(--color-text-faint)]">
           <span>generated automatically from github · meufolio.dev/@{profile.github_username}</span>
-          <a
-            href={`https://github.com/${profile.github_username}`}
-            className="inline-flex items-center gap-1.5 hover:text-[var(--color-text-muted)] transition-colors"
-          >
-            <GithubIcon className="h-3.5 w-3.5" />
-            Github
-          </a>
+          <div className="flex items-center gap-4">
+            {isOwner && <DeleteAccountButton profileId={profile.id} />}
+            <a
+              href={`https://github.com/${profile.github_username}`}
+              className="inline-flex items-center gap-1.5 hover:text-[var(--color-text-muted)] transition-colors"
+            >
+              <GithubIcon className="h-3.5 w-3.5" />
+              Github
+            </a>
+          </div>
         </footer>
       </main>
 
