@@ -7,8 +7,7 @@ name: Sync-all fallback cron
 #
 # Offset by 1h30 from the Vercel cron (0 3 * * *, see vercel.json) on purpose:
 # /api/cron/sync-all has no locking around its repo delete+upsert, so two
-# concurrent full-batch runs would race on the same rows and could flicker
-# project cards for anyone visiting mid-sync.
+# concurrent full-batch runs would race on the same rows and could flicker project cards for anyone visiting mid-sync.
 on:
   schedule:
     - cron: "30 1,4,7,10,13,16,19,22 * * *"
