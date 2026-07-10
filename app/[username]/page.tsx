@@ -381,7 +381,7 @@ export default async function ProfilePage({
           )}
         </section>
 
-        <footer className="pb-10 flex items-center justify-between text-xs font-mono text-[var(--color-text-faint)]">
+        <footer className="pb-10 flex flex-col-reverse items-center gap-3 text-center text-xs font-mono text-[var(--color-text-faint)] md:flex-row md:justify-between md:text-left">
           <span>generated automatically from github · meufolio.dev/@{profile.github_username}</span>
           <div className="flex items-center gap-4">
             {isOwner && <DeleteAccountButton profileId={profile.id} />}
