@@ -82,9 +82,9 @@ export default function LoginPage() {
         {/* Composite CTA: real username input + button that navigates to the profile */}
         <form
           onSubmit={handleViewProfile}
-          className="mt-10 flex w-full max-w-md flex-col sm:flex-row items-stretch gap-3"
+          className="mt-10 flex w-full max-w-lg flex-col sm:flex-row items-stretch gap-3"
         >
-          <div className="flex-1 flex items-center gap-2.5 rounded-lg border border-[var(--color-border-bright)] bg-[var(--color-surface)] px-4 py-3.5 font-lato font-semibold text-sm focus-within:border-white/30 transition-colors">
+          <div className="flex-1 flex items-center gap-2.5 rounded-lg border border-[var(--color-border-bright)] bg-[var(--color-surface)] px-4 py-3.5 font-lato font-semibold text-md focus-within:border-white/30 transition-colors">
             <GithubIcon className="h-4 w-4 shrink-0 text-[var(--color-text-faint)]" />
             <input
               type="text"
@@ -100,7 +100,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={!username.trim() || checking}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-sm font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85 disabled:opacity-40 whitespace-nowrap"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-md font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85 disabled:opacity-40 whitespace-nowrap"
           >
             {checking ? "Checking…" : "View Profile on Folio"}
           </button>
