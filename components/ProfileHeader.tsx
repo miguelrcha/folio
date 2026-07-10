@@ -21,10 +21,7 @@ function SearchUsers({ className = "" }: { className?: string }) {
   // Busca com debounce enquanto digita
   useEffect(() => {
     const term = query.trim().replace(/^@/, "");
-    if (term.length < 2) {
-      setResults([]);
-      return;
-    }
+    if (term.length < 2) return;
 
     const id = setTimeout(async () => {
       const supabase = createClient();
@@ -51,9 +48,15 @@ function SearchUsers({ className = "" }: { className?: string }) {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    if (value.trim().replace(/^@/, "").length < 2) setResults([]);
+  };
+
   const goToUser = (username: string) => {
     setOpen(false);
     setQuery("");
+    setResults([]);
     router.push(`/${username}`);
   };
 
@@ -86,7 +89,7 @@ function SearchUsers({ className = "" }: { className?: string }) {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleQueryChange(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
           placeholder="Search Github username"
           className="w-full sm:w-40 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none"

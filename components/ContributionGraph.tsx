@@ -40,7 +40,6 @@ export function ContributionGraph({
 
   useEffect(() => {
     if (mode !== "building") return;
-    setRevealedWeeks(0);
     const id = setInterval(() => {
       setRevealedWeeks((w) => {
         if (w >= weeks) {

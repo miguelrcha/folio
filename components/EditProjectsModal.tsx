@@ -22,12 +22,16 @@ export function EditProjectsModal({ profileId }: { profileId: string }) {
   const [syncError, setSyncError] = useState(false);
   const [repos, setRepos] = useState<DbRepo[]>([]);
 
+  const handleOpen = () => {
+    setLoading(true);
+    setSyncError(false);
+    setOpen(true);
+  };
+
   useEffect(() => {
     if (!open) return;
 
     let cancelled = false;
-    setLoading(true);
-    setSyncError(false);
 
     const run = async () => {
       // Puxa repositórios novos/atualizados do GitHub antes de listar, pra
@@ -73,7 +77,7 @@ export function EditProjectsModal({ profileId }: { profileId: string }) {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         aria-label="Edit projects"
         className="inline-flex items-center justify-center h-6 w-6 rounded-md text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-white/[0.06] transition-colors"
       >
