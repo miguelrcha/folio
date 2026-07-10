@@ -1,0 +1,22 @@
+name: Sync-all fallback cron
+
+# Vercel's Hobby plan caps scheduled Cron Jobs to once a day, so the daily
+# cron in vercel.json can't be tightened past that. This workflow calls the
+# same endpoint on a shorter interval as a free, plan-independent fallback —
+# it doesn't replace the Vercel cron, just supplements it. See issue #31.
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/sync-all
+        run: |
+          curl --fail-with-body -sS \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://meufolio.dev/api/cron/sync-all
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
