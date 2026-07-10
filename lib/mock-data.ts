@@ -1,5 +1,5 @@
-// Estrutura pensada para bater 1:1 com o que a API REST/GraphQL do GitHub
-// devolve, para que trocar por dados reais seja só trocar a fonte, não a forma.
+// Structure designed to match 1:1 what the GitHub REST/GraphQL API
+// returns, so that swapping in real data is just changing the source, not the shape.
 
 export type Repo = {
   id: string;
@@ -9,14 +9,14 @@ export type Repo = {
   stars: number;
   forks: number;
   commits: number;
-  impactScore: number; // score interno do Folio (0-100) para ranquear "melhores projetos"
+  impactScore: number; // Folio's internal score (0-100) for ranking "best projects"
   isPrivate: boolean;
   selected: boolean;
 };
 
 export type ContributionDay = {
   date: string;
-  count: number; // 0-4, intensidade
+  count: number; // 0-4, intensity
 };
 
 export type FolioUser = {
@@ -32,7 +32,7 @@ export type FolioUser = {
   totalPRs: number;
   totalReviews: number;
   topStack: { name: string; percentage: number }[];
-  summary: string; // resumo profissional gerado automaticamente
+  summary: string; // auto-generated professional summary
   repos: Repo[];
   contributions: ContributionDay[];
 };
@@ -41,7 +41,7 @@ export const mockUser: FolioUser = {
   githubUsername: "marinacosta",
   name: "Marina Costa",
   avatarUrl: "",
-  bio: "Backend engineer. Distributed systems e APIs que aguentam tráfego real.",
+  bio: "Backend engineer. Distributed systems and APIs that hold up under real traffic.",
   location: "Joinville, SC",
   followers: 312,
   following: 84,
@@ -57,13 +57,13 @@ export const mockUser: FolioUser = {
     { name: "Rust", percentage: 8 },
   ],
   summary:
-    "Engenheira de software com foco em sistemas backend de alta concorrência. Nos últimos 12 meses, liderou 96 pull requests e manteve um ritmo consistente de contribuição em projetos open source de infraestrutura, com destaque para ferramentas de observabilidade escritas em Go.",
+    "Software engineer focused on high-concurrency backend systems. Over the last 12 months, led 96 pull requests and kept a consistent pace of contribution to open source infrastructure projects, with a focus on observability tooling written in Go.",
   repos: [
     {
       id: "r1",
       name: "flowqueue",
       description:
-        "Fila de jobs distribuída com backpressure automático, escrita em Go. Usada em produção processando ~2M jobs/dia.",
+        "Distributed job queue with automatic backpressure, written in Go. Used in production processing ~2M jobs/day.",
       stack: ["Go", "Redis", "Docker"],
       stars: 842,
       forks: 61,
@@ -76,7 +76,7 @@ export const mockUser: FolioUser = {
       id: "r2",
       name: "api-gateway-lite",
       description:
-        "Gateway HTTP minimalista com rate limiting e auth pluggable. Foco em baixa latência (p99 < 4ms).",
+        "Minimalist HTTP gateway with rate limiting and pluggable auth. Focused on low latency (p99 < 4ms).",
       stack: ["TypeScript", "Node.js"],
       stars: 401,
       forks: 33,
@@ -88,7 +88,7 @@ export const mockUser: FolioUser = {
     {
       id: "r3",
       name: "obs-tracer",
-      description: "SDK de tracing distribuído compatível com OpenTelemetry, com overhead menor que 1%.",
+      description: "Distributed tracing SDK compatible with OpenTelemetry, with less than 1% overhead.",
       stack: ["Go", "gRPC"],
       stars: 205,
       forks: 19,
@@ -100,7 +100,7 @@ export const mockUser: FolioUser = {
     {
       id: "r4",
       name: "data-pipeline-sandbox",
-      description: "Experimentos pessoais de ETL com Python e Airflow.",
+      description: "Personal ETL experiments with Python and Airflow.",
       stack: ["Python", "SQL"],
       stars: 12,
       forks: 2,
@@ -112,7 +112,7 @@ export const mockUser: FolioUser = {
     {
       id: "r5",
       name: "dotfiles",
-      description: "Configurações pessoais de terminal e editor.",
+      description: "Personal terminal and editor configuration.",
       stack: ["Shell"],
       stars: 8,
       forks: 1,

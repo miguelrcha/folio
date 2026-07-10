@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
 
 function LinkedInIcon({ className = "" }: { className?: string }) {
   return (
@@ -11,6 +12,7 @@ function LinkedInIcon({ className = "" }: { className?: string }) {
 }
 
 export function ConnectLinkedInButton() {
+  const { t } = useLanguage();
   const [showNotice, setShowNotice] = useState(false);
 
   const handleClick = () => {
@@ -25,12 +27,12 @@ export function ConnectLinkedInButton() {
         className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2.5 py-1 text-xs font-mono text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:border-[var(--color-border-bright)] transition-colors cursor-pointer"
       >
         <LinkedInIcon className="h-3 w-3" />
-        import from LinkedIn
+        {t("linkedin.import")}
       </button>
 
       {showNotice && (
         <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-[var(--color-surface-raised)] border border-[var(--color-border)] px-2.5 py-1 text-xs font-mono text-[var(--color-text-muted)] shadow-lg z-10">
-          coming soon — for now, edit manually
+          {t("linkedin.comingSoon")}
         </span>
       )}
     </span>

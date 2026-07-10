@@ -1,16 +1,17 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import { translate, type Language } from "@/lib/i18n/translations";
 
-export function baseOptions(): BaseLayoutProps {
+export function baseOptions(lang: Language = "en"): BaseLayoutProps {
   return {
     nav: {
-      title: "Docs",
+      title: translate(lang, "header.docs"),
       url: "/docs",
     },
     githubUrl: "https://github.com/miguelrcha/folio",
     links: [
       {
         type: "button",
-        text: "Get started",
+        text: translate(lang, "cta.getStarted"),
         url: "/loading",
       },
     ],

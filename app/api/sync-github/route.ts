@@ -27,8 +27,8 @@ export async function POST() {
   try {
     githubAccessToken = decrypt(profile.github_access_token);
   } catch {
-    // Token salvo antes dessa criptografia entrar em vigor (texto puro).
-    // Pede pra pessoa logar de novo pra ele ser salvo já criptografado.
+    // Token saved before this encryption went into effect (plain text).
+    // Ask the person to sign in again so it gets saved already encrypted.
     return NextResponse.json(
       { error: "token in legacy format, please sign in again" },
       { status: 401 }

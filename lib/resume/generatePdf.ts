@@ -25,7 +25,7 @@ export type ResumePdfData = {
   certifications: CertificationEntry[];
   languages: LanguageEntry[];
   repos: ResumePdfRepo[];
-  /** Data URL (data:image/...;base64,...) já carregada. Se omitido, some do cabeçalho. */
+  /** Already-loaded data URL (data:image/...;base64,...). If omitted, disappears from the header. */
   photoDataUrl?: string | null;
 };
 
@@ -51,10 +51,10 @@ const SUBTEXT_SIZE = 9;
 const SUBTEXT_LINE = 4.3;
 const FOOTER_SIZE = 8.5;
 
-// As fontes padrão do jsPDF (Helvetica/Times/Courier) só cobrem WinAnsi
-// (Latin-1) — bom o bastante pra acentos do português, mas emoji (as
-// bandeirinhas de idioma, por exemplo) viram caixinhas quebradas. Corta
-// qualquer coisa fora do BMP básico antes de desenhar.
+// jsPDF's default fonts (Helvetica/Times/Courier) only cover WinAnsi
+// (Latin-1) — good enough for Portuguese accents, but emoji (the language
+// flags, for instance) turn into broken boxes. Strips anything outside the
+// basic BMP before drawing.
 function clean(text: string): string {
   return text
     .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "")
@@ -83,8 +83,8 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     }
   };
 
-  // Cabeçalho: foto (se disponível) + nome + contato, tudo centralizado.
-  // De propósito, sem cargo/título fixo — só o que vem do GitHub.
+  // Header: photo (if available) + name + contact, all centered.
+  // Deliberately no fixed job title — only what comes from GitHub.
   if (data.photoDataUrl) {
     const format = imageFormatFromDataUrl(data.photoDataUrl);
     if (format) {
@@ -159,8 +159,8 @@ export function generateResumePdf(data: ResumePdfData): jsPDF {
     y += 3.5;
   };
 
-  // Cada experiência: uma linha principal (cargo — empresa (período)) e,
-  // logo abaixo, sub-bullets menores e recuados com o que foi feito.
+  // Each experience: one main line (title — company (period)) and, right
+  // below, smaller indented sub-bullets with what was done.
   const experienceList = (items: { headline: string; bullets: string[] }[]) => {
     items.forEach(({ headline, bullets }) => {
       doc.setFont(FONT, "normal");

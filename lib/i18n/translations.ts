@@ -108,6 +108,107 @@ export const translations: Record<Language, Dictionary> = {
     "profile.forks": "forks",
     "profile.footer.generated": "generated automatically from github",
     "profile.footer.github": "Github",
+
+    // Docs landing page
+    "docs.title": "Documentation",
+    "docs.subtitle": "Everything you need to know about how Folio turns your GitHub",
+    "docs.subtitleLine2": "into a portfolio and resume.",
+    "docs.readDocs": "Read the docs",
+    "docs.viewOnGithub": "View on GitHub",
+
+    // Shared modal chrome
+    "modal.cancel": "Cancel",
+    "modal.save": "Save",
+    "modal.saving": "Saving...",
+    "modal.done": "Done",
+    "modal.unexpectedError": "Unexpected error while saving.",
+
+    // EditOverviewModal
+    "modal.overview.ariaEdit": "Edit overview",
+    "modal.overview.title": "Edit overview",
+    "modal.overview.placeholder": "Write a short professional summary...",
+    "modal.overview.characters": "{n} characters",
+
+    // EditEmailModal
+    "modal.email.ariaEdit": "Edit email",
+    "modal.email.title": "Edit email",
+    "modal.email.invalid": "Invalid email",
+    "modal.email.saveError": "Couldn't save, try again",
+    "modal.email.hint": "shown on your public profile and CV",
+
+    // EditExperiencesModal
+    "modal.experiences.ariaEdit": "Edit experiences",
+    "modal.experiences.title": "Edit experiences",
+    "modal.experiences.ariaRemove": "Remove experience",
+    "modal.experiences.jobTitle": "Job title",
+    "modal.experiences.jobTitlePlaceholder": "E.g. Development Intern",
+    "modal.experiences.company": "Company",
+    "modal.experiences.companyPlaceholder": "E.g. Company X",
+    "modal.experiences.start": "Start",
+    "modal.experiences.end": "End",
+    "modal.experiences.year": "Year",
+    "modal.experiences.current": "Current (present job)",
+    "modal.experiences.whatYouDid": "What you did (one line per bullet)",
+    "modal.experiences.bulletsPlaceholder":
+      "Developed internal software used by engineering and operations teams.\nBuilt REST APIs and backend services.\nWorked with PostgreSQL and SQL Server.",
+    "modal.experiences.addEntry": "+ add experience",
+
+    // EditStacksModal
+    "modal.stacks.ariaEdit": "Edit stacks",
+    "modal.stacks.title": "Edit stacks",
+    "modal.stacks.placeholder": "E.g. TypeScript, Docker, PostgreSQL...",
+    "modal.stacks.add": "+ add",
+    "modal.stacks.empty": "no stacks yet.",
+    "modal.stacks.ariaRemove": "Remove {name}",
+
+    // EditCertificationsModal
+    "modal.certifications.ariaEdit": "Edit certifications",
+    "modal.certifications.title": "Edit certifications",
+    "modal.certifications.ariaRemove": "Remove certification",
+    "modal.certifications.name": "Certification name",
+    "modal.certifications.namePlaceholder": "E.g. AWS Certified Cloud Practitioner",
+    "modal.certifications.issuer": "Company / institution",
+    "modal.certifications.issuerPlaceholder": "E.g. Amazon Web Services",
+    "modal.certifications.issuedOn": "Issued on",
+    "modal.certifications.expiration": "Expiration",
+    "modal.certifications.hasExpiration": "Has an expiration date",
+    "modal.certifications.addEntry": "+ add certification",
+
+    // EditLanguagesModal
+    "modal.languages.ariaEdit": "Edit languages",
+    "modal.languages.title": "Edit languages",
+    "modal.languages.ariaRemove": "Remove language",
+    "modal.languages.addEntry": "+ add language",
+
+    // EditProjectsModal
+    "modal.projects.ariaEdit": "Edit projects",
+    "modal.projects.title": "Edit projects",
+    "modal.projects.syncing": "syncing with github...",
+    "modal.projects.syncError": "couldn't refresh from github right now, showing the last saved version.",
+    "modal.projects.noRepos": "no repositories found.",
+
+    // DeleteAccountButton
+    "deleteAccount.button": "Delete account",
+    "deleteAccount.title": "Delete account",
+    "deleteAccount.description":
+      "This permanently deletes your Folio profile and all its data. This can't be undone.",
+    "deleteAccount.deleting": "Deleting...",
+
+    // SignOutButton
+    "signOut.button": "Logout",
+
+    // ConnectLinkedInButton
+    "linkedin.import": "import from LinkedIn",
+    "linkedin.comingSoon": "coming soon — for now, edit manually",
+
+    // DownloadCvButton
+    "downloadCv.generating": "Generating…",
+    "downloadCv.viewCv": "View CV",
+
+    // ShareButton
+    "share.copied": "Link copied ✓",
+    "share.button": "Share",
+    "share.text": "Check out {name}'s professional profile on folio",
   },
   pt: {
     // Header
@@ -206,6 +307,107 @@ export const translations: Record<Language, Dictionary> = {
     "profile.forks": "forks",
     "profile.footer.generated": "gerado automaticamente a partir do github",
     "profile.footer.github": "Github",
+
+    // Docs landing page
+    "docs.title": "Documentação",
+    "docs.subtitle": "Tudo que você precisa saber sobre como o Folio transforma seu GitHub",
+    "docs.subtitleLine2": "em um portfólio e currículo.",
+    "docs.readDocs": "Ler a documentação",
+    "docs.viewOnGithub": "Ver no GitHub",
+
+    // Shared modal chrome
+    "modal.cancel": "Cancelar",
+    "modal.save": "Salvar",
+    "modal.saving": "Salvando...",
+    "modal.done": "Concluído",
+    "modal.unexpectedError": "Erro inesperado ao salvar.",
+
+    // EditOverviewModal
+    "modal.overview.ariaEdit": "Editar resumo",
+    "modal.overview.title": "Editar resumo",
+    "modal.overview.placeholder": "Escreva um resumo profissional curto...",
+    "modal.overview.characters": "{n} caracteres",
+
+    // EditEmailModal
+    "modal.email.ariaEdit": "Editar e-mail",
+    "modal.email.title": "Editar e-mail",
+    "modal.email.invalid": "E-mail inválido",
+    "modal.email.saveError": "Não foi possível salvar, tente de novo",
+    "modal.email.hint": "exibido no seu perfil público e currículo",
+
+    // EditExperiencesModal
+    "modal.experiences.ariaEdit": "Editar experiências",
+    "modal.experiences.title": "Editar experiências",
+    "modal.experiences.ariaRemove": "Remover experiência",
+    "modal.experiences.jobTitle": "Cargo",
+    "modal.experiences.jobTitlePlaceholder": "Ex: Estagiário de Desenvolvimento",
+    "modal.experiences.company": "Empresa",
+    "modal.experiences.companyPlaceholder": "Ex: Empresa X",
+    "modal.experiences.start": "Início",
+    "modal.experiences.end": "Fim",
+    "modal.experiences.year": "Ano",
+    "modal.experiences.current": "Atual (emprego presente)",
+    "modal.experiences.whatYouDid": "O que você fez (uma linha por tópico)",
+    "modal.experiences.bulletsPlaceholder":
+      "Desenvolveu software interno usado pelas equipes de engenharia e operações.\nConstruiu APIs REST e serviços de backend.\nTrabalhou com PostgreSQL e SQL Server.",
+    "modal.experiences.addEntry": "+ adicionar experiência",
+
+    // EditStacksModal
+    "modal.stacks.ariaEdit": "Editar stacks",
+    "modal.stacks.title": "Editar stacks",
+    "modal.stacks.placeholder": "Ex: TypeScript, Docker, PostgreSQL...",
+    "modal.stacks.add": "+ adicionar",
+    "modal.stacks.empty": "nenhuma stack ainda.",
+    "modal.stacks.ariaRemove": "Remover {name}",
+
+    // EditCertificationsModal
+    "modal.certifications.ariaEdit": "Editar certificações",
+    "modal.certifications.title": "Editar certificações",
+    "modal.certifications.ariaRemove": "Remover certificação",
+    "modal.certifications.name": "Nome da certificação",
+    "modal.certifications.namePlaceholder": "Ex: AWS Certified Cloud Practitioner",
+    "modal.certifications.issuer": "Empresa / instituição",
+    "modal.certifications.issuerPlaceholder": "Ex: Amazon Web Services",
+    "modal.certifications.issuedOn": "Emitido em",
+    "modal.certifications.expiration": "Expiração",
+    "modal.certifications.hasExpiration": "Tem data de expiração",
+    "modal.certifications.addEntry": "+ adicionar certificação",
+
+    // EditLanguagesModal
+    "modal.languages.ariaEdit": "Editar idiomas",
+    "modal.languages.title": "Editar idiomas",
+    "modal.languages.ariaRemove": "Remover idioma",
+    "modal.languages.addEntry": "+ adicionar idioma",
+
+    // EditProjectsModal
+    "modal.projects.ariaEdit": "Editar projetos",
+    "modal.projects.title": "Editar projetos",
+    "modal.projects.syncing": "sincronizando com o github...",
+    "modal.projects.syncError": "não foi possível atualizar com o github agora, mostrando a última versão salva.",
+    "modal.projects.noRepos": "nenhum repositório encontrado.",
+
+    // DeleteAccountButton
+    "deleteAccount.button": "Excluir conta",
+    "deleteAccount.title": "Excluir conta",
+    "deleteAccount.description":
+      "Isso exclui permanentemente seu perfil no Folio e todos os seus dados. Essa ação não pode ser desfeita.",
+    "deleteAccount.deleting": "Excluindo...",
+
+    // SignOutButton
+    "signOut.button": "Sair",
+
+    // ConnectLinkedInButton
+    "linkedin.import": "importar do LinkedIn",
+    "linkedin.comingSoon": "em breve — por enquanto, edite manualmente",
+
+    // DownloadCvButton
+    "downloadCv.generating": "Gerando…",
+    "downloadCv.viewCv": "Ver Currículo",
+
+    // ShareButton
+    "share.copied": "Link copiado ✓",
+    "share.button": "Compartilhar",
+    "share.text": "Confira o perfil profissional de {name} no folio",
   },
 };
 

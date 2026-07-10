@@ -62,7 +62,7 @@ export default function SignInPage() {
     });
   }, []);
 
-  // Se já tiver sessão ativa, pula direto pro perfil em vez de mostrar o botão de novo
+  // If there's already an active session, skip straight to the profile instead of showing the button again
   useEffect(() => {
     const supabase = createClient();
     let settled = false;
@@ -92,28 +92,28 @@ export default function SignInPage() {
           .single();
 
         if (profileError || !profile?.github_username) {
-          // já autenticou mas o perfil ainda nem foi salvo direito
+          // already authenticated but the profile hasn't been saved properly yet
           router.replace("/connect");
           return;
         }
 
-        // Já completou o onboarding antes (mesmo sem nenhum repo)? Pula direto pro perfil.
+        // Already completed onboarding before (even with no repos)? Skip straight to the profile.
         if (profile.onboarding_completed) {
           router.replace(`/${profile.github_username}`);
         } else {
           router.replace("/connect");
         }
       } catch (err) {
-        console.error("Erro ao checar sessão existente:", err);
-        // nunca deixa a tela travada em branco — libera pra mostrar o login normal
+        console.error("Error checking existing session:", err);
+        // never leave the screen stuck blank — release it to show the normal login
         finish();
       }
     };
 
     checkSession();
 
-    // Rede de segurança: se por qualquer motivo a checagem nunca resolver,
-    // libera a tela de login depois de alguns segundos em vez de travar pra sempre.
+    // Safety net: if for any reason the check never resolves, release the
+    // login screen after a few seconds instead of hanging forever.
     const safetyTimeout = setTimeout(finish, 4000);
 
     return () => clearTimeout(safetyTimeout);
@@ -130,7 +130,7 @@ export default function SignInPage() {
     });
   };
 
-  // Evita mostrar o botão de login por um instante enquanto ainda checa se já tem sessão
+  // Avoids showing the login button for an instant while still checking for an existing session
   if (checkingSession) {
     return (
       <main className="relative z-10 min-h-screen flex items-center justify-center px-6 overflow-hidden">

@@ -13,10 +13,10 @@ export function ProtectedEmailLink({
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    // Decodificação tem que rodar só depois de montar no cliente — se
-    // calculássemos isso direto no corpo do componente, o Next renderizaria o
-    // e-mail já decodificado no HTML gerado no servidor, voltando a expor o
-    // endereço em texto puro pra scrapers que não executam JS.
+    // Decoding has to run only after mounting on the client — if we
+    // computed this directly in the component body, Next would render the
+    // already-decoded email in the server-generated HTML, exposing the
+    // plain-text address again to scrapers that don't execute JS.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setEmail(atob(encodedEmail));
   }, [encodedEmail]);

@@ -48,8 +48,8 @@ export default function ConnectPage() {
   const [generating, setGenerating] = useState(false);
   const startedRef = useRef(false);
 
-  // Anima os steps de "terminal" enquanto a sincronização real acontece em paralelo.
-  // Ela não representa progresso real por etapa — é só feedback visual durante a espera.
+  // Animates the "terminal" steps while the real sync happens in parallel.
+  // It doesn't represent actual per-step progress — it's just visual feedback while waiting.
   useEffect(() => {
     if (phase !== "loading") return;
     const id = setInterval(() => {
@@ -72,7 +72,7 @@ export default function ConnectPage() {
         return;
       }
 
-      // Dispara a sincronização real com a API do GitHub (rota server-side)
+      // Triggers the real sync with the GitHub API (server-side route)
       const res = await fetch("/api/sync-github", { method: "POST" });
       if (!res.ok) {
         setPhase("error");
@@ -101,12 +101,12 @@ export default function ConnectPage() {
     if (!target) return;
     const nextSelected = !target.is_selected;
 
-    // atualiza a UI otimisticamente
+    // optimistically updates the UI
     setRepos((prev) => prev.map((r) => (r.id === id ? { ...r, is_selected: nextSelected } : r)));
 
     const { error } = await supabase.from("repos").update({ is_selected: nextSelected }).eq("id", id);
     if (error) {
-      // reverte se der erro ao salvar
+      // reverts if saving fails
       setRepos((prev) => prev.map((r) => (r.id === id ? { ...r, is_selected: !nextSelected } : r)));
     }
   };
@@ -117,9 +117,9 @@ export default function ConnectPage() {
     if (!githubUsername) return;
     setGenerating(true);
 
-    // Marca que essa pessoa já passou pelo onboarding, independente de ter
-    // selecionado algum projeto ou não — assim login de retorno não fica
-    // preso voltando pro /connect quando ela não tem nenhum repositório.
+    // Marks that this person already went through onboarding, regardless of
+    // whether they selected any project — so a returning login doesn't get
+    // stuck going back to /connect when they have no repositories.
     const {
       data: { user },
     } = await supabase.auth.getUser();

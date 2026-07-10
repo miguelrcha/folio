@@ -24,14 +24,14 @@ export async function GET(request: Request) {
       });
 
       if (upsertError) {
-        console.error("Falha ao salvar perfil:", upsertError.message);
+        console.error("Failed to save profile:", upsertError.message);
         return NextResponse.redirect(
           `${origin}/login?error=profile_save_failed&reason=${encodeURIComponent(upsertError.message)}`
         );
       }
 
-      // Se essa pessoa já completou o onboarding antes (login de retorno),
-      // pula direto pro perfil — mesmo que ela não tenha nenhum repositório.
+      // If this person already completed onboarding before (returning
+      // login), skip straight to the profile — even if they have no repos.
       const { data: existingProfile } = await supabase
         .from("profiles")
         .select("onboarding_completed")
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     }
 
     if (error) {
-      console.error("Falha ao trocar código pela sessão:", error.message);
+      console.error("Failed to exchange code for session:", error.message);
     }
   }
 

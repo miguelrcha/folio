@@ -3,10 +3,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { decrypt } from "@/lib/crypto";
 import { syncGithubProfile, SyncError } from "@/lib/github-sync";
 
-// Disparado 1x/dia pelo Vercel Cron (ver vercel.json) pra manter bio, nome e
-// total de commits em dia mesmo sem a pessoa abrir o folio ou reconectar o
-// GitHub. Vercel injeta o header Authorization com o valor de CRON_SECRET
-// automaticamente quando essa env var está configurada no projeto.
+// Triggered once a day by Vercel Cron (see vercel.json) to keep bio, name,
+// and total commits current even without the person opening folio or
+// reconnecting GitHub. Vercel injects the Authorization header with the
+// CRON_SECRET value automatically when that env var is set on the project.
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

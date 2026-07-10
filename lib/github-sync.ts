@@ -130,14 +130,14 @@ export function impactScore(
   );
 }
 
-// Resumo gerado automaticamente a partir dos dados reais (sem IA por trás,
-// só regras) — se depois vocês quiserem trocar por uma chamada à API da
-// Anthropic pra deixar mais natural, é só substituir essa função.
+// Summary generated automatically from the real data (no AI behind it,
+// just rules) — if you later want to swap this for a call to the Anthropic
+// API to make it sound more natural, just replace this function.
 //
-// Pra não parecer um mad-lib (mesma frase, só trocando os números), existem
-// várias variações de template e a escolha é determinística por usuário
-// (hash do username) — assim o texto não muda a cada sync, mas dois perfis
-// diferentes tendem a sair com estruturas de frase diferentes.
+// To avoid feeling like a mad-lib (same sentence, just swapping numbers),
+// there are several template variations and the choice is deterministic per
+// user (hash of the username) — so the text doesn't change on every sync,
+// but different profiles tend to get different sentence structures.
 function hashSeed(seed: string): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
@@ -146,8 +146,8 @@ function hashSeed(seed: string): number {
   return hash;
 }
 
-// Mapeia os códigos curtos usados pelo skillicons.dev (ex: "?i=js,ts,react")
-// pro nome legível da tecnologia.
+// Maps the short codes used by skillicons.dev (e.g. "?i=js,ts,react")
+// to the technology's readable name.
 const SKILLICONS_NAMES: Record<string, string> = {
   js: "JavaScript",
   ts: "TypeScript",
@@ -261,9 +261,9 @@ const SKILLICONS_NAMES: Record<string, string> = {
   solidity: "Solidity",
 };
 
-// Mapeia os slugs do simple-icons usados no parâmetro `logo=` dos badges do
-// shields.io (ex: https://img.shields.io/badge/Python-3776AB?logo=python)
-// pro nome legível da tecnologia.
+// Maps the simple-icons slugs used in the `logo=` parameter of shields.io
+// badges (e.g. https://img.shields.io/badge/Python-3776AB?logo=python)
+// to the technology's readable name.
 const SHIELDS_LOGO_NAMES: Record<string, string> = {
   javascript: "JavaScript",
   typescript: "TypeScript",
@@ -345,9 +345,9 @@ const SHIELDS_LOGO_NAMES: Record<string, string> = {
   figma: "Figma",
 };
 
-// Mapeia os slugs de pasta usados pelo devicon (ex:
-// .../devicon/icons/java/java-original.svg) pro nome legível da tecnologia —
-// esse é o formato mais comum em README gerado à mão, geralmente via
+// Maps the folder slugs used by devicon (e.g.
+// .../devicon/icons/java/java-original.svg) to the technology's readable
+// name — this is the most common format in hand-crafted READMEs, usually via
 // <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/{slug}/...">.
 const DEVICON_NAMES: Record<string, string> = {
   java: "Java",
@@ -447,13 +447,13 @@ const DEVICON_NAMES: Record<string, string> = {
   android: "Android",
 };
 
-// Extrai os nomes das tecnologias a partir dos ícones/badges usados no README
-// de perfil (github.com/usuario/usuario). Cobre os formatos mais comuns:
-// skillicons.dev (?i=js,ts,react), badges do shields.io (?logo=python) e
-// ícones do devicon/simple-icons embutidos via <img src="...">, que é o
-// padrão mais comum em README montado à mão. Sempre deriva o nome do
-// slug/URL do ícone, nunca do atributo alt — que na prática costuma vir
-// copiado e colado errado de um ícone pro outro.
+// Extracts technology names from the icons/badges used in the profile
+// README (github.com/username/username). Covers the most common formats:
+// skillicons.dev (?i=js,ts,react), shields.io badges (?logo=python), and
+// devicon/simple-icons icons embedded via <img src="...">, which is the
+// most common pattern in hand-assembled READMEs. Always derives the name
+// from the icon's slug/URL, never from the alt attribute — which in
+// practice tends to come copy-pasted wrong from one icon to another.
 export function extractReadmeStacks(markdown: string): string[] {
   const names = new Set<string>();
 
@@ -541,12 +541,12 @@ export function buildSummary(opts: {
   return variants[index];
 }
 
-// Soma os commits contribuídos pela conta ao longo de toda a sua história.
-// A GraphQL API do GitHub só permite consultar `contributionsCollection` em
-// janelas de até 1 ano por vez, então percorremos ano a ano desde a criação
-// da conta. Consultando como `viewer` (dono do próprio token), commits em
-// repositórios privados também entram na soma — igual ao gráfico de
-// contribuições do próprio GitHub.
+// Sums the commits contributed by the account across its entire history.
+// GitHub's GraphQL API only allows querying `contributionsCollection` in
+// windows of up to 1 year at a time, so we walk year by year since the
+// account was created. Querying as `viewer` (owner of the token itself),
+// commits in private repos are included in the sum too — same as GitHub's
+// own contributions graph.
 async function fetchTotalCommits(accessToken: string, createdAt: string | null): Promise<number> {
   if (!createdAt) return 0;
 
@@ -613,18 +613,19 @@ export async function syncGithubProfile(
     Accept: "application/vnd.github+json",
   };
 
-  // 1. Dados do usuário (bio, localização, contadores)
+  // 1. User data (bio, location, counters)
   const userRes = await fetch("https://api.github.com/user", { headers: githubHeaders });
   if (!userRes.ok) {
     throw new SyncError("github user fetch failed", 502);
   }
   const githubUser = await userRes.json();
 
-  // 2. Repositórios. Repos privados nunca devem virar cards/seleções no
-  // portfólio público — quem visitar o perfil não tem acesso a eles e o link
-  // pro GitHub dá 404. As contribuições desses repos já entram no total de
-  // commits separadamente, via GraphQL (ver fetchTotalCommits), então
-  // descartamos os privados aqui sem perder esse número.
+  // 2. Repositories. Private repos should never become cards/selections in
+  // the public portfolio — visitors to the profile have no access to them
+  // and the link to GitHub 404s. Contributions from those repos are already
+  // counted separately in the total commits, via GraphQL (see
+  // fetchTotalCommits), so we discard the private ones here without losing
+  // that number.
   const reposRes = await fetch(
     "https://api.github.com/user/repos?per_page=100&sort=pushed&affiliation=owner",
     { headers: githubHeaders }
@@ -632,9 +633,9 @@ export async function syncGithubProfile(
   const allRepos: GithubRepo[] = await reposRes.json();
   const repos = allRepos.filter((repo) => !repo.private);
 
-  // 2.1 Seleções já feitas pela pessoa dona do perfil — um re-sync (ex: ao
-  // abrir "editar projetos" pra puxar repositórios novos) não pode resetar
-  // os projetos que ela já tinha escolhido pra aparecer no portfólio.
+  // 2.1 Selections already made by the profile's owner — a re-sync (e.g.
+  // opening "edit projects" to pull in new repos) must not reset the
+  // projects they had already chosen to show on the portfolio.
   const { data: existingRepos } = await supabase
     .from("repos")
     .select("github_repo_id, is_selected")
@@ -644,10 +645,10 @@ export async function syncGithubProfile(
     (existingRepos ?? []).map((r) => [r.github_repo_id, r.is_selected])
   );
 
-  // 2.2 Remove da tabela qualquer repo que não veio nessa leva pública (ficou
-  // privado depois de já ter sido sincronizado, ou foi apagado no GitHub) —
-  // sem isso, um repo selecionado antes de virar privado continuaria
-  // aparecendo com link quebrado no portfólio pra sempre.
+  // 2.2 Removes from the table any repo that didn't come back in this public
+  // batch (went private after already being synced, or was deleted on
+  // GitHub) — without this, a repo selected before going private would keep
+  // showing up with a broken link on the portfolio forever.
   const currentRepoIds = repos.map((repo) => repo.id);
   if (currentRepoIds.length > 0) {
     await supabase
@@ -659,8 +660,8 @@ export async function syncGithubProfile(
     await supabase.from("repos").delete().eq("profile_id", userId);
   }
 
-  // 3. Linguagens por repo (bytes), em paralelo — usadas tanto pro card do
-  // repo quanto pra agregação da stack geral do perfil
+  // 3. Languages per repo (bytes), in parallel — used both for the repo's
+  // card and for aggregating the profile's overall stack
   const languageBytesTotal: Record<string, number> = {};
 
   const enriched = await Promise.all(
@@ -690,7 +691,7 @@ export async function syncGithubProfile(
     })
   );
 
-  // 4. Agrega a stack geral em percentuais
+  // 4. Aggregates the overall stack into percentages
   const totalBytes = Object.values(languageBytesTotal).reduce((a, b) => a + b, 0);
   const githubStack = Object.entries(languageBytesTotal)
     .map(([name, bytes]) => ({
@@ -700,8 +701,8 @@ export async function syncGithubProfile(
     .sort((a, b) => b.percentage - a.percentage)
     .slice(0, 5);
 
-  // 4.1 Ícones de stack do README de perfil (github.com/usuario/usuario) —
-  // repo opcional, então um 404 aqui é esperado pra quem não tem um.
+  // 4.1 Stack icons from the profile README (github.com/username/username) —
+  // an optional repo, so a 404 here is expected for those who don't have one.
   let readmeStackNames: string[] = [];
   try {
     const readmeRes = await fetch(
@@ -713,16 +714,16 @@ export async function syncGithubProfile(
       readmeStackNames = extractReadmeStacks(readmeContent);
     }
   } catch {
-    // Falha ao buscar/parsear o README não deve travar o resto do sync.
+    // Failing to fetch/parse the README shouldn't block the rest of the sync.
   }
 
   const readmeStack = readmeStackNames
     .filter((name) => !githubStack.some((g) => g.name.toLowerCase() === name.toLowerCase()))
     .map((name) => ({ name, percentage: 0 }));
 
-  // Stacks adicionadas manualmente pela pessoa dona do perfil não devem ser
-  // apagadas a cada sync — preserva as que não vieram do GitHub nem do README
-  // dessa vez.
+  // Stacks added manually by the profile's owner shouldn't be wiped on every
+  // sync — preserves the ones that didn't come from GitHub or the README
+  // this time.
   const existingTopStack =
     (profile?.top_stack as { name: string; percentage: number; manual?: boolean }[] | null) ?? [];
   const manualStacks = existingTopStack.filter(
@@ -744,7 +745,7 @@ export async function syncGithubProfile(
       ? enriched.slice().sort((a, b) => b.impact_score - a.impact_score)[0].name
       : null;
 
-  // 5. Total de commits da conta (todo o histórico, incluindo privados)
+  // 5. Total account commits (full history, including private repos)
   const totalCommits = await fetchTotalCommits(githubAccessToken, githubUser.created_at ?? null);
 
   // 6. Salva repos
@@ -756,9 +757,9 @@ export async function syncGithubProfile(
     throw new SyncError(reposError.message, 500);
   }
 
-  // 7. Atualiza o perfil com os dados agregados
-  // O resumo (overview) editado manualmente pela pessoa dona do perfil não
-  // deve ser sobrescrito a cada sync — mesma lógica já aplicada ao top_stack.
+  // 7. Updates the profile with the aggregated data
+  // The overview (summary) manually edited by the profile's owner shouldn't
+  // be overwritten on every sync — same logic already applied to top_stack.
   const profileUpdate: Record<string, unknown> = {
     bio: githubUser.bio,
     full_name: githubUser.name ?? null,
@@ -797,19 +798,19 @@ export async function syncGithubProfile(
 
 const VISIT_SYNC_TTL_MS = 60 * 60 * 1000; // 1h
 
-// Disparado a cada visita/refresh de `folio.dev/{username}` (ver
-// app/[username]/page.tsx) pra manter foto, nome, bio, followers e commits
-// em dia sem depender de a pessoa abrir "editar projetos". Um visitante
-// anônimo não tem sessão nem token próprio, então isso roda com o client
-// admin usando o token do dono do perfil, salvo no onboarding.
+// Triggered on every visit/refresh of `folio.dev/{username}` (see
+// app/[username]/page.tsx) to keep photo, name, bio, followers and commits
+// current without depending on the person opening "edit projects". An
+// anonymous visitor has no session or token of their own, so this runs with
+// the admin client using the profile owner's token, saved during onboarding.
 //
-// Gated por `profiles.updated_at`: só resincroniza se o último sync tiver
-// mais de 1h, pra não estourar o rate limit do GitHub em perfis muito
-// visitados. Antes de rodar o sync completo (que faz várias chamadas
-// sequenciais à API do GitHub e pode levar alguns segundos), "reserva" o
-// slot atualizando updated_at com um optimistic lock — se duas visitas
-// concorrentes caírem na mesma janela, só a primeira ganha a corrida e
-// dispara o sync de verdade.
+// Gated by `profiles.updated_at`: only resyncs if the last sync is more
+// than 1h old, to avoid hitting GitHub's rate limit on heavily visited
+// profiles. Before running the full sync (which makes several sequential
+// calls to the GitHub API and can take a few seconds), it "reserves" the
+// slot by updating updated_at with an optimistic lock — if two concurrent
+// visits land in the same window, only the first wins the race and
+// triggers the actual sync.
 export async function syncProfileIfStale(githubUsername: string): Promise<void> {
   const supabase = createAdminClient();
 
@@ -837,15 +838,15 @@ export async function syncProfileIfStale(githubUsername: string): Promise<void> 
   try {
     accessToken = decrypt(profile.github_access_token as string);
   } catch {
-    // Token salvo antes da criptografia entrar em vigor (texto puro) — não
-    // dá pra sincronizar em background, a pessoa precisa logar de novo.
+    // Token saved before encryption went into effect (plain text) — can't
+    // sync in the background, the person needs to sign in again.
     return;
   }
 
   try {
     await syncGithubProfile(supabase, profile.id, accessToken);
   } catch {
-    // Sync em background: uma falha aqui (rate limit, token revogado etc.)
-    // não deve derrubar nada, só deixa pro próximo visit/TTL tentar de novo.
+    // Background sync: a failure here (rate limit, revoked token, etc.)
+    // shouldn't break anything, just leaves it for the next visit/TTL to retry.
   }
 }

@@ -53,10 +53,10 @@ export default async function ProfilePage({
 
   if (!profile) notFound();
 
-  // Mantém foto, nome, bio, followers e commits em dia a cada visita/refresh
-  // do perfil, sem travar o carregamento da página nem estourar o rate
-  // limit do GitHub — roda em background após a resposta ser enviada, e só
-  // de fato sincroniza se o último sync tiver mais de 1h (ver
+  // Keeps photo, name, bio, followers and commits current on every
+  // visit/refresh of the profile, without blocking the page load or hitting
+  // GitHub's rate limit — runs in the background after the response is
+  // sent, and only actually syncs if the last sync is more than 1h old (see
   // syncProfileIfStale).
   after(() => syncProfileIfStale(username));
 
@@ -151,7 +151,7 @@ export default async function ProfilePage({
           ))}
         </section>
 
-        {/* Resumo profissional gerado automaticamente */}
+        {/* Auto-generated professional summary */}
         {(profile.summary || isOwner) && (
           <section className="mt-12">
             <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ export default async function ProfilePage({
                       <p className="text-sm text-[var(--color-text-muted)]">{exp?.company ?? ""}</p>
                     </div>
                     <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
-                      {formatExperienceRange(exp)}
+                      {formatExperienceRange(exp, lang)}
                     </span>
                   </div>
                   {Array.isArray(exp?.bullets) && exp.bullets.length > 0 && (
@@ -222,7 +222,7 @@ export default async function ProfilePage({
           )}
         </section>
 
-        {/* Stack real */}
+        {/* Real stack */}
         {((profile.top_stack && profile.top_stack.length > 0) || isOwner) && (
           <section className="mt-12">
             <div className="flex items-center gap-3">
@@ -253,7 +253,7 @@ export default async function ProfilePage({
           </section>
         )}
 
-        {/* Portfólio ordenado por impacto — como já estava, sem mudanças */}
+        {/* Portfolio ordered by impact — unchanged from before */}
         <section className="mt-12">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
@@ -313,7 +313,7 @@ export default async function ProfilePage({
           )}
         </section>
 
-        {/* Certificados */}
+        {/* Certifications */}
         <section className="mt-12">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
@@ -341,7 +341,7 @@ export default async function ProfilePage({
                     <p className="text-sm text-[var(--color-text-muted)]">{cert?.issuer ?? ""}</p>
                   </div>
                   <span className="shrink-0 text-xs font-mono text-[var(--color-text-faint)] whitespace-nowrap">
-                    {formatCertificationRange(cert)}
+                    {formatCertificationRange(cert, lang)}
                   </span>
                 </div>
               ))}

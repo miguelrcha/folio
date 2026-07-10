@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
+import { useLanguage } from "@/components/LanguageProvider";
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ function Kbd({ children }: { children: React.ReactNode }) {
 
 export function SignOutButton() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -29,7 +31,7 @@ export function SignOutButton() {
       onClick={handleSignOut}
       className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold cursor-pointer"
     >
-      Logout
+      {t("signOut.button")}
       <Kbd>L</Kbd>
     </button>
   );

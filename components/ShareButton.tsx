@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
@@ -17,13 +18,14 @@ export function ShareButton({
   username: string;
   name?: string;
 }) {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     const url = `${window.location.origin}/${username}`;
     const shareData = {
       title: `${name ?? username} · folio`,
-      text: `Check out ${name ?? username}'s professional profile on folio`,
+      text: t("share.text", { name: name ?? username }),
       url,
     };
 
@@ -31,7 +33,7 @@ export function ShareButton({
       try {
         await navigator.share(shareData);
       } catch {
-        // usuário cancelou o share
+        // user cancelled the share
       }
       return;
     }
@@ -41,7 +43,7 @@ export function ShareButton({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // clipboard indisponível
+      // clipboard unavailable
     }
   };
 
@@ -51,10 +53,10 @@ export function ShareButton({
       className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold"
     >
       {copied ? (
-        "Link copied ✓"
+        t("share.copied")
       ) : (
         <>
-          Share
+          {t("share.button")}
           <Kbd>S</Kbd>
         </>
       )}
