@@ -45,16 +45,6 @@ function Kbd({
   );
 }
 
-function BetaBadge({ className = "" }: { className?: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-mono text-[var(--color-text-muted)] ${className}`}
-    >
-      🚀 Free during beta
-    </span>
-  );
-}
-
 // Chip que mostra quem está logado — substitui o botão "Sign in with GitHub"
 function LoggedInChip({
   user,
