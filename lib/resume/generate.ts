@@ -38,7 +38,7 @@ export type ResumeData = {
   certifications: CertificationEntry[];
   languages: LanguageEntry[];
   repos: ResumeRepo[];
-  /** bytes da foto (avatar do GitHub), já baixados. Se omitido, o cabeçalho fica só com o texto. */
+  /** Photo bytes (GitHub avatar), already downloaded. If omitted, the header is text-only. */
   photo?: { data: Buffer; type: "jpg" | "png" | "gif" | "bmp" } | null;
 };
 
@@ -186,9 +186,9 @@ export async function generateResumeDocx(data: ResumeData): Promise<Buffer> {
     }),
   ];
 
-  // Cabeçalho: foto à esquerda (se disponível) + nome/contato à direita.
-  // De propósito, sem cargo/título fixo abaixo do nome — esse texto é só
-  // o que vem do GitHub, sem inventar um título de vaga.
+  // Header: photo on the left (if available) + name/contact on the right.
+  // Deliberately no fixed job title under the name — that text is only
+  // what comes from GitHub, without making up a job title.
   const headerChildren = data.photo
     ? [
         new Table({

@@ -24,12 +24,12 @@ function ResumeBulletList({ items }: { items: string[] }) {
   );
 }
 
-// Layout dedicado de 1 página A4 pra impressão/PDF do CV — renderizado só em
-// @media print (ver .resume-print no globals.css + hidden print:block aqui).
-// Independente da UI escura interativa do resto do site: tipografia clara,
-// compacta, pensada pra caber numa página só com os dados reais do GitHub.
-// De propósito, texto e bullets em todas as seções — sem tags/cards — e sem
-// nenhum cargo/título fixo abaixo do nome, só o que vem do GitHub.
+// Dedicated single-page A4 layout for CV print/PDF — rendered only under
+// @media print (see .resume-print in globals.css + hidden print:block here).
+// Independent from the dark interactive UI of the rest of the site: light,
+// compact typography, sized to fit one page with the real GitHub data.
+// Deliberately plain text and bullets across every section — no tags/cards —
+// and no fixed job title under the name, only what comes from GitHub.
 export function ResumeDocument({
   profile,
   repos,

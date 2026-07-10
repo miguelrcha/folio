@@ -21,7 +21,7 @@ function SearchUsers({ className = "" }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Busca com debounce enquanto digita
+  // Debounced search while typing
   useEffect(() => {
     const term = query.trim().replace(/^@/, "");
     if (term.length < 2) return;
@@ -40,7 +40,7 @@ function SearchUsers({ className = "" }: { className?: string }) {
     return () => clearTimeout(id);
   }, [query]);
 
-  // Fecha o dropdown ao clicar fora
+  // Closes the dropdown on outside click
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -133,8 +133,8 @@ type LoggedInUser = {
   avatar_url: string | null;
 };
 
-// Chip que mostra quem está logado no momento — aparece independente de
-// de quem for o perfil que está sendo visitado.
+// Chip that shows who's currently signed in — appears regardless of
+// whose profile is being visited.
 function LoggedInChip({
   user,
   fullWidth = false,
@@ -227,7 +227,7 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
       aria-label="Main"
     >
       <div className="mx-auto w-full max-w-7xl px-6 relative">
-        {/* Mobile: logo + hambúrguer */}
+        {/* Mobile: logo + hamburger */}
         <div className="flex w-full items-center justify-between py-4 md:hidden">
           <Logo size="sm" />
           <button
@@ -250,12 +250,12 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Mobile: busca sempre visível, é o coração da coisa */}
+        {/* Mobile: search always visible, it's the heart of the thing */}
         <div className="pb-3 md:hidden ">
           <SearchUsers />
         </div>
 
-        {/* Mobile: identidade + ações escondidas atrás do hambúrguer, empilhadas */}
+        {/* Mobile: identity + actions hidden behind the hamburger, stacked */}
         {mobileOpen && (
           <div className="md:hidden pb-4 flex flex-col gap-2 [&>*]:w-full [&>*]:justify-center">
             <div className="flex items-center justify-center">

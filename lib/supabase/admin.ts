@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Cliente com a service role key: ignora RLS. Só pra uso em contextos sem
-// sessão de usuário (ex: o cron job de sync em lote), nunca em rotas que
-// respondem a um visitante.
+// Client with the service role key: bypasses RLS. Only for use in
+// contexts without a user session (e.g. the batch sync cron job), never in
+// routes that respond to a visitor.
 export function createAdminClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

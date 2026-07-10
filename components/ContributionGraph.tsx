@@ -19,10 +19,10 @@ const intensityColor = (count: number) => {
 };
 
 /**
- * Grid de contribuições. Três modos:
- * - "skeleton": células vazias pulsando (tela de login, antes de conectar)
- * - "building": células preenchem em cascata (tela de loading/análise)
- * - "static": estado final (tela de perfil)
+ * Contribution grid. Three modes:
+ * - "skeleton": empty pulsing cells (login screen, before connecting)
+ * - "building": cells fill in cascading (loading/analysis screen)
+ * - "static": final state (profile screen)
  */
 export function ContributionGraph({
   data,

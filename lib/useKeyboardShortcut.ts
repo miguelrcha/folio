@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
-// Cmd na Mac, Ctrl nos outros SOs — o mesmo padrão dos Kbd exibidos na UI.
+// Cmd on Mac, Ctrl on other OSes — the same pattern as the Kbd shown in the UI.
 export function useKeyboardShortcut(key: string, callback: () => void) {
   const callbackRef = useRef(callback);
-  // Atualiza a ref fora do render para sempre chamar o callback mais recente
-  // sem reassinar o listener a cada mudança.
+  // Updates the ref outside of render to always call the latest callback
+  // without re-attaching the listener on every change.
   useEffect(() => {
     callbackRef.current = callback;
   });

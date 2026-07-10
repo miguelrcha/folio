@@ -36,7 +36,7 @@ function Kbd({
   );
 }
 
-// Chip que mostra quem está logado — substitui o botão "Sign in with GitHub"
+// Chip that shows who's signed in — replaces the "Sign in with GitHub" button
 function LoggedInChip({
   user,
   fullWidth = false,
@@ -110,23 +110,24 @@ export function Header() {
       try {
         const { data, error } = await supabase.rpc("get_total_profiles");
         if (error) {
-          console.error("Header: erro ao buscar contagem de perfis:", error.message);
+          console.error("Header: error fetching profile count:", error.message);
           return;
         }
         if (typeof data === "number") setProfileCount(data);
       } catch (err) {
-        console.error("Header: falha inesperada ao buscar contagem de perfis:", err);
+        console.error("Header: unexpected failure fetching profile count:", err);
       }
     };
 
     loadCount();
   }, []);
 
-  // Detecta sessão via onAuthStateChange, que dispara sozinho com o evento
-  // INITIAL_SESSION assim que o client termina de restaurar a sessão salva
-  // (cookies). Isso evita a race condition de chamar getUser() manualmente
-  // antes do client terminar essa restauração — que era a causa do header
-  // "esquecer" que você tava logado ao voltar no site.
+  // Detects the session via onAuthStateChange, which fires on its own with
+  // the INITIAL_SESSION event as soon as the client finishes restoring the
+  // saved session (cookies). This avoids the race condition of calling
+  // getUser() manually before the client finishes that restoration — which
+  // was the cause of the header "forgetting" you were signed in when
+  // returning to the site.
   useEffect(() => {
     const supabase = createClient();
     let cancelled = false;
@@ -142,7 +143,7 @@ export function Header() {
         if (cancelled) return;
 
         if (error) {
-          console.error("Header: erro ao buscar perfil:", error.message);
+          console.error("Header: error fetching profile:", error.message);
           return;
         }
 
@@ -150,7 +151,7 @@ export function Header() {
           setLoggedInUser(profile);
         }
       } catch (err) {
-        if (!cancelled) console.error("Header: falha inesperada ao buscar perfil:", err);
+        if (!cancelled) console.error("Header: unexpected failure fetching profile:", err);
       }
     };
 
