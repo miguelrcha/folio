@@ -4,9 +4,14 @@ name: Sync-all fallback cron
 # cron in vercel.json can't be tightened past that. This workflow calls the
 # same endpoint on a shorter interval as a free, plan-independent fallback —
 # it doesn't replace the Vercel cron, just supplements it. See issue #31.
+#
+# Offset by 1h30 from the Vercel cron (0 3 * * *, see vercel.json) on purpose:
+# /api/cron/sync-all has no locking around its repo delete+upsert, so two
+# concurrent full-batch runs would race on the same rows and could flicker
+# project cards for anyone visiting mid-sync.
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: "30 1,4,7,10,13,16,19,22 * * *"
   workflow_dispatch:
 
 jobs:
