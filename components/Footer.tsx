@@ -1,20 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { GithubStarsBadge } from "@/components/GithubStarsBadge";
-
-const PRODUCT_LINKS = [
-  { label: "Public Profile", href: "#" },
-  { label: "PDF Resume", href: "#" },
-  { label: "Automatic Selection", href: "#" },
-];
-
-const COMPANY_LINKS = [
-  { label: "Examples", href: "/miguelrcha" },
-  { label: "Sign in with GitHub", href: "/loading" },
-  { label: "Open Source", href: "https://github.com/miguelrcha/folio" },
-];
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function Footer() {
+  const { t } = useLanguage();
+
+  const PRODUCT_LINKS = [
+    { label: t("features.publicProfile.title"), href: "#" },
+    { label: t("features.pdfResume.title"), href: "#" },
+    { label: t("features.autoSelection.title"), href: "#" },
+  ];
+
+  const COMPANY_LINKS = [
+    { label: t("header.examples"), href: "/miguelrcha" },
+    { label: t("header.signIn"), href: "/loading" },
+    { label: t("footer.openSource"), href: "https://github.com/miguelrcha/folio" },
+  ];
+
   return (
     <footer className="relative z-10 border-t border-white/[0.08]">
       <div className="mx-auto max-w-7xl px-6 pt-14 pb-8">
@@ -27,7 +32,7 @@ export function Footer() {
 
           <div className="grid grid-cols-2 gap-10 sm:flex sm:gap-16">
             <div className="flex flex-col gap-3">
-              <span className="text-sm font-medium text-[var(--color-text)]">Product</span>
+              <span className="text-sm font-medium text-[var(--color-text)]">{t("footer.product")}</span>
               {PRODUCT_LINKS.map((l) => (
                 <a
                   key={l.label}
@@ -40,7 +45,7 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <span className="text-sm font-medium text-[var(--color-text)]">Company</span>
+              <span className="text-sm font-medium text-[var(--color-text)]">{t("footer.company")}</span>
               {COMPANY_LINKS.map((l) =>
                 l.href.startsWith("http") ? (
                   <a
@@ -68,7 +73,7 @@ export function Footer() {
 
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-md text-[var(--color-text-faint)] font-lato">
-            © {new Date().getFullYear()} Folio. All rights reserved.
+            © {new Date().getFullYear()} Folio. {t("footer.rights")}
           </p>
           
         </div>

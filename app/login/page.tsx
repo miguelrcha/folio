@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GithubIcon } from "@/components/GithubIcon";
+import { useLanguage } from "@/components/LanguageProvider";
 import { createClient } from "@/lib/supabase/client";
 
 const GITHUB_DEFAULT_AVATAR = "https://github.com/Braian-de-Liz.png";
@@ -11,6 +12,7 @@ const MY_AVATAR = "https://github.com/miguelrcha.png";
 const SPOUK_AVATAR = "https://github.com/spoukhs.png";
 
 function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
+  const { t } = useLanguage();
   const avatars = [MY_AVATAR, GITHUB_DEFAULT_AVATAR2, SPOUK_AVATAR, GITHUB_DEFAULT_AVATAR,];
   const displayCount = totalCount === null ? null : `+${totalCount}`;
 
@@ -37,7 +39,7 @@ function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
         </div>
       </div>
       <p className="text-sm font-mono text-[var(--color-text-muted)]">
-        Join several other devs
+        {t("login.joinDevs")}
       </p>
     </div>
   );
@@ -45,6 +47,7 @@ function DevAvatarStack({ totalCount }: { totalCount: number | null }) {
 
 export default function SignInPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
 
@@ -152,11 +155,11 @@ export default function SignInPage() {
           className="animate-fade-up group mt-10 inline-flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-md font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85"
         >
           <GithubIcon className="h-7 w-7" />
-          Sign in with GitHub
+          {t("header.signIn")}
         </button>
 
         <p className="mt-6 text-xs text-[var(--color-text-faint)] font-mono">
-          read-only · no write access to your repositories
+          {t("login.readOnly")}
         </p>
       </div>
     </main>

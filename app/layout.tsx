@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Lato } from "next/font/google";
+import { LanguageProvider } from "@/components/LanguageProvider";
+import { getServerLanguage } from "@/lib/i18n/server";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -50,16 +52,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getServerLanguage();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${lato.variable} antialiased`}>
         <div className="grain" />
-        {children}
+        <LanguageProvider initialLang={lang}>{children}</LanguageProvider>
       </body>
     </html>
   );

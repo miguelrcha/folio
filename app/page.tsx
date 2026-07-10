@@ -7,6 +7,7 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { FeatureShowcase } from "@/components/FeatureShowcase";
 import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
+import { useLanguage } from "@/components/LanguageProvider";
 import { createClient } from "@/lib/supabase/client";
 
 // Aceita "@user", "github.com/user", "https://github.com/user" (com ou sem
@@ -22,6 +23,7 @@ function cleanGithubUsername(raw: string) {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [username, setUsername] = useState("");
   const [checking, setChecking] = useState(false);
   const [notFoundUser, setNotFoundUser] = useState<string | null>(null);
@@ -69,14 +71,14 @@ export default function LoginPage() {
       <section className="relative flex min-h-[calc(100vh-60px)] md:min-h-[calc(100vh-58px)] flex-col items-center justify-center text-center px-6 pb-16">
         <h1 className="font-sans tracking-tight text-5xl sm:text-6xl md:text-7xl leading-[1.05]">
           <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent mb-2">
-            Build your Github portfolio in minutes
+            {t("home.hero.title")}
           </span>
         </h1>
 
-        <p className="mt-7 max-w-lg text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed">
-          Connect your Github. In less than a minute, get a professional
+        <p className="mt-7 max-w-xl text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed">
+          {t("home.hero.subtitle")}{" "}
           <br className="hidden md:block" />
-          resume, always up-to-date and ready to send.
+          {t("home.hero.subtitleLine2")}
         </p>
 
         {/* Composite CTA: real username input + button that navigates to the profile */}
@@ -93,7 +95,7 @@ export default function LoginPage() {
                 setUsername(e.target.value);
                 if (notFoundUser) setNotFoundUser(null);
               }}
-              placeholder="github.com/miguelrcha"
+              placeholder={t("home.hero.inputPlaceholder")}
               className="w-full bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none truncate"
             />
           </div>
@@ -102,7 +104,7 @@ export default function LoginPage() {
             disabled={!username.trim() || checking}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-text)] px-6 py-3.5 font-lato text-md font-semibold text-[var(--color-ink)] transition-opacity hover:opacity-85 disabled:opacity-40 whitespace-nowrap"
           >
-            {checking ? "Checking…" : "View Profile on Folio"}
+            {checking ? t("home.hero.checking") : t("home.hero.viewProfile")}
           </button>
         </form>
 
@@ -110,7 +112,7 @@ export default function LoginPage() {
           <div className="mt-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.06] px-4 py-2.5 text-sm text-red-300/90 font-lato max-w-md w-full">
             <span className="shrink-0">⚠️</span>
             <span>
-              <span className="font-semibold">@{notFoundUser}</span>  isn&apos;t registered on Folio yet.
+              <span className="font-semibold">@{notFoundUser}</span> {t("home.hero.notFound")}
             </span>
           </div>
         )}

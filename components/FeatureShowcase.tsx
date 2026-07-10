@@ -1,5 +1,8 @@
+"use client";
+
 import { GithubStarsBadge } from "@/components/GithubStarsBadge";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { useLanguage } from "@/components/LanguageProvider";
 
 function CardShell({ children }: { children: React.ReactNode }) {
   return (
@@ -87,6 +90,8 @@ const SELECTION_ROWS = [
 ];
 
 export function FeatureShowcase() {
+  const { t } = useLanguage();
+
   return (
     <>
       <div className="flex justify-center mb-8 md:mb-10 relative z-10">
@@ -104,12 +109,11 @@ export function FeatureShowcase() {
       <ScrollReveal className="text-center mb-10 md:mb-14">
         <h2 className="text-[2.25rem] md:text-[4rem] tracking-tighter leading-[120%] mb-2 font-normal">
           <span className="bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent">
-            Everything from your GitHub
+            {t("features.title")}
           </span>
         </h2>
         <p className="text-sm md:text-lg text-neutral-400 font-normal max-w-2xl mx-auto">
-          A public profile, a PDF resume, and a curated selection of your best projects —
-          all generated from your GitHub, without filling in anything by hand.
+          {t("features.subtitle")}
         </p>
       </ScrollReveal>
 
@@ -120,8 +124,8 @@ export function FeatureShowcase() {
           <PreviewPanel>
             <div className="w-full overflow-hidden">
               <div className="grid grid-cols-[1fr_60px_50px] items-center py-2 border-b border-white/10 text-[10px] text-white/60 uppercase tracking-wider">
-                <span>Repository</span>
-                <span>Impact</span>
+                <span>{t("features.table.repository")}</span>
+                <span>{t("features.table.impact")}</span>
                 <span className="text-right">★</span>
               </div>
               {PROFILE_ROWS.map((r) => (
@@ -137,10 +141,9 @@ export function FeatureShowcase() {
             </div>
           </PreviewPanel>
           <div className="z-10 flex flex-col gap-3 px-6 pb-8">
-            <h3 className="text-[1.7rem] font-normal text-white/90">Public Profile</h3>
+            <h3 className="text-[1.7rem] font-normal text-white/90">{t("features.publicProfile.title")}</h3>
             <p className="text-sm leading-[1.6] text-neutral-400">
-              A page at meufolio.dev/@you with your bio, real stack, and projects ranked by
-              impact — always up to date.
+              {t("features.publicProfile.description")}
             </p>
             <div className="flex items-center gap-3 mt-2 text-white/70">
               <IconGlobe />
@@ -174,10 +177,9 @@ export function FeatureShowcase() {
             </div>
           </PreviewPanel>
           <div className="z-10 flex flex-col gap-3 px-6 pb-8">
-            <h3 className="text-[1.7rem] font-normal text-white/90">PDF Resume</h3>
+            <h3 className="text-[1.7rem] font-normal text-white/90">{t("features.pdfResume.title")}</h3>
             <p className="text-sm leading-[1.6] text-neutral-400">
-              One click and the same profile becomes a ready-to-send resume — complete
-              with your GitHub photo and projects included.
+              {t("features.pdfResume.description")}
             </p>
             <div className="flex items-center gap-3 mt-2 text-white/70">
               <IconFile />
@@ -193,7 +195,7 @@ export function FeatureShowcase() {
           <PreviewPanel>
             <div className="w-full overflow-hidden">
               <div className="py-2 border-b border-white/10 text-[10px] text-white/60 uppercase tracking-wider">
-                Select your projects
+                {t("features.table.selectProjects")}
               </div>
               {SELECTION_ROWS.map((r) => (
                 <div
@@ -216,10 +218,9 @@ export function FeatureShowcase() {
             </div>
           </PreviewPanel>
           <div className="z-10 flex flex-col gap-3 px-6 pb-8">
-            <h3 className="text-[1.7rem] font-normal text-white/90">Automatic Selection</h3>
+            <h3 className="text-[1.7rem] font-normal text-white/90">{t("features.autoSelection.title")}</h3>
             <p className="text-sm leading-[1.6] text-neutral-400">
-              Projects with the most stars and recent activity come pre-selected —
-              you just adjust if you want.
+              {t("features.autoSelection.description")}
             </p>
             <div className="flex items-center gap-3 mt-2 text-white/70">
               <IconCheck />

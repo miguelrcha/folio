@@ -22,6 +22,8 @@ import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
 import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 import { syncProfileIfStale } from "@/lib/github-sync";
+import { getServerLanguage } from "@/lib/i18n/server";
+import { translate } from "@/lib/i18n/translations";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 export async function generateMetadata({
@@ -40,6 +42,8 @@ export default async function ProfilePage({
 }) {
   const { username } = await params;
   const supabase = await createClient();
+  const lang = await getServerLanguage();
+  const t = (key: string, vars?: Record<string, string | number>) => translate(lang, key, vars);
 
   const { data: profile } = await supabase
     .from("public_profiles")
@@ -135,10 +139,10 @@ export default async function ProfilePage({
         {/* Stats */}
         <section className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--color-border)] rounded-lg overflow-hidden">
           {[
-            { label: "followers", value: profile.followers ?? 0 },
-            { label: "public repositories", value: profile.public_repos ?? 0 },
-            { label: "total commits", value: profile.total_commits ?? 0 },
-            { label: "on github since", value: githubSinceYear ?? "—" },
+            { label: t("profile.stats.followers"), value: profile.followers ?? 0 },
+            { label: t("profile.stats.publicRepos"), value: profile.public_repos ?? 0 },
+            { label: t("profile.stats.totalCommits"), value: profile.total_commits ?? 0 },
+            { label: t("profile.stats.onGithubSince"), value: githubSinceYear ?? "—" },
           ].map((stat) => (
             <div key={stat.label} className="bg-[var(--color-ink)] px-5 py-4">
               <div className="font-mono text-2xl text-[var(--color-accent)]">{stat.value}</div>
@@ -152,7 +156,7 @@ export default async function ProfilePage({
           <section className="mt-12">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-                overview
+                {t("profile.section.overview")}
               </span>
               {isOwner && (
                 <EditOverviewModal profileId={profile.id} initialSummary={profile.summary ?? ""} />
@@ -162,7 +166,7 @@ export default async function ProfilePage({
             <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl">
               {profile.summary || (
                 <span className="text-[var(--color-text-faint)] font-mono text-sm">
-                  no summary yet.
+                  {t("profile.empty.summary")}
                 </span>
               )}
             </p>
@@ -173,7 +177,7 @@ export default async function ProfilePage({
         <section className="mt-12">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-              experiences
+              {t("profile.section.experiences")}
             </span>
             {isOwner && (
               <>
@@ -213,7 +217,7 @@ export default async function ProfilePage({
             </div>
           ) : (
             <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
-              No professional experience added yet.
+              {t("profile.empty.experiences")}
             </p>
           )}
         </section>
@@ -223,7 +227,7 @@ export default async function ProfilePage({
           <section className="mt-12">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-                stacks
+                {t("profile.section.stacks")}
               </span>
               {isOwner && (
                 <EditStacksModal profileId={profile.id} initialStacks={profile.top_stack ?? []} />
@@ -243,7 +247,7 @@ export default async function ProfilePage({
               </div>
             ) : (
               <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
-                No stacks added yet.
+                {t("profile.empty.stacks")}
               </p>
             )}
           </section>
@@ -253,14 +257,14 @@ export default async function ProfilePage({
         <section className="mt-12">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-              projects, by impact
+              {t("profile.section.projects")}
             </span>
             {isOwner && <EditProjectsModal profileId={profile.id} />}
             <span className="flex-1 h-px bg-[var(--color-border)]" />
           </div>
           {selectedRepos.length === 0 ? (
             <p className="mt-4 text-sm text-[var(--color-text-faint)] font-mono">
-              No projects selected yet.
+              {t("profile.empty.projects")}
             </p>
           ) : (
             <ol className="mt-4 space-y-4">
@@ -284,7 +288,7 @@ export default async function ProfilePage({
                           <GithubIcon className="h-3 w-3 text-[var(--color-text-faint)] opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         <p className="mt-1.5 text-sm text-[var(--color-text-muted)] max-w-xl">
-                          {repo.description || "no description"}
+                          {repo.description || t("profile.noDescription")}
                         </p>
                         <div className="mt-2.5 flex flex-wrap gap-2">
                           {(repo.stack ?? []).slice(0, 6).map((s) => (
@@ -299,7 +303,7 @@ export default async function ProfilePage({
                       </div>
                       <div className="shrink-0 text-right font-mono text-xs text-[var(--color-text-faint)] space-y-0.5">
                         <div>★ {repo.stars}</div>
-                        <div>{repo.forks} forks</div>
+                        <div>{repo.forks} {t("profile.forks")}</div>
                       </div>
                     </div>
                   </a>
@@ -313,7 +317,7 @@ export default async function ProfilePage({
         <section className="mt-12">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-              certificates
+              {t("profile.section.certificates")}
             </span>
             {isOwner && (
               <>
@@ -344,7 +348,7 @@ export default async function ProfilePage({
             </div>
           ) : (
             <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
-              No certifications added yet.
+              {t("profile.empty.certificates")}
             </p>
           )}
         </section>
@@ -353,7 +357,7 @@ export default async function ProfilePage({
         <section className="mt-12 mb-20">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
-              languages
+              {t("profile.section.languages")}
             </span>
             {isOwner && (
               <EditLanguagesModal
@@ -376,13 +380,13 @@ export default async function ProfilePage({
             </div>
           ) : (
             <p className="mt-3 text-[var(--color-text-faint)] font-mono text-sm">
-              No languages added yet.
+              {t("profile.empty.languages")}
             </p>
           )}
         </section>
 
         <footer className="pb-10 flex flex-col-reverse items-center gap-3 text-center text-xs font-mono text-[var(--color-text-faint)] md:flex-row md:justify-between md:text-left">
-          <span>generated automatically from github · meufolio.dev/@{profile.github_username}</span>
+          <span>{t("profile.footer.generated")} · meufolio.dev/@{profile.github_username}</span>
           <div className="flex items-center gap-4">
             {isOwner && <DeleteAccountButton profileId={profile.id} />}
             <a
@@ -390,7 +394,7 @@ export default async function ProfilePage({
               className="inline-flex items-center gap-1.5 hover:text-[var(--color-text-muted)] transition-colors"
             >
               <GithubIcon className="h-3.5 w-3.5" />
-              Github
+              {t("profile.footer.github")}
             </a>
           </div>
         </footer>
