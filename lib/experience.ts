@@ -1,21 +1,31 @@
+import type { Language } from "@/lib/i18n/translations";
+
 export type ExperienceEntry = {
   title: string;
   company: string;
   startMonth: number; // 1-12
   startYear: number;
-  endMonth: number | null; // null se "atual"
+  endMonth: number | null; // null if "current"
   endYear: number | null;
   current: boolean;
-  /** Linhas curtas do que foi feito nessa experiência (stack, responsabilidades). */
+  /** Short lines describing what was done in this experience (stack, responsibilities). */
   bullets?: string[];
 };
 
-export const MONTHS = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
-];
+const MONTHS_BY_LANG: Record<Language, string[]> = {
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  pt: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+};
 
-export function formatExperienceRange(exp: ExperienceEntry): string {
+export function getMonths(lang: Language = "en") {
+  return MONTHS_BY_LANG[lang];
+}
+
+// English default, kept for any call site that doesn't (yet) thread a language through.
+export const MONTHS = MONTHS_BY_LANG.en;
+
+export function formatExperienceRange(exp: ExperienceEntry, lang: Language = "en"): string {
+  const months = getMonths(lang);
   const hasValidStart =
     typeof exp?.startMonth === "number" &&
     exp.startMonth >= 1 &&
@@ -24,9 +34,9 @@ export function formatExperienceRange(exp: ExperienceEntry): string {
 
   if (!hasValidStart) return "";
 
-  const start = `${MONTHS[exp.startMonth - 1]}/${exp.startYear}`;
+  const start = `${months[exp.startMonth - 1]}/${exp.startYear}`;
 
-  if (exp.current) return `${start} – atual`;
+  if (exp.current) return `${start} – ${lang === "pt" ? "atual" : "present"}`;
 
   const hasValidEnd =
     typeof exp.endMonth === "number" &&
@@ -34,7 +44,7 @@ export function formatExperienceRange(exp: ExperienceEntry): string {
     exp.endMonth <= 12 &&
     typeof exp.endYear === "number";
 
-  const end = hasValidEnd ? `${MONTHS[exp.endMonth! - 1]}/${exp.endYear}` : "?";
+  const end = hasValidEnd ? `${months[exp.endMonth! - 1]}/${exp.endYear}` : "?";
   return `${start} – ${end}`;
 }
 

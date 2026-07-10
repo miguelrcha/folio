@@ -10,8 +10,8 @@ import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/components/LanguageProvider";
 import { createClient } from "@/lib/supabase/client";
 
-// Aceita "@user", "github.com/user", "https://github.com/user" (com ou sem
-// www./barra final) e extrai só o username.
+// Accepts "@user", "github.com/user", "https://github.com/user" (with or
+// without www./trailing slash) and extracts just the username.
 function cleanGithubUsername(raw: string) {
   return raw
     .trim()

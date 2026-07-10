@@ -1,4 +1,5 @@
-import { MONTHS } from "@/lib/experience";
+import { getMonths } from "@/lib/experience";
+import type { Language } from "@/lib/i18n/translations";
 
 export type CertificationEntry = {
   name: string;
@@ -23,7 +24,8 @@ export function emptyCertificationEntry(): CertificationEntry {
   };
 }
 
-export function formatCertificationRange(cert: CertificationEntry): string {
+export function formatCertificationRange(cert: CertificationEntry, lang: Language = "en"): string {
+  const months = getMonths(lang);
   const hasValidIssue =
     typeof cert?.issueMonth === "number" &&
     cert.issueMonth >= 1 &&
@@ -32,7 +34,7 @@ export function formatCertificationRange(cert: CertificationEntry): string {
 
   if (!hasValidIssue) return "";
 
-  const issued = `${MONTHS[cert.issueMonth - 1]}/${cert.issueYear}`;
+  const issued = `${months[cert.issueMonth - 1]}/${cert.issueYear}`;
 
   if (!cert.hasExpiration) return issued;
 
@@ -43,7 +45,7 @@ export function formatCertificationRange(cert: CertificationEntry): string {
     typeof cert.expirationYear === "number";
 
   const expires = hasValidExpiration
-    ? `${MONTHS[cert.expirationMonth! - 1]}/${cert.expirationYear}`
+    ? `${months[cert.expirationMonth! - 1]}/${cert.expirationYear}`
     : "?";
 
   return `${issued} – ${expires}`;

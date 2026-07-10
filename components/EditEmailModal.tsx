@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { MailIcon } from "@/components/MailIcon";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function EditEmailModal({
   profileId,
@@ -12,10 +13,11 @@ export function EditEmailModal({
 }: {
   profileId: string;
   initialEmail: string;
-  /** Email que o GitHub retornou no login — usado só como sugestão inicial. */
+  /** Email returned by GitHub on login — used only as an initial suggestion. */
   githubEmail?: string | null;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const supabase = createClient();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState(initialEmail);
@@ -31,7 +33,7 @@ export function EditEmailModal({
   const handleSave = async () => {
     const trimmed = email.trim();
     if (trimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError("Invalid email");
+      setError(t("modal.email.invalid"));
       return;
     }
 
@@ -44,7 +46,7 @@ export function EditEmailModal({
     setSaving(false);
 
     if (updateError) {
-      setError("Couldn't save, try again");
+      setError(t("modal.email.saveError"));
       return;
     }
 
@@ -56,7 +58,7 @@ export function EditEmailModal({
     <>
       <button
         onClick={handleOpen}
-        aria-label="Edit email"
+        aria-label={t("modal.email.ariaEdit")}
         className="inline-flex items-center justify-center h-6 w-6 rounded-md text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-white/[0.06] transition-colors"
       >
         <MailIcon className="h-3.5 w-3.5" />
@@ -67,7 +69,7 @@ export function EditEmailModal({
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="relative w-full max-w-sm flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
-              <h2 className="font-mono text-sm text-[var(--color-text)]">Edit email</h2>
+              <h2 className="font-mono text-sm text-[var(--color-text)]">{t("modal.email.title")}</h2>
               <button
                 onClick={() => setOpen(false)}
                 className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
@@ -89,7 +91,7 @@ export function EditEmailModal({
               />
               {error && <p className="mt-2 text-xs text-red-400 font-mono">{error}</p>}
               <p className="mt-2 text-xs text-[var(--color-text-faint)] font-mono">
-                shown on your public profile and CV
+                {t("modal.email.hint")}
               </p>
             </div>
 
@@ -98,14 +100,14 @@ export function EditEmailModal({
                 onClick={() => setOpen(false)}
                 className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer transition-colors"
               >
-                Cancel
+                {t("modal.cancel")}
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className="rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50 cursor-pointer transition-colors"
               >
-                {saving ? "Saving..." : "Save"}
+                {saving ? t("modal.saving") : t("modal.save")}
               </button>
             </div>
           </div>

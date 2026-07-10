@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function EditOverviewModal({
   profileId,
@@ -12,6 +13,7 @@ export function EditOverviewModal({
   initialSummary: string;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const supabase = createClient();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(initialSummary);
@@ -40,7 +42,7 @@ export function EditOverviewModal({
     <>
       <button
         onClick={handleOpen}
-        aria-label="Edit overview"
+        aria-label={t("modal.overview.ariaEdit")}
         className="inline-flex items-center justify-center h-6 w-6 rounded-md text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-white/[0.06] transition-colors"
       >
         <svg
@@ -61,7 +63,7 @@ export function EditOverviewModal({
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="relative w-full max-w-lg flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
-              <h2 className="font-mono text-sm text-[var(--color-text)]">Edit overview</h2>
+              <h2 className="font-mono text-sm text-[var(--color-text)]">{t("modal.overview.title")}</h2>
               <button
                 onClick={() => setOpen(false)}
                 className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
@@ -78,11 +80,11 @@ export function EditOverviewModal({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={6}
-                placeholder="Write a short professional summary..."
+                placeholder={t("modal.overview.placeholder")}
                 className="w-full resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3.5 py-3 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none focus:border-white/20 transition-colors"
               />
               <p className="mt-2 text-xs text-[var(--color-text-faint)] font-mono">
-                {text.length} characters
+                {t("modal.overview.characters", { n: text.length })}
               </p>
             </div>
 
@@ -91,14 +93,14 @@ export function EditOverviewModal({
                 onClick={() => setOpen(false)}
                 className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer transition-colors"
               >
-                Cancel
+                {t("modal.cancel")}
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className="rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50 cursor-pointer transition-colors"
               >
-                {saving ? "Saving..." : "Save"}
+                {saving ? t("modal.saving") : t("modal.save")}
               </button>
             </div>
           </div>
