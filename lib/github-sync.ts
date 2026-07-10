@@ -44,6 +44,24 @@ const MAX_REPO_SIZE_KB_FOR_STRUCTURE_SCAN = 200_000;
 // extra fetch isn't worth it. One fetch answers all three checks, instead of
 // one lightweight call per check, to keep this to a single extra request per
 // repo in the common case.
+// GitHub REST "list repos" item, narrowed to the fields the sync reads —
+// covers what fetchStructureSignals and impactScore need too.
+type GithubRepo = {
+  id: number;
+  name: string;
+  description: string | null;
+  private: boolean;
+  fork: boolean;
+  size: number;
+  stargazers_count: number;
+  forks_count: number;
+  pushed_at: string;
+  languages_url: string;
+  license: unknown;
+  default_branch: string;
+  owner: { login: string };
+};
+
 async function fetchStructureSignals(
   repo: {
     owner: { login: string };
@@ -611,8 +629,8 @@ export async function syncGithubProfile(
     "https://api.github.com/user/repos?per_page=100&sort=pushed&affiliation=owner",
     { headers: githubHeaders }
   );
-  const allRepos = await reposRes.json();
-  const repos = allRepos.filter((repo: any) => !repo.private);
+  const allRepos: GithubRepo[] = await reposRes.json();
+  const repos = allRepos.filter((repo) => !repo.private);
 
   // 2.1 Seleções já feitas pela pessoa dona do perfil — um re-sync (ex: ao
   // abrir "editar projetos" pra puxar repositórios novos) não pode resetar
@@ -630,7 +648,7 @@ export async function syncGithubProfile(
   // privado depois de já ter sido sincronizado, ou foi apagado no GitHub) —
   // sem isso, um repo selecionado antes de virar privado continuaria
   // aparecendo com link quebrado no portfólio pra sempre.
-  const currentRepoIds = repos.map((repo: any) => repo.id);
+  const currentRepoIds = repos.map((repo) => repo.id);
   if (currentRepoIds.length > 0) {
     await supabase
       .from("repos")
@@ -646,7 +664,7 @@ export async function syncGithubProfile(
   const languageBytesTotal: Record<string, number> = {};
 
   const enriched = await Promise.all(
-    repos.map(async (repo: any) => {
+    repos.map(async (repo) => {
       const [langRes, structureSignals] = await Promise.all([
         fetch(repo.languages_url, { headers: githubHeaders }),
         fetchStructureSignals(repo, githubHeaders),
@@ -717,7 +735,7 @@ export async function syncGithubProfile(
   const topStack = [...githubStack, ...readmeStack, ...manualStacks];
 
   const activeRepos = repos.filter(
-    (r: any) => Date.now() - new Date(r.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90
+    (r) => Date.now() - new Date(r.pushed_at).getTime() < 1000 * 60 * 60 * 24 * 90
   ).length;
 
   const totalStars = enriched.reduce((sum: number, r) => sum + r.stars, 0);
