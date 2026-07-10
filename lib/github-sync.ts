@@ -10,6 +10,19 @@ export class SyncError extends Error {
   }
 }
 
+// GitHub signals an exhausted quota either as a 429 or as a 403 with the
+// x-ratelimit-remaining header at 0 (the classic REST behavior). Rate limits
+// are routine, not exceptional, so they get their own status for the UI to
+// offer a plain retry instead of a re-login.
+function githubFetchError(res: Response, what: string): SyncError {
+  const rateLimited =
+    res.status === 429 ||
+    (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0");
+  return rateLimited
+    ? new SyncError("github rate limit exceeded", 429)
+    : new SyncError(`github ${what} fetch failed`, 502);
+}
+
 type StructureSignals = {
   hasReadme: boolean;
   hasTests: boolean;
@@ -616,7 +629,7 @@ export async function syncGithubProfile(
   // 1. User data (bio, location, counters)
   const userRes = await fetch("https://api.github.com/user", { headers: githubHeaders });
   if (!userRes.ok) {
-    throw new SyncError("github user fetch failed", 502);
+    throw githubFetchError(userRes, "user");
   }
   const githubUser = await userRes.json();
 
@@ -630,6 +643,9 @@ export async function syncGithubProfile(
     "https://api.github.com/user/repos?per_page=100&sort=pushed&affiliation=owner",
     { headers: githubHeaders }
   );
+  if (!reposRes.ok) {
+    throw githubFetchError(reposRes, "repos");
+  }
   const allRepos: GithubRepo[] = await reposRes.json();
   const repos = allRepos.filter((repo) => !repo.private);
 
