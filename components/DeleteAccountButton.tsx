@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { TrashIcon } from "@/components/TrashIcon";
 
 export function DeleteAccountButton({ profileId }: { profileId: string }) {
   const router = useRouter();
@@ -46,6 +47,7 @@ export function DeleteAccountButton({ profileId }: { profileId: string }) {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 hover:text-red-400 transition-colors cursor-pointer"
       >
+        <TrashIcon className="h-3.5 w-3.5" />
         Delete account
       </button>
 
