@@ -1,0 +1,30 @@
+name: CI
+
+# Enforces the "green before PR" bar from CONTRIBUTING.md: lint, tests and
+# the production build (which doubles as the type check) must all pass.
+# Pair it with a branch protection rule on main requiring this check, so
+# merging is blocked until it's green. See issue #15.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # Placeholders, never real credentials: prerendering /connect just needs
+      # the Supabase client to instantiate. No network call happens at build
+      # time, so any non-empty values work.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
