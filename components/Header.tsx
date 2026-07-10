@@ -5,19 +5,10 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { GithubIcon } from "@/components/GithubIcon";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/components/LanguageProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
-
-const NAV_LINKS = [
-  { label: "Examples", href: "#" },
-  { label: "Docs", href: "/docs" },
-];
-
-const RESOURCE_LINKS = [
-  { label: "Public Profile", href: "/miguelrcha" },
-  { label: "Resume in PDF", href: "/#cta" },
-  { label: "Automatic Selection", href: "/#cta" },
-];
 
 type LoggedInUser = {
   github_username: string;
@@ -80,6 +71,7 @@ function LoggedInChip({
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
@@ -179,6 +171,17 @@ export function Header() {
     };
   }, []);
 
+  const NAV_LINKS = [
+    { label: t("header.examples"), href: "#" },
+    { label: t("header.docs"), href: "/docs" },
+  ];
+
+  const RESOURCE_LINKS = [
+    { label: t("header.resources.publicProfile"), href: "/miguelrcha" },
+    { label: t("header.resources.resumePdf"), href: "/#cta" },
+    { label: t("header.resources.autoSelection"), href: "/#cta" },
+  ];
+
   return (
     <header
       className={`fixed top-0 inset-x-0 z-40 border-b transition-all duration-200 ease-in-out ${
@@ -249,16 +252,20 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
+            <div className="mt-2 flex items-center justify-between rounded-md px-2 py-1">
+              <span className="text-[var(--color-text-muted)]">{t("header.language")}</span>
+              <LanguageSwitcher />
+            </div>
             {loggedInUser ? (
-              <div className="mt-3">
+              <div className="mt-1">
                 <LoggedInChip user={loggedInUser} fullWidth />
               </div>
             ) : (
               <Link
                 href="/loading"
-                className="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-text)] px-4 py-2.5 text-[var(--color-ink)] font-medium"
+                className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-text)] px-4 py-2.5 text-[var(--color-ink)] font-medium"
               >
-                Sign in with GitHub
+                {t("header.signIn")}
               </Link>
             )}
           </div>
@@ -291,7 +298,7 @@ export function Header() {
                 onMouseLeave={() => setResourcesOpen(false)}
               >
                 <button className="h-[58px] flex items-center mx-2 py-1 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] lg:mx-5 group select-none gap-[2px] transition duration-150 ease-in-out">
-                  Features
+                  {t("header.features")}
                   <svg
                     className={`opacity-70 -ml-0.5 transition-transform duration-200 ease-in ${
                       resourcesOpen ? "translate-y-0.5" : ""
@@ -347,15 +354,16 @@ export function Header() {
             </ul>
           </nav>
 
-          <div className="flex flex-1 justify-end gap-4">
+          <div className="flex flex-1 justify-end items-center gap-4">
             <a
               ref={examplesLinkRef}
               href="#"
               className="hidden lg:inline-flex items-center gap-2.5 rounded-2xl px-4 h-10 text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition ease-in-out duration-200"
             >
-              Show examples
+              {t("header.showExamples")}
               <Kbd>E</Kbd>
             </a>
+            <LanguageSwitcher />
             {loggedInUser ? (
               <LoggedInChip user={loggedInUser} />
             ) : (
@@ -363,7 +371,7 @@ export function Header() {
                 href="/loading"
                 className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold"
               >
-                Sign in with GitHub
+                {t("header.signIn")}
                 <Kbd variant="light">G</Kbd>
               </Link>
             )}

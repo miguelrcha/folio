@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/components/LanguageProvider";
 import { createClient } from "@/lib/supabase/client";
 
 type UserResult = {
@@ -13,6 +15,7 @@ type UserResult = {
 
 function SearchUsers({ className = "" }: { className?: string }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<UserResult[]>([]);
   const [open, setOpen] = useState(false);
@@ -91,7 +94,7 @@ function SearchUsers({ className = "" }: { className?: string }) {
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
-          placeholder="Search Github username"
+          placeholder={t("search.placeholder")}
           className="w-full sm:w-40 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none"
         />
       </form>
@@ -255,6 +258,9 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
         {/* Mobile: identidade + ações escondidas atrás do hambúrguer, empilhadas */}
         {mobileOpen && (
           <div className="md:hidden pb-4 flex flex-col gap-2 [&>*]:w-full [&>*]:justify-center">
+            <div className="flex items-center justify-center">
+              <LanguageSwitcher />
+            </div>
             {loggedInUser && <LoggedInChip user={loggedInUser} fullWidth />}
             {children}
           </div>
@@ -270,6 +276,7 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex flex-1 justify-end items-center gap-3">
+            <LanguageSwitcher />
             {loggedInUser && <LoggedInChip user={loggedInUser} />}
             {children}
           </div>

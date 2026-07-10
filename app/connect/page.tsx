@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ContributionGraph } from "@/components/ContributionGraph";
+import { useLanguage } from "@/components/LanguageProvider";
 import { mockUser } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase/client";
 
-const ANALYSIS_STEPS = [
-  "connecting to the github api",
-  "reading public repositories",
-  "analyzing languages and stacks",
-  "calculating impact per project",
+const ANALYSIS_STEP_KEYS = [
+  "connect.step.connecting",
+  "connect.step.reading",
+  "connect.step.analyzing",
+  "connect.step.calculating",
 ];
 
 type DbRepo = {
@@ -37,6 +38,7 @@ function FolioWordmark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
 
 export default function ConnectPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const supabase = createClient();
 
   const [phase, setPhase] = useState<"loading" | "select" | "error">("loading");
@@ -51,7 +53,7 @@ export default function ConnectPage() {
   useEffect(() => {
     if (phase !== "loading") return;
     const id = setInterval(() => {
-      setStepIndex((i) => (i < ANALYSIS_STEPS.length - 1 ? i + 1 : i));
+      setStepIndex((i) => (i < ANALYSIS_STEP_KEYS.length - 1 ? i + 1 : i));
     }, 700);
     return () => clearInterval(id);
   }, [phase]);
@@ -134,13 +136,13 @@ export default function ConnectPage() {
       <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
         <FolioWordmark size="lg" />
         <p className="mt-6 text-[var(--color-text-muted)]">
-          Couldn&apos;t sync with GitHub right now. Try again?
+          {t("connect.error.title")}
         </p>
         <button
           onClick={() => router.replace("/login")}
           className="mt-6 rounded-md bg-[var(--color-text)] px-5 py-2.5 font-lato text-sm text-[var(--color-ink)]"
         >
-          Back to login
+          {t("connect.error.backToLogin")}
         </button>
       </main>
     );
@@ -154,12 +156,12 @@ export default function ConnectPage() {
           <ContributionGraph data={mockUser.contributions} mode="building" cell={8} gap={3} />
         </div>
         <div className="mt-10 w-full max-w-sm font-mono text-sm space-y-2">
-          {ANALYSIS_STEPS.map((step, i) => {
+          {ANALYSIS_STEP_KEYS.map((stepKey, i) => {
             const done = i < stepIndex;
             const active = i === stepIndex;
             if (i > stepIndex) return null;
             return (
-              <div key={step} className="flex items-center gap-3 text-[var(--color-text-muted)]">
+              <div key={stepKey} className="flex items-center gap-3 text-[var(--color-text-muted)]">
                 <span
                   className={
                     done ? "text-[var(--color-accent)]" : "text-[var(--color-text-faint)] animate-pulse"
@@ -167,7 +169,7 @@ export default function ConnectPage() {
                 >
                   {done ? "✓" : "·"}
                 </span>
-                <span className={done ? "text-[var(--color-text)]" : ""}>{step}</span>
+                <span className={done ? "text-[var(--color-text)]" : ""}>{t(stepKey)}</span>
                 {active && <span className="animate-pulse">...</span>}
               </div>
             );
@@ -182,16 +184,15 @@ export default function ConnectPage() {
       <div className="w-full max-w-2xl">
         <FolioWordmark size="sm" />
         <h1 className="mt-8 text-2xl md:text-3xl font-mono text-[var(--color-text)]">
-          Choose what goes in your resume
+          {t("connect.select.title")}
         </h1>
         <p className="mt-2 text-[var(--color-text-muted)]">
-          We pre-selected the projects with the highest impact (stars, commits, and
-          recent activity). Adjust as you like.
+          {t("connect.select.subtitle")}
         </p>
 
         {repos.length === 0 && (
           <p className="mt-8 text-sm text-[var(--color-text-faint)] font-mono">
-            No repositories found on this account.
+            {t("connect.select.noRepos")}
           </p>
         )}
 
@@ -211,11 +212,11 @@ export default function ConnectPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[var(--color-text)]">{repo.name}</span>
                       <span className="text-xs font-mono text-[var(--color-accent)]">
-                        impact {repo.impact_score}
+                        {t("connect.select.impact")} {repo.impact_score}
                       </span>
                     </div>
                     <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                      {repo.description || "no description"}
+                      {repo.description || t("connect.select.noDescription")}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {(repo.stack ?? []).slice(0, 5).map((s) => (
@@ -245,14 +246,15 @@ export default function ConnectPage() {
 
         <div className="mt-10 flex items-center justify-between">
           <span className="text-sm font-mono text-[var(--color-text-muted)]">
-            {selectedCount} project{selectedCount !== 1 ? "s" : ""} selected
+            {selectedCount}{" "}
+            {t(selectedCount !== 1 ? "connect.select.projectsSelected" : "connect.select.projectSelected")}
           </span>
           <button
             onClick={handleGenerate}
             disabled={!githubUsername || generating}
             className="rounded-md bg-[var(--color-accent)] px-6 py-3 font-mono text-sm text-[var(--color-ink)] transition-opacity disabled:opacity-30 hover:opacity-90"
           >
-            {generating ? "Generating..." : "Generate my Folio →"}
+            {generating ? t("connect.select.generating") : t("connect.select.generate")}
           </button>
         </div>
       </div>
