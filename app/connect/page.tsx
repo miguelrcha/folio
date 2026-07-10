@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ContributionGraph } from "@/components/ContributionGraph";
 import { useLanguage } from "@/components/LanguageProvider";
 import { mockUser } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase/client";
+import { syncFailureKind, type SyncFailureKind } from "@/lib/sync-error";
 
 const ANALYSIS_STEP_KEYS = [
   "connect.step.connecting",
@@ -42,10 +43,12 @@ export default function ConnectPage() {
   const supabase = createClient();
 
   const [phase, setPhase] = useState<"loading" | "select" | "error">("loading");
+  const [errorKind, setErrorKind] = useState<SyncFailureKind>("transient");
   const [stepIndex, setStepIndex] = useState(0);
   const [repos, setRepos] = useState<DbRepo[]>([]);
   const [githubUsername, setGithubUsername] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const startedRef = useRef(false);
 
   // Animates the "terminal" steps while the real sync happens in parallel.
@@ -58,43 +61,58 @@ export default function ConnectPage() {
     return () => clearInterval(id);
   }, [phase]);
 
+  // Runs the real GitHub sync (server-side route). Failures land on the
+  // error phase with a kind that decides the recovery action: only an auth
+  // failure forces a re-login; everything else is retryable in place.
+  const runSync = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+
+    const res = await fetch("/api/sync-github", { method: "POST" });
+    if (!res.ok) {
+      setErrorKind(syncFailureKind(res.status));
+      setPhase("error");
+      return;
+    }
+
+    const [{ data: profile }, { data: dbRepos }] = await Promise.all([
+      supabase.from("profiles").select("github_username").eq("id", user.id).single(),
+      supabase
+        .from("repos")
+        .select("*")
+        .eq("profile_id", user.id)
+        .order("impact_score", { ascending: false }),
+    ]);
+
+    setGithubUsername(profile?.github_username ?? null);
+    setRepos((dbRepos as DbRepo[]) ?? []);
+    setPhase("select");
+  }, [supabase, router]);
+
+  const startSync = useCallback(() => {
+    runSync().catch(() => {
+      setErrorKind("transient");
+      setPhase("error");
+    });
+  }, [runSync]);
+
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
+    startSync();
+  }, [startSync]);
 
-    const run = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
-
-      // Triggers the real sync with the GitHub API (server-side route)
-      const res = await fetch("/api/sync-github", { method: "POST" });
-      if (!res.ok) {
-        setPhase("error");
-        return;
-      }
-
-      const [{ data: profile }, { data: dbRepos }] = await Promise.all([
-        supabase.from("profiles").select("github_username").eq("id", user.id).single(),
-        supabase
-          .from("repos")
-          .select("*")
-          .eq("profile_id", user.id)
-          .order("impact_score", { ascending: false }),
-      ]);
-
-      setGithubUsername(profile?.github_username ?? null);
-      setRepos((dbRepos as DbRepo[]) ?? []);
-      setPhase("select");
-    };
-
-    run().catch(() => setPhase("error"));
-  }, [supabase, router]);
+  const retrySync = () => {
+    setStepIndex(0);
+    setPhase("loading");
+    startSync();
+  };
 
   const toggleRepo = async (id: string) => {
     const target = repos.find((r) => r.id === id);
@@ -116,6 +134,7 @@ export default function ConnectPage() {
   const handleGenerate = async () => {
     if (!githubUsername) return;
     setGenerating(true);
+    setSaveError(false);
 
     // Marks that this person already went through onboarding, regardless of
     // whether they selected any project — so a returning login doesn't get
@@ -125,25 +144,58 @@ export default function ConnectPage() {
     } = await supabase.auth.getUser();
 
     if (user) {
-      await supabase.from("profiles").update({ onboarding_completed: true }).eq("id", user.id);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ onboarding_completed: true })
+        .eq("id", user.id);
+
+      // A silent failure here would send every future login back through
+      // /connect — surface it and let the person try again instead.
+      if (error) {
+        setSaveError(true);
+        setGenerating(false);
+        return;
+      }
     }
 
     router.push(`/${githubUsername}`);
   };
 
   if (phase === "error") {
+    const errorTitleKey =
+      errorKind === "auth"
+        ? "connect.error.auth"
+        : errorKind === "rateLimit"
+          ? "connect.error.rateLimit"
+          : "connect.error.title";
+
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
         <FolioWordmark size="lg" />
-        <p className="mt-6 text-[var(--color-text-muted)]">
-          {t("connect.error.title")}
-        </p>
-        <button
-          onClick={() => router.replace("/login")}
-          className="mt-6 rounded-md bg-[var(--color-text)] px-5 py-2.5 font-lato text-sm text-[var(--color-ink)]"
-        >
-          {t("connect.error.backToLogin")}
-        </button>
+        <p className="mt-6 max-w-md text-[var(--color-text-muted)]">{t(errorTitleKey)}</p>
+        {errorKind === "auth" ? (
+          <button
+            onClick={() => router.replace("/login")}
+            className="mt-6 rounded-md bg-[var(--color-text)] px-5 py-2.5 font-lato text-sm text-[var(--color-ink)]"
+          >
+            {t("connect.error.backToLogin")}
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={retrySync}
+              className="mt-6 rounded-md bg-[var(--color-text)] px-5 py-2.5 font-lato text-sm text-[var(--color-ink)]"
+            >
+              {t("connect.error.tryAgain")}
+            </button>
+            <button
+              onClick={() => router.replace("/login")}
+              className="mt-3 text-sm text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-colors"
+            >
+              {t("connect.error.backToLogin")}
+            </button>
+          </>
+        )}
       </main>
     );
   }
@@ -257,6 +309,11 @@ export default function ConnectPage() {
             {generating ? t("connect.select.generating") : t("connect.select.generate")}
           </button>
         </div>
+        {saveError && (
+          <p className="mt-3 text-right text-sm text-[var(--color-text-faint)]">
+            {t("connect.select.saveFailed")}
+          </p>
+        )}
       </div>
     </main>
   );
