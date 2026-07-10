@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "pitch:studio": "remotion studio remotion/index.ts",
+    "pitch:render": "remotion render remotion/index.ts Pitch out/pitch.mp4"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -20,9 +22,14 @@
     "jspdf": "^4.2.1",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "4.3.6"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.487",
+    "@remotion/google-fonts": "^4.0.487",
+    "@remotion/player": "^4.0.487",
+    "@remotion/transitions": "^4.0.487",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -35,6 +42,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "jsdom": "^29.1.1",
+    "remotion": "^4.0.487",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"
