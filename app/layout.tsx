@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Lato } from "next/font/google";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { getServerLanguage } from "@/lib/i18n/server";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -18,7 +19,7 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://meufolio.dev"),
+  metadataBase: new URL(SITE_URL),
 
   title: "Folio - Turn your GitHub into a professional resume with AI",
 
