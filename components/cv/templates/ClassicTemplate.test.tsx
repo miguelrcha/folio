@@ -114,4 +114,37 @@ describe("ClassicTemplate", () => {
     );
     expect(screen.getByAltText("octocat")).toBeInTheDocument();
   });
+
+  it("hides the bio when config.hideBio is true", () => {
+    const { rerender } = render(
+      <ClassicTemplate profile={fullProfile} repos={repos} config={DEFAULT_CV_CONFIG} />
+    );
+    expect(screen.getByText(fullProfile.bio!)).toBeInTheDocument();
+
+    rerender(
+      <ClassicTemplate
+        profile={fullProfile}
+        repos={repos}
+        config={{ ...DEFAULT_CV_CONFIG, hideBio: true }}
+      />
+    );
+    expect(screen.queryByText(fullProfile.bio!)).not.toBeInTheDocument();
+  });
+
+  it("only applies the print-only hidden class for variant=\"print\"", () => {
+    const { container, rerender } = render(
+      <ClassicTemplate profile={minimalProfile} repos={[]} config={DEFAULT_CV_CONFIG} />
+    );
+    expect(container.firstElementChild?.className).toContain("hidden");
+
+    rerender(
+      <ClassicTemplate
+        profile={minimalProfile}
+        repos={[]}
+        config={DEFAULT_CV_CONFIG}
+        variant="preview"
+      />
+    );
+    expect(container.firstElementChild?.className).not.toContain("hidden");
+  });
 });

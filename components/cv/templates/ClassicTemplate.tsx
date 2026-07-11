@@ -33,7 +33,7 @@ function BulletList({ items }: { items: string[] }) {
 // bullets, no photo by default, no tags/cards. Rendered `hidden print:block`
 // — only appears when the page is printed/exported (see the export button
 // which calls window.print(), and the @page rule in app/globals.css).
-export function ClassicTemplate({ profile, repos, config }: CvTemplateProps) {
+export function ClassicTemplate({ profile, repos, config, variant = "print" }: CvTemplateProps) {
   const stacks = profile.top_stack ?? [];
   const experiences = Array.isArray(profile.experiences_json) ? profile.experiences_json : [];
   const certifications = Array.isArray(profile.certifications_json)
@@ -167,7 +167,11 @@ export function ClassicTemplate({ profile, repos, config }: CvTemplateProps) {
 
   return (
     <div
-      className="hidden print:flex flex-col items-center bg-white text-[#111827]"
+      className={
+        variant === "print"
+          ? "hidden print:flex flex-col items-center bg-white text-[#111827]"
+          : "flex flex-col items-center bg-white text-[#111827]"
+      }
       style={{ fontFamily: "var(--font-sans)" }}
     >
       <div className="w-full max-w-[440pt]">
@@ -184,7 +188,7 @@ export function ClassicTemplate({ profile, repos, config }: CvTemplateProps) {
           <h1 className="mt-[6pt] text-[19pt] font-bold leading-tight text-[#0a0a0a]">
             {profile.full_name || `@${profile.github_username}`}
           </h1>
-          {profile.bio && (
+          {profile.bio && !config.hideBio && (
             <p className="mt-[2pt] text-[9pt] text-[#4b5563] leading-snug">{profile.bio}</p>
           )}
           <div className="mt-[5pt] flex flex-wrap justify-center gap-x-[10pt] gap-y-[2pt] text-[8pt] text-[#4b5563]">

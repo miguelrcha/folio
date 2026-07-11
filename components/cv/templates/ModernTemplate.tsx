@@ -48,7 +48,7 @@ function MainTitle({ children }: { children: ReactNode }) {
 // to it (SIDEBAR_SECTIONS / MAIN_SECTIONS) rather than one free-flowing list.
 // Not exposed to any picker yet (see issue #29) — built and print-verified
 // ahead of time so #29 only has to add selection UI.
-export function ModernTemplate({ profile, repos, config }: CvTemplateProps) {
+export function ModernTemplate({ profile, repos, config, variant = "print" }: CvTemplateProps) {
   const stacks = profile.top_stack ?? [];
   const experiences = Array.isArray(profile.experiences_json) ? profile.experiences_json : [];
   const certifications = Array.isArray(profile.certifications_json)
@@ -209,7 +209,10 @@ export function ModernTemplate({ profile, repos, config }: CvTemplateProps) {
   }
 
   return (
-    <div className="hidden print:flex" style={{ fontFamily: "var(--font-sans)" }}>
+    <div
+      className={variant === "print" ? "hidden print:flex" : "flex"}
+      style={{ fontFamily: "var(--font-sans)" }}
+    >
       <div className="flex w-full max-w-[500pt] mx-auto">
         {/* Sidebar */}
         <div
@@ -250,7 +253,7 @@ export function ModernTemplate({ profile, repos, config }: CvTemplateProps) {
             <h1 className="text-[18pt] font-bold leading-tight text-[#0a0a0a]">
               {profile.full_name || `@${profile.github_username}`}
             </h1>
-            {profile.bio && (
+            {profile.bio && !config.hideBio && (
               <p className="mt-[2pt] text-[8.5pt] text-[#4b5563] leading-snug">{profile.bio}</p>
             )}
           </div>
