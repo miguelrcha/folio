@@ -16,7 +16,8 @@ import { EditLanguagesModal } from "@/components/EditLanguagesModal";
 import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
 import { ProtectedEmailLink } from "@/components/ProtectedEmailLink";
-import { CV_TEMPLATES } from "@/lib/cv/templates";
+import { CvExportCoordinator } from "@/components/CvExportCoordinator";
+import { CvPrintFallback } from "@/components/CvPrintFallback";
 import { resolveCvConfig } from "@/lib/cv/config";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
@@ -113,9 +114,9 @@ export default async function ProfilePage({
     ? new Date(profile.github_created_at).getFullYear()
     : null;
   const savedCvConfig = resolveCvConfig(profile.cv_config);
-  const CvTemplate = CV_TEMPLATES[savedCvConfig.template].component;
 
   return (
+    <CvExportCoordinator>
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
@@ -437,12 +438,12 @@ export default async function ProfilePage({
         </footer>
       </main>
 
-      {/* Owners print from inside CvStudioModal (its own portaled print-variant
-          node) instead — keeps exactly one print-eligible CV node mounted at
-          a time. Visitors keep the plain static path. */}
-      {!isOwner && (
-        <CvTemplate profile={profile} repos={selectedRepos} config={savedCvConfig} variant="print" />
-      )}
+      {/* Always mounted (owner and visitor alike) so a plain Cmd/Ctrl+P works
+          with no other action — steps aside automatically while
+          CvStudioModal is open (see CvExportCoordinator), which carries its
+          own print-variant node reflecting live, possibly unsaved edits. */}
+      <CvPrintFallback profile={profile} repos={selectedRepos} config={savedCvConfig} />
     </div>
+    </CvExportCoordinator>
   );
 }

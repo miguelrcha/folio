@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 import { useLanguage } from "@/components/LanguageProvider";
 import { CvStudioModal } from "@/components/CvStudioModal";
+import { useCvExport } from "@/components/CvExportCoordinator";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 function Kbd({ children }: { children: React.ReactNode }) {
@@ -24,7 +24,7 @@ export function DownloadCvButton({
   isOwner: boolean;
 }) {
   const { t } = useLanguage();
-  const [studioOpen, setStudioOpen] = useState(false);
+  const { studioOpen, setStudioOpen } = useCvExport();
 
   // Owners get the customization studio; everyone else prints straight away.
   const handleClick = () => (isOwner ? setStudioOpen(true) : window.print());
