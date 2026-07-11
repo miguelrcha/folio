@@ -3,8 +3,15 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
-import { CV_FONT_STACKS, type CvSectionConfig, type CvSectionKey } from "@/lib/cv/config";
+import {
+  CV_FONT_STACKS,
+  CV_SECTION_LIMITS,
+  type CvSectionConfig,
+  type CvSectionKey,
+} from "@/lib/cv/config";
 import type { CvTemplateProps } from "@/lib/cv/types";
+
+const LIMITS = CV_SECTION_LIMITS.modern;
 
 // Fixed brand accent — per-user color customization is out of scope until v2
 // (see issue #29's notes).
@@ -118,7 +125,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
             <div>
               <MainTitle>Experiences</MainTitle>
               <ul className="space-y-[5pt] pl-[10pt]">
-                {experiences.map((exp, i) => {
+                {experiences.slice(0, LIMITS.experiences).map((exp, i) => {
                   const range = formatExperienceRange(exp);
                   const parts = [exp?.title ?? "", exp?.company ?? ""].filter(Boolean).join(" — ");
                   const headline = range ? `${parts} (${range})` : parts;
@@ -130,7 +137,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
                       {headline}
                       {Array.isArray(exp?.bullets) && exp.bullets.length > 0 && (
                         <ul className="mt-[2pt] space-y-[1.5pt] pl-[10pt]">
-                          {exp.bullets.map((bullet, bi) => (
+                          {exp.bullets.slice(0, LIMITS.bulletsPerExperience).map((bullet, bi) => (
                             <li
                               key={bi}
                               className="text-[7.5pt] text-[#6b7280] leading-snug list-disc"
@@ -154,7 +161,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
             <div>
               <MainTitle>Projects, by impact</MainTitle>
               <ul className="space-y-[5pt] pl-[10pt]">
-                {repos.map((repo) => (
+                {repos.slice(0, LIMITS.projects).map((repo) => (
                   <li
                     key={repo.id}
                     className="text-[8.5pt] text-[#374151] leading-relaxed list-disc break-inside-avoid"
@@ -186,7 +193,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
             <div className="break-inside-avoid">
               <MainTitle>Certificates</MainTitle>
               <ul className="space-y-[2pt] pl-[10pt]">
-                {certifications.map((cert, i) => {
+                {certifications.slice(0, LIMITS.certifications).map((cert, i) => {
                   const range = formatCertificationRange(cert);
                   const parts = [cert?.name ?? "", cert?.issuer ?? ""].filter(Boolean).join(" — ");
                   return (

@@ -23,7 +23,7 @@ Folio is built for developers who want:
 - GitHub-powered developer profile
 - ATS-optimized resume generation
 - Real-time sync with repositories and activity
-Shareable public profile pages (`meufolio.dev/@username`)
+Shareable public profile pages (`meufolio.dev/username`)
 
 ---
 

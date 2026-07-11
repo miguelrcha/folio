@@ -25,6 +25,23 @@ export type CvConfig = {
   sections: CvSectionConfig[];
 };
 
+// Hard caps that keep the printed CV on a single A4 page regardless of how
+// many entries a profile has (sized by print-to-pdf runs against overstuffed
+// fixtures; Modern's narrower main column fits fewer projects than Classic).
+// They don't bound the length of a single free-text field, and per-section
+// controls belong to the CV Studio (#29) — until then these are the only bound.
+export type CvSectionLimits = {
+  experiences: number;
+  bulletsPerExperience: number;
+  projects: number;
+  certifications: number;
+};
+
+export const CV_SECTION_LIMITS: Record<CvTemplateKey, CvSectionLimits> = {
+  classic: { experiences: 4, bulletsPerExperience: 2, projects: 4, certifications: 4 },
+  modern: { experiences: 4, bulletsPerExperience: 2, projects: 3, certifications: 4 },
+};
+
 // No font files to ship: "sans" reuses the app's existing Inter stack (reads
 // like Arial/Helvetica), "serif" is a web-safe Times-like stack.
 export const CV_FONT_STACKS: Record<CvFont, string> = {
