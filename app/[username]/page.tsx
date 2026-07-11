@@ -17,6 +17,8 @@ import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
 import { ProtectedEmailLink } from "@/components/ProtectedEmailLink";
 import { CvPrintFallback } from "@/components/CvPrintFallback";
+import { CvPreviewCoordinator } from "@/components/CvPreviewCoordinator";
+import { CvPreviewLayoutShell } from "@/components/CvPreviewLayoutShell";
 import { resolveCvConfig } from "@/lib/cv/config";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
@@ -115,7 +117,8 @@ export default async function ProfilePage({
   const savedCvConfig = resolveCvConfig(profile.cv_config);
 
   return (
-    <div className="relative z-10 min-h-screen">
+    <CvPreviewCoordinator>
+    <CvPreviewLayoutShell>
       <ProfileHeader>
         {isOwner && <SignOutButton />}
         <DownloadCvButton profile={profile} repos={selectedRepos} isOwner={isOwner} />
@@ -440,6 +443,7 @@ export default async function ProfilePage({
           with no other action. Owners customizing the CV do so on the
           dedicated /[username]/cv-studio route instead of here. */}
       <CvPrintFallback profile={profile} repos={selectedRepos} config={savedCvConfig} />
-    </div>
+    </CvPreviewLayoutShell>
+    </CvPreviewCoordinator>
   );
 }

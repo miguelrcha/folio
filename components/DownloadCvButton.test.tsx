@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { LanguageProvider } from "@/components/LanguageProvider";
+import { CvPreviewCoordinator } from "@/components/CvPreviewCoordinator";
 import { DownloadCvButton } from "@/components/DownloadCvButton";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
@@ -34,7 +35,9 @@ const repos: Repo[] = [];
 function renderButton(isOwner: boolean) {
   render(
     <LanguageProvider initialLang="en">
-      <DownloadCvButton profile={profile} repos={repos} isOwner={isOwner} />
+      <CvPreviewCoordinator>
+        <DownloadCvButton profile={profile} repos={repos} isOwner={isOwner} />
+      </CvPreviewCoordinator>
     </LanguageProvider>
   );
 }
