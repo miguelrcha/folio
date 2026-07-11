@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ClassicTemplate } from "@/components/cv/templates/ClassicTemplate";
-import { DEFAULT_CV_CONFIG } from "@/lib/cv/config";
+import { CV_SECTION_LIMITS, DEFAULT_CV_CONFIG } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 const minimalProfile: PublicProfile = {
@@ -129,6 +129,43 @@ describe("ClassicTemplate", () => {
       />
     );
     expect(screen.queryByText(fullProfile.bio!)).not.toBeInTheDocument();
+  });
+
+  it("caps experiences, bullets, projects and certifications at the single-page limits", () => {
+    const overstuffed: PublicProfile = {
+      ...fullProfile,
+      experiences_json: Array.from({ length: CV_SECTION_LIMITS.classic.experiences + 2 }, (_, i) => ({
+        ...fullProfile.experiences_json![0],
+        title: `Role ${i}`,
+        bullets: Array.from(
+          { length: CV_SECTION_LIMITS.classic.bulletsPerExperience + 2 },
+          (_, bi) => `Bullet ${i}-${bi}`
+        ),
+      })),
+      certifications_json: Array.from(
+        { length: CV_SECTION_LIMITS.classic.certifications + 2 },
+        (_, i) => ({ ...fullProfile.certifications_json![0], name: `Cert ${i}` })
+      ),
+    };
+    const manyRepos: Repo[] = Array.from({ length: CV_SECTION_LIMITS.classic.projects + 2 }, (_, i) => ({
+      ...repos[0],
+      id: `id-${i}`,
+      name: `project-${i}`,
+    }));
+
+    const { container } = render(
+      <ClassicTemplate profile={overstuffed} repos={manyRepos} config={DEFAULT_CV_CONFIG} />
+    );
+    const text = container.textContent!;
+
+    expect(text).toContain(`Role ${CV_SECTION_LIMITS.classic.experiences - 1}`);
+    expect(text).not.toContain(`Role ${CV_SECTION_LIMITS.classic.experiences}`);
+    expect(text).toContain(`Bullet 0-${CV_SECTION_LIMITS.classic.bulletsPerExperience - 1}`);
+    expect(text).not.toContain(`Bullet 0-${CV_SECTION_LIMITS.classic.bulletsPerExperience}`);
+    expect(text).toContain(`project-${CV_SECTION_LIMITS.classic.projects - 1}`);
+    expect(text).not.toContain(`project-${CV_SECTION_LIMITS.classic.projects}`);
+    expect(text).toContain(`Cert ${CV_SECTION_LIMITS.classic.certifications - 1}`);
+    expect(text).not.toContain(`Cert ${CV_SECTION_LIMITS.classic.certifications}`);
   });
 
   it("only applies the print-only hidden class for variant=\"print\"", () => {
