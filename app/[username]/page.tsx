@@ -17,7 +17,7 @@ import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
 import { ProtectedEmailLink } from "@/components/ProtectedEmailLink";
 import { CV_TEMPLATES } from "@/lib/cv/templates";
-import { DEFAULT_CV_CONFIG } from "@/lib/cv/config";
+import { resolveCvConfig } from "@/lib/cv/config";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
@@ -112,13 +112,14 @@ export default async function ProfilePage({
   const githubSinceYear = profile.github_created_at
     ? new Date(profile.github_created_at).getFullYear()
     : null;
-  const CvTemplate = CV_TEMPLATES[DEFAULT_CV_CONFIG.template].component;
+  const savedCvConfig = resolveCvConfig(profile.cv_config);
+  const CvTemplate = CV_TEMPLATES[savedCvConfig.template].component;
 
   return (
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
-        <DownloadCvButton profile={profile} />
+        <DownloadCvButton profile={profile} repos={selectedRepos} isOwner={isOwner} />
       </ProfileHeader>
 
       <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
@@ -436,7 +437,12 @@ export default async function ProfilePage({
         </footer>
       </main>
 
-      <CvTemplate profile={profile} repos={selectedRepos} config={DEFAULT_CV_CONFIG} />
+      {/* Owners print from inside CvStudioModal (its own portaled print-variant
+          node) instead — keeps exactly one print-eligible CV node mounted at
+          a time. Visitors keep the plain static path. */}
+      {!isOwner && (
+        <CvTemplate profile={profile} repos={selectedRepos} config={savedCvConfig} variant="print" />
+      )}
     </div>
   );
 }

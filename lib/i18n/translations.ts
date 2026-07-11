@@ -220,6 +220,22 @@ export const translations: Record<Language, Dictionary> = {
     "downloadCv.generating": "Generating…",
     "downloadCv.viewCv": "View CV",
 
+    // CvStudioModal
+    "cvStudio.title": "Customize CV",
+    "cvStudio.template": "Template",
+    "cvStudio.template.classic": "Classic",
+    "cvStudio.template.modern": "Modern",
+    "cvStudio.showPhoto": "Show photo",
+    "cvStudio.hideBio": "Hide bio",
+    "cvStudio.sections": "Sections",
+    "cvStudio.section.overview": "Overview",
+    "cvStudio.section.experiences": "Experiences",
+    "cvStudio.section.stacks": "Stacks",
+    "cvStudio.section.projects": "Projects",
+    "cvStudio.section.certifications": "Certifications",
+    "cvStudio.section.languages": "Languages",
+    "cvStudio.print": "Print",
+
     // ShareButton
     "share.copied": "Link copied ✓",
     "share.button": "Share",
@@ -433,6 +449,22 @@ export const translations: Record<Language, Dictionary> = {
     // DownloadCvButton
     "downloadCv.generating": "Gerando…",
     "downloadCv.viewCv": "Ver Currículo",
+
+    // CvStudioModal
+    "cvStudio.title": "Personalizar currículo",
+    "cvStudio.template": "Modelo",
+    "cvStudio.template.classic": "Clássico",
+    "cvStudio.template.modern": "Moderno",
+    "cvStudio.showPhoto": "Mostrar foto",
+    "cvStudio.hideBio": "Ocultar bio",
+    "cvStudio.sections": "Seções",
+    "cvStudio.section.overview": "Visão geral",
+    "cvStudio.section.experiences": "Experiências",
+    "cvStudio.section.stacks": "Stacks",
+    "cvStudio.section.projects": "Projetos",
+    "cvStudio.section.certifications": "Certificações",
+    "cvStudio.section.languages": "Idiomas",
+    "cvStudio.print": "Imprimir",
 
     // ShareButton
     "share.copied": "Link copiado ✓",
