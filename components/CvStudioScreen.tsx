@@ -19,11 +19,16 @@ import type { PublicProfile, Repo } from "@/lib/profile";
 
 // Renders its child at natural (print) size, scrolling the surrounding
 // canvas rather than shrinking the page to fit — a scaled-down preview read
-// worse than a scrollable one at true size.
+// worse than a scrollable one at true size. Centering is done with margin
+// auto on the child (not justify-center on the container): when the child
+// is wider than the pane, a centered flex item overflows equally on both
+// sides and the left edge becomes unreachable (scroll containers can't
+// scroll to a negative offset) — margin auto instead collapses to 0 and
+// left-aligns, so every letter stays scrollable into view.
 function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-1 justify-center overflow-auto bg-black/40 p-8">
-      <div className="h-fit shadow-2xl">{children}</div>
+    <div className="flex-1 overflow-auto bg-black/40 p-8">
+      <div className="mx-auto h-fit w-fit shadow-2xl">{children}</div>
     </div>
   );
 }
