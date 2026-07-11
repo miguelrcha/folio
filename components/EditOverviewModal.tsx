@@ -18,24 +18,30 @@ export function EditOverviewModal({
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(initialSummary);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleOpen = () => {
     setText(initialSummary);
+    setError(null);
     setOpen(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const { error } = await supabase
+    setError(null);
+    const { error: updateError } = await supabase
       .from("profiles")
       .update({ summary: text.trim(), summary_manual: true })
       .eq("id", profileId);
     setSaving(false);
 
-    if (!error) {
-      setOpen(false);
-      router.refresh();
+    if (updateError) {
+      setError(t("modal.unexpectedError"));
+      return;
     }
+
+    setOpen(false);
+    router.refresh();
   };
 
   return (
@@ -86,6 +92,7 @@ export function EditOverviewModal({
               <p className="mt-2 text-xs text-[var(--color-text-faint)] font-mono">
                 {t("modal.overview.characters", { n: text.length })}
               </p>
+              {error && <p className="mt-2 text-xs text-red-400 font-mono">{error}</p>}
             </div>
 
             <div className="px-5 py-4 border-t border-[var(--color-border)] flex justify-end gap-2">
