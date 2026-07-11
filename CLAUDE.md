@@ -38,8 +38,8 @@ Sync flow: `/api/sync-github` (interactive, on connect) and `/api/cron/sync-all`
 ## Layout
 
 - `app/` — routes. Public profile is `app/[username]/page.tsx`; auth via `app/login`, `app/auth/callback`, `app/connect`; API under `app/api/`.
-- `components/` — UI, including the `Edit*Modal.tsx` editable-section family and the print-only `ResumeDocument.tsx`.
-- `lib/` — data/domain helpers (`profile.ts`, `experience.ts`, `certification.ts`, `language.ts`), `github-sync.ts`, `crypto.ts`, `resume/` (docx/pdf generation via `docx` + `jspdf`), and `supabase/`.
+- `components/` — UI, including the `Edit*Modal.tsx` editable-section family and the print-only `cv/templates/{Classic,Modern}Template.tsx`.
+- `lib/` — data/domain helpers (`profile.ts`, `experience.ts`, `certification.ts`, `language.ts`), `github-sync.ts`, `crypto.ts`, `cv/` (template registry + `CvConfig`, the real CV-export path), `resume/generate.ts` (docx generator, currently unused), and `supabase/`.
 
 ## Working notes specific to this repo
 
