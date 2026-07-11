@@ -238,6 +238,7 @@ export const translations: Record<Language, Dictionary> = {
     "cvStudio.section.certifications": "Certifications",
     "cvStudio.section.languages": "Languages",
     "cvStudio.print": "Print",
+    "cvStudio.backToProfile": "Back to profile",
 
     // ShareButton
     "share.copied": "Link copied ✓",
@@ -471,6 +472,7 @@ export const translations: Record<Language, Dictionary> = {
     "cvStudio.section.certifications": "Certificações",
     "cvStudio.section.languages": "Idiomas",
     "cvStudio.print": "Imprimir",
+    "cvStudio.backToProfile": "Voltar ao perfil",
 
     // ShareButton
     "share.copied": "Link copiado ✓",

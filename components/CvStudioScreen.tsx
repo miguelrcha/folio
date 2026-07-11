@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ProfileHeader } from "@/components/ProfileHeader";
+import { SignOutButton } from "@/components/SignOutButton";
 import { CV_TEMPLATES } from "@/lib/cv/templates";
 import {
   resolveCvConfig,
@@ -14,15 +16,6 @@ import {
   type CvTemplateKey,
 } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
-
-function CloseIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="18" y1="6" x2="6" y2="18" />
-    </svg>
-  );
-}
 
 // Scales its child down (never up) so the whole page is visible inside
 // whatever space is available, instead of rendering at natural print size
@@ -63,27 +56,23 @@ function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Owner-only "Customize CV" editor: template/photo/bio/section controls on the
-// left, a live preview of the selected template on the right (a plain React
-// re-render — no PDF regeneration, no debounce needed). Also carries its own
-// print-variant node (bottom of the portaled tree) reflecting the live,
-// possibly-unsaved config — CvPrintFallback (rendered elsewhere on the page)
-// steps aside while this modal is open, via CvExportCoordinator, so there's
-// never two print-eligible CV nodes mounted at once.
-//
-// Portaled to document.body because ProfileHeader renders a real <header>,
-// and globals.css hides it entirely on print
-// (`header { display: none !important }`) — an ancestor display:none hides
-// all descendants regardless of their own print:block, so this modal must
-// live outside that subtree.
-export function CvStudioModal({
+// Owner-only "Customize CV" screen: a full page (not a modal) so the live
+// preview gets the whole viewport instead of being squeezed into a dialog box.
+// Template/photo/bio/section controls on the left, a live full-screen preview
+// of the selected template on the right (a plain React re-render — no PDF
+// regeneration, no debounce needed, so it tracks every keystroke/toggle in
+// real time). Also renders its own print-variant node (a sibling of the
+// on-screen layout, outside the h-screen/overflow-hidden wrapper so a
+// multi-page CV never gets clipped) reflecting the live, possibly-unsaved
+// config — this route is the only place that mounts a print-eligible CV
+// node while it's open, so there's no coordination needed with
+// CvPrintFallback on the main profile page.
+export function CvStudioScreen({
   profile,
   repos,
-  onClose,
 }: {
   profile: PublicProfile;
   repos: Repo[];
-  onClose: () => void;
 }) {
   const router = useRouter();
   const { t } = useLanguage();
@@ -132,40 +121,38 @@ export function CvStudioModal({
         .eq("id", profile.id);
 
       if (updateError) {
-        console.error("CvStudioModal: error saving:", updateError.message);
+        console.error("CvStudioScreen: error saving:", updateError.message);
         setError(updateError.message);
         return;
       }
 
       router.refresh();
     } catch (err) {
-      console.error("CvStudioModal: unexpected failure while saving:", err);
+      console.error("CvStudioScreen: unexpected failure while saving:", err);
       setError(err instanceof Error ? err.message : t("modal.unexpectedError"));
     } finally {
       setSaving(false);
     }
   };
 
-  if (typeof document === "undefined") return null;
-
-  return createPortal(
+  return (
     <>
-      <div className="fixed inset-0 z-[100] flex print:hidden">
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative m-auto flex h-[90vh] w-[95vw] max-w-6xl flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
-          <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
-            <h2 className="font-mono text-sm text-[var(--color-text)]">{t("cvStudio.title")}</h2>
-            <button
-              onClick={onClose}
-              aria-label={t("modal.cancel")}
-              className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-            >
-              <CloseIcon />
-            </button>
-          </div>
+      <div className="flex h-screen flex-col overflow-hidden print:hidden">
+        <ProfileHeader>
+          <SignOutButton />
+          <Link
+            href={`/${profile.github_username}`}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.08] transition-colors text-sm h-9 px-4 font-medium text-[var(--color-text)]"
+          >
+            {t("cvStudio.backToProfile")}
+          </Link>
+        </ProfileHeader>
 
-          <div className="flex flex-1 overflow-hidden">
-            <div className="w-[300px] shrink-0 space-y-6 overflow-y-auto border-r border-[var(--color-border)] p-5">
+        <div className="flex flex-1 min-h-0">
+          <div className="w-[300px] shrink-0 flex flex-col overflow-y-auto border-r border-[var(--color-border)] p-5">
+            <h1 className="mb-5 font-mono text-sm text-[var(--color-text)]">{t("cvStudio.title")}</h1>
+
+            <div className="flex-1 space-y-6">
               <div className="space-y-2">
                 <p className="text-xs font-mono text-[var(--color-text-faint)] uppercase tracking-wide">
                   {t("cvStudio.template")}
@@ -245,44 +232,37 @@ export function CvStudioModal({
               </div>
             </div>
 
-            <CvPreviewCanvas>
-              <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
-            </CvPreviewCanvas>
-          </div>
-
-          <div className="shrink-0 border-t border-[var(--color-border)] px-5 py-4">
-            {error && (
-              <p className="mb-3 text-xs font-mono text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
-                {error}
-              </p>
-            )}
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={onClose}
-                className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              >
-                {t("modal.cancel")}
-              </button>
-              <button
-                onClick={handlePrint}
-                className="rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              >
-                {t("cvStudio.print")}
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50"
-              >
-                {saving ? t("modal.saving") : t("modal.save")}
-              </button>
+            <div className="shrink-0 pt-6">
+              {error && (
+                <p className="mb-3 text-xs font-mono text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                  {error}
+                </p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={handlePrint}
+                  className="flex-1 rounded-md border border-[var(--color-border)] px-4 py-2 font-mono text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                >
+                  {t("cvStudio.print")}
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-1 rounded-md bg-[var(--color-text)] px-5 py-2 font-mono text-sm text-[var(--color-ink)] hover:opacity-90 disabled:opacity-50"
+                >
+                  {saving ? t("modal.saving") : t("modal.save")}
+                </button>
+              </div>
             </div>
           </div>
+
+          <CvPreviewCanvas>
+            <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
+          </CvPreviewCanvas>
         </div>
       </div>
 
       <CvTemplate profile={profile} repos={repos} config={config} variant="print" />
-    </>,
-    document.body
+    </>
   );
 }

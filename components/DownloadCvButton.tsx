@@ -1,10 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 import { useLanguage } from "@/components/LanguageProvider";
-import { CvStudioModal } from "@/components/CvStudioModal";
-import { useCvExport } from "@/components/CvExportCoordinator";
-import type { PublicProfile, Repo } from "@/lib/profile";
+import type { PublicProfile } from "@/lib/profile";
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
@@ -16,34 +15,29 @@ function Kbd({ children }: { children: React.ReactNode }) {
 
 export function DownloadCvButton({
   profile,
-  repos,
   isOwner,
 }: {
   profile: PublicProfile;
-  repos: Repo[];
   isOwner: boolean;
 }) {
+  const router = useRouter();
   const { t } = useLanguage();
-  const { studioOpen, setStudioOpen } = useCvExport();
 
-  // Owners get the customization studio; everyone else prints straight away.
-  const handleClick = () => (isOwner ? setStudioOpen(true) : window.print());
+  // Owners get the full-screen customization studio; everyone else prints
+  // straight away from the profile page's own print-fallback CV node.
+  const handleClick = () =>
+    isOwner ? router.push(`/${profile.github_username}/cv-studio`) : window.print();
 
   useKeyboardShortcut("d", handleClick);
 
   return (
-    <>
-      <button
-        onClick={handleClick}
-        className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold cursor-pointer"
-        aria-label={`View ${profile.github_username}'s CV as PDF`}
-      >
-        {t("downloadCv.viewCv")}
-        <Kbd>D</Kbd>
-      </button>
-      {isOwner && studioOpen && (
-        <CvStudioModal profile={profile} repos={repos} onClose={() => setStudioOpen(false)} />
-      )}
-    </>
+    <button
+      onClick={handleClick}
+      className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold cursor-pointer"
+      aria-label={`View ${profile.github_username}'s CV as PDF`}
+    >
+      {t("downloadCv.viewCv")}
+      <Kbd>D</Kbd>
+    </button>
   );
 }

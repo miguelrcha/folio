@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { LanguageProvider } from "@/components/LanguageProvider";
-import { CvStudioModal } from "@/components/CvStudioModal";
+import { CvStudioScreen } from "@/components/CvStudioScreen";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 const refresh = vi.fn();
@@ -17,6 +17,10 @@ vi.mock("@/lib/supabase/client", () => ({
         eq: async () => update(payload),
       }),
     }),
+    auth: {
+      getUser: async () => ({ data: { user: null } }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+    },
   }),
 }));
 
@@ -42,35 +46,34 @@ const profile: PublicProfile = {
 
 const repos: Repo[] = [];
 
-function renderModal(onClose = vi.fn()) {
+function renderScreen() {
   render(
     <LanguageProvider initialLang="en">
-      <CvStudioModal profile={profile} repos={repos} onClose={onClose} />
+      <CvStudioScreen profile={profile} repos={repos} />
     </LanguageProvider>
   );
-  return { onClose };
 }
 
-describe("CvStudioModal", () => {
+describe("CvStudioScreen", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     update.mockResolvedValue({ error: null });
   });
 
-  // The modal always renders two instances of the selected template at once
+  // The screen always renders two instances of the selected template at once
   // (an on-screen "preview" one and a print-only "print" one, kept in sync
-  // via the same live config — see CvStudioModal's portal comment) — content
-  // shared by both shows up twice in the DOM, hence getAllByText below.
+  // via the same live config) — content shared by both shows up twice in the
+  // DOM, hence getAllByText below.
 
   it("renders the editor with a live preview of the current config", () => {
-    renderModal();
+    renderScreen();
     expect(screen.getByText("Customize CV")).toBeInTheDocument();
     expect(screen.getAllByText("Ada Lovelace")).toHaveLength(2);
     expect(screen.getAllByText("Overview")).toHaveLength(3); // sidebar checkbox label + preview + print heading
   });
 
   it("hides a section from the preview as soon as it's unchecked", () => {
-    renderModal();
+    renderScreen();
     const overviewToggle = screen.getByRole("checkbox", { name: "Overview" });
     expect(screen.getAllByText(profile.summary!)).toHaveLength(2);
 
@@ -80,7 +83,7 @@ describe("CvStudioModal", () => {
   });
 
   it("hides the bio as soon as 'Hide bio' is checked", () => {
-    renderModal();
+    renderScreen();
     expect(screen.getAllByText(profile.bio!)).toHaveLength(2);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Hide bio" }));
@@ -89,10 +92,7 @@ describe("CvStudioModal", () => {
   });
 
   it("switches the preview font when a Font option is clicked", () => {
-    renderModal();
-    // Portaled content attaches to document.body, outside RTL's own render
-    // container — query the document directly. Preview and print variants
-    // share the same live config, so either match reflects the same font.
+    renderScreen();
     const templateRoot = document.querySelector('[style*="font-family"]') as HTMLElement;
     expect(templateRoot.style.fontFamily).toContain("var(--font-sans)");
 
@@ -102,7 +102,7 @@ describe("CvStudioModal", () => {
   });
 
   it("saves the current config and refreshes on Save", async () => {
-    renderModal();
+    renderScreen();
     fireEvent.click(screen.getByRole("checkbox", { name: "Hide bio" }));
     fireEvent.click(screen.getByText("Save"));
 
@@ -112,10 +112,9 @@ describe("CvStudioModal", () => {
     );
   });
 
-  it("calls onClose without saving when Cancel is clicked", () => {
-    const { onClose } = renderModal();
-    fireEvent.click(screen.getByText("Cancel"));
-    expect(onClose).toHaveBeenCalled();
-    expect(update).not.toHaveBeenCalled();
+  it("links back to the public profile", () => {
+    renderScreen();
+    const backLink = screen.getByText("Back to profile").closest("a");
+    expect(backLink).toHaveAttribute("href", "/octocat");
   });
 });
