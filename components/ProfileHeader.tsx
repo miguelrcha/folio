@@ -13,12 +13,14 @@ type UserResult = {
   avatar_url: string | null;
 };
 
-function SearchUsers({ className = "" }: { className?: string }) {
+export function SearchUsers({ className = "" }: { className?: string }) {
   const router = useRouter();
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<UserResult[]>([]);
   const [open, setOpen] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [notFoundUser, setNotFoundUser] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Debounced search while typing
@@ -53,6 +55,7 @@ function SearchUsers({ className = "" }: { className?: string }) {
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
+    setNotFoundUser(null);
     if (value.trim().replace(/^@/, "").length < 2) setResults([]);
   };
 
@@ -63,11 +66,35 @@ function SearchUsers({ className = "" }: { className?: string }) {
     router.push(`/${username}`);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  // Free-typed submissions are checked against public_profiles before
+  // navigating (same pattern as the landing search) — otherwise any typo
+  // lands straight on the 404 page.
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const username = query.trim().replace(/^@/, "");
-    if (!username) return;
-    goToUser(username);
+    if (!username || checking) return;
+
+    setChecking(true);
+    setNotFoundUser(null);
+
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("public_profiles")
+      .select("github_username")
+      .ilike("github_username", username)
+      .maybeSingle();
+
+    setChecking(false);
+
+    if (!data) {
+      // The suggestions dropdown shares the hint's spot below the input and
+      // would paint over it — close it so the feedback is actually visible.
+      setOpen(false);
+      setNotFoundUser(username);
+      return;
+    }
+
+    goToUser(data.github_username);
   };
 
   return (
@@ -98,6 +125,12 @@ function SearchUsers({ className = "" }: { className?: string }) {
           className="w-full sm:w-40 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none"
         />
       </form>
+
+      {notFoundUser && (
+        <p className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.08] bg-neutral-900/95 px-3 py-2.5 text-xs font-mono text-[var(--color-text-muted)] z-50">
+          {t("search.notFound")}
+        </p>
+      )}
 
       {open && results.length > 0 && (
         <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.08] bg-neutral-900/95 backdrop-blur-xl shadow-2xl shadow-black/50 overflow-hidden z-50">

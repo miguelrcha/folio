@@ -25,6 +25,7 @@ export const translations: Record<Language, Dictionary> = {
 
     // Search (Header/ProfileHeader)
     "search.placeholder": "Search Github username",
+    "search.notFound": "This username isn't on Folio yet.",
 
     // Home hero
     "home.hero.title": "Build your Github portfolio in minutes",
@@ -68,6 +69,15 @@ export const translations: Record<Language, Dictionary> = {
     // Login
     "login.joinDevs": "Join several other devs",
     "login.readOnly": "read-only · no write access to your repositories",
+    "login.error.authFailed": "GitHub sign-in didn't complete. Try again.",
+    "login.error.profileSaveFailed": "Signed in, but saving your profile failed. Try again.",
+
+    // Fallback surfaces (404 / error boundary)
+    "notFound.title": "This page doesn't exist.",
+    "notFound.hint": "Looking for someone? Search the GitHub username:",
+    "notFound.goHome": "← Back to home",
+    "error.title": "Something went wrong on our side.",
+    "error.retry": "Try again",
 
     // Connect / onboarding
     "connect.step.connecting": "connecting to the github api",
@@ -229,6 +239,7 @@ export const translations: Record<Language, Dictionary> = {
 
     // Search (Header/ProfileHeader)
     "search.placeholder": "Buscar usuário do Github",
+    "search.notFound": "Esse username ainda não está no Folio.",
 
     // Home hero
     "home.hero.title": "Monte seu portfólio do Github em minutos",
@@ -272,6 +283,15 @@ export const translations: Record<Language, Dictionary> = {
     // Login
     "login.joinDevs": "Junte-se a vários outros devs",
     "login.readOnly": "somente leitura · sem acesso de escrita aos seus repositórios",
+    "login.error.authFailed": "O login com o GitHub não foi concluído. Tente de novo.",
+    "login.error.profileSaveFailed": "Login feito, mas não foi possível salvar seu perfil. Tente de novo.",
+
+    // Fallback surfaces (404 / error boundary)
+    "notFound.title": "Essa página não existe.",
+    "notFound.hint": "Procurando alguém? Busque pelo username do GitHub:",
+    "notFound.goHome": "← Voltar para a home",
+    "error.title": "Algo deu errado do nosso lado.",
+    "error.retry": "Tentar novamente",
 
     // Connect / onboarding
     "connect.step.connecting": "conectando à api do github",
