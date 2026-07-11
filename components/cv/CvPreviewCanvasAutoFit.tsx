@@ -38,7 +38,14 @@ export function CvPreviewCanvasAutoFit({ children }: { children: React.ReactNode
 
   return (
     <div ref={containerRef} className="flex flex-1 items-center justify-center overflow-hidden bg-black/40 p-4 sm:p-8">
-      <div ref={contentRef} className="shadow-2xl" style={{ transform: `scale(${scale})` }}>
+      {/* shrink-0: without it, this flex item's layout box (which the scale
+          above is computed from and centered against) gets compressed to
+          fit the container by ordinary flexbox shrinking, forcing the page
+          to re-wrap narrower instead of staying at its true width and
+          shrinking visually via transform — the measured/centered box and
+          the painted (scaled) box fall out of sync, and the page renders
+          off-center and wrong. */}
+      <div ref={contentRef} className="shrink-0 shadow-2xl" style={{ transform: `scale(${scale})` }}>
         {children}
       </div>
     </div>
