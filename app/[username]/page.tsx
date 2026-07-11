@@ -24,7 +24,9 @@ import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 import { syncProfileIfStale } from "@/lib/github-sync";
 import { getServerLanguage } from "@/lib/i18n/server";
 import { translate } from "@/lib/i18n/translations";
-import type { PublicProfile, Repo } from "@/lib/profile";
+import type { Repo } from "@/lib/profile";
+import { buildProfileMetaDescription, profileDisplayName } from "@/lib/profile-metadata";
+import { getPublicProfile } from "./profile-data";
 
 export async function generateMetadata({
   params,
@@ -32,7 +34,43 @@ export async function generateMetadata({
   params: Promise<{ username: string }>;
 }): Promise<Metadata> {
   const { username } = await params;
-  return { title: `Folio - ${username}` };
+  const profile = await getPublicProfile(username);
+
+  // Unknown usernames get honest not-found metadata and stay out of the
+  // index instead of advertising a page that 404s.
+  if (!profile) {
+    return {
+      title: "Profile not found - Folio",
+      description: "This GitHub username isn't on Folio yet.",
+      robots: { index: false },
+    };
+  }
+
+  const displayName = profileDisplayName(profile);
+  const title = `${displayName} - Folio`;
+  const description = buildProfileMetaDescription(profile);
+  const path = `/${profile.github_username}`;
+
+  // og:image and twitter:image come from the sibling opengraph-image.tsx
+  // file convention; relative URLs resolve against metadataBase (root layout).
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "profile",
+      username: profile.github_username,
+      url: path,
+      title,
+      description,
+      siteName: "Folio",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function ProfilePage({
@@ -45,11 +83,7 @@ export default async function ProfilePage({
   const lang = await getServerLanguage();
   const t = (key: string, vars?: Record<string, string | number>) => translate(lang, key, vars);
 
-  const { data: profile } = await supabase
-    .from("public_profiles")
-    .select("*")
-    .eq("github_username", username)
-    .single<PublicProfile>();
+  const profile = await getPublicProfile(username);
 
   if (!profile) notFound();
 
