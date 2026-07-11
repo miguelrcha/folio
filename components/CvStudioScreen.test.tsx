@@ -117,4 +117,16 @@ describe("CvStudioScreen", () => {
     const backLink = screen.getByText("Back to profile").closest("a");
     expect(backLink).toHaveAttribute("href", "/octocat");
   });
+
+  it("on mobile, toggles between the CV preview and the controls panel", () => {
+    renderScreen();
+    // Defaults to the preview, with a floating button to open the panel.
+    expect(screen.getByRole("button", { name: "Customize" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Customize" }));
+    expect(screen.queryByRole("button", { name: "Customize" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "View CV" }));
+    expect(screen.getByRole("button", { name: "Customize" })).toBeInTheDocument();
+  });
 });

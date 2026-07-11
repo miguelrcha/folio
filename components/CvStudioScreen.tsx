@@ -72,6 +72,11 @@ export function CvStudioScreen({
   const [config, setConfig] = useState<CvConfig>(() => resolveCvConfig(profile.cv_config));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Below md, the controls panel and the preview can't fit side by side —
+  // one has to fully replace the other, toggled by this. Defaults closed so
+  // the CV is what you see first; irrelevant at md+, where both are always
+  // shown together (see the `md:flex` overrides below).
+  const [controlsOpen, setControlsOpen] = useState(false);
 
   const TEMPLATE_LABELS: Record<CvTemplateKey, string> = {
     classic: t("cvStudio.template.classic"),
@@ -140,9 +145,20 @@ export function CvStudioScreen({
           </Link>
         </ProfileHeader>
 
-        <div className="flex flex-1 min-h-0">
-          <div className="w-[300px] shrink-0 flex flex-col overflow-y-auto border-r border-[var(--color-border)] p-5">
-            <h1 className="mb-5 font-mono text-sm text-[var(--color-text)]">{t("cvStudio.title")}</h1>
+        <div className="relative flex flex-1 min-h-0">
+          <div
+            className={`${controlsOpen ? "flex" : "hidden"} md:flex w-full md:w-[300px] shrink-0 flex-col overflow-y-auto border-r border-[var(--color-border)] p-5`}
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <h1 className="font-mono text-sm text-[var(--color-text)]">{t("cvStudio.title")}</h1>
+              <button
+                type="button"
+                onClick={() => setControlsOpen(false)}
+                className="md:hidden rounded-md border border-[var(--color-border)] px-3 py-1.5 font-mono text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              >
+                {t("downloadCv.viewCv")}
+              </button>
+            </div>
 
             <div className="flex-1 space-y-6">
               <div className="space-y-2">
@@ -248,9 +264,21 @@ export function CvStudioScreen({
             </div>
           </div>
 
-          <CvPreviewCanvas>
-            <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
-          </CvPreviewCanvas>
+          <div className={`${controlsOpen ? "hidden" : "flex"} md:flex flex-1 min-h-0 min-w-0`}>
+            <CvPreviewCanvas>
+              <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
+            </CvPreviewCanvas>
+          </div>
+
+          {!controlsOpen && (
+            <button
+              type="button"
+              onClick={() => setControlsOpen(true)}
+              className="md:hidden fixed bottom-5 right-5 z-10 rounded-full bg-[var(--color-text)] px-5 py-3 font-mono text-sm text-[var(--color-ink)] shadow-lg hover:opacity-90"
+            >
+              {t("cvStudio.openControls")}
+            </button>
+          )}
         </div>
       </div>
 
