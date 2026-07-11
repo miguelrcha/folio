@@ -75,6 +75,10 @@ export const translations: Record<Language, Dictionary> = {
     "connect.step.analyzing": "analyzing languages and stacks",
     "connect.step.calculating": "calculating impact per project",
     "connect.error.title": "Couldn't sync with GitHub right now. Try again?",
+    "connect.error.rateLimit":
+      "GitHub is rate-limiting requests at the moment. Give it a minute, then try again.",
+    "connect.error.auth": "Your GitHub session needs to be renewed to continue.",
+    "connect.error.tryAgain": "Try again",
     "connect.error.backToLogin": "Back to login",
     "connect.select.title": "Choose what goes in your resume",
     "connect.select.subtitle":
@@ -86,6 +90,7 @@ export const translations: Record<Language, Dictionary> = {
     "connect.select.projectsSelected": "projects selected",
     "connect.select.generating": "Generating...",
     "connect.select.generate": "Generate my Folio →",
+    "connect.select.saveFailed": "Couldn't save your onboarding. Try generating again.",
 
     // Profile page
     "profile.stats.followers": "followers",
@@ -274,6 +279,10 @@ export const translations: Record<Language, Dictionary> = {
     "connect.step.analyzing": "analisando linguagens e stacks",
     "connect.step.calculating": "calculando impacto por projeto",
     "connect.error.title": "Não foi possível sincronizar com o GitHub agora. Tentar de novo?",
+    "connect.error.rateLimit":
+      "O GitHub está limitando as requisições no momento. Aguarde um minuto e tente de novo.",
+    "connect.error.auth": "Sua sessão com o GitHub precisa ser renovada para continuar.",
+    "connect.error.tryAgain": "Tentar novamente",
     "connect.error.backToLogin": "Voltar ao login",
     "connect.select.title": "Escolha o que vai no seu currículo",
     "connect.select.subtitle":
@@ -285,6 +294,7 @@ export const translations: Record<Language, Dictionary> = {
     "connect.select.projectsSelected": "projetos selecionados",
     "connect.select.generating": "Gerando...",
     "connect.select.generate": "Gerar meu Folio →",
+    "connect.select.saveFailed": "Não foi possível salvar seu onboarding. Tente gerar de novo.",
 
     // Profile page
     "profile.stats.followers": "seguidores",
