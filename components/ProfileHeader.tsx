@@ -87,6 +87,9 @@ export function SearchUsers({ className = "" }: { className?: string }) {
     setChecking(false);
 
     if (!data) {
+      // The suggestions dropdown shares the hint's spot below the input and
+      // would paint over it — close it so the feedback is actually visible.
+      setOpen(false);
       setNotFoundUser(username);
       return;
     }
