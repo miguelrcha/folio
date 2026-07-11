@@ -1,15 +1,14 @@
 "use client";
 
-import { useCvExport } from "@/components/CvExportCoordinator";
 import { CV_TEMPLATES } from "@/lib/cv/templates";
 import type { CvConfig } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
-// The default print target, reflecting the saved config — always present so
-// a plain Cmd/Ctrl+P works with no other action, for owners and visitors
-// alike. Steps aside (renders nothing) while CvStudioModal is open, since
-// the modal carries its own print-variant node reflecting live, possibly
-// unsaved edits.
+// The print target for the main profile page, reflecting the saved config —
+// always present so a plain Cmd/Ctrl+P works with no other action, for
+// owners and visitors alike. Owners customizing the CV do so on the
+// dedicated /[username]/cv-studio route, which carries its own print-variant
+// node, so this one only ever needs to reflect the saved config.
 export function CvPrintFallback({
   profile,
   repos,
@@ -19,9 +18,6 @@ export function CvPrintFallback({
   repos: Repo[];
   config: CvConfig;
 }) {
-  const { studioOpen } = useCvExport();
-  if (studioOpen) return null;
-
   const CvTemplate = CV_TEMPLATES[config.template].component;
   return <CvTemplate profile={profile} repos={repos} config={config} variant="print" />;
 }

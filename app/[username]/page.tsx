@@ -16,7 +16,6 @@ import { EditLanguagesModal } from "@/components/EditLanguagesModal";
 import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
 import { ProtectedEmailLink } from "@/components/ProtectedEmailLink";
-import { CvExportCoordinator } from "@/components/CvExportCoordinator";
 import { CvPrintFallback } from "@/components/CvPrintFallback";
 import { resolveCvConfig } from "@/lib/cv/config";
 import { formatExperienceRange } from "@/lib/experience";
@@ -116,11 +115,10 @@ export default async function ProfilePage({
   const savedCvConfig = resolveCvConfig(profile.cv_config);
 
   return (
-    <CvExportCoordinator>
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
-        <DownloadCvButton profile={profile} repos={selectedRepos} isOwner={isOwner} />
+        <DownloadCvButton profile={profile} isOwner={isOwner} />
       </ProfileHeader>
 
       <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
@@ -439,11 +437,9 @@ export default async function ProfilePage({
       </main>
 
       {/* Always mounted (owner and visitor alike) so a plain Cmd/Ctrl+P works
-          with no other action — steps aside automatically while
-          CvStudioModal is open (see CvExportCoordinator), which carries its
-          own print-variant node reflecting live, possibly unsaved edits. */}
+          with no other action. Owners customizing the CV do so on the
+          dedicated /[username]/cv-studio route instead of here. */}
       <CvPrintFallback profile={profile} repos={selectedRepos} config={savedCvConfig} />
     </div>
-    </CvExportCoordinator>
   );
 }

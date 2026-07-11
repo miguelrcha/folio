@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { CvExportCoordinator, useCvExport } from "@/components/CvExportCoordinator";
+import { render, screen } from "@testing-library/react";
 import { CvPrintFallback } from "@/components/CvPrintFallback";
 import { DEFAULT_CV_CONFIG } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
@@ -27,25 +26,10 @@ const profile: PublicProfile = {
 
 const repos: Repo[] = [];
 
-// A stand-in for DownloadCvButton, which is the real consumer of setStudioOpen.
-function OpenStudioButton() {
-  const { setStudioOpen } = useCvExport();
-  return <button onClick={() => setStudioOpen(true)}>open studio</button>;
-}
-
 describe("CvPrintFallback", () => {
-  it("renders the print target by default, and steps aside once the studio opens", () => {
-    render(
-      <CvExportCoordinator>
-        <OpenStudioButton />
-        <CvPrintFallback profile={profile} repos={repos} config={DEFAULT_CV_CONFIG} />
-      </CvExportCoordinator>
-    );
+  it("renders the print target reflecting the saved config", () => {
+    render(<CvPrintFallback profile={profile} repos={repos} config={DEFAULT_CV_CONFIG} />);
 
     expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("open studio"));
-
-    expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
   });
 });
