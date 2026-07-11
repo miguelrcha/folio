@@ -49,7 +49,7 @@ export const translations: Record<Language, Dictionary> = {
       "A public profile, a PDF resume, and a curated selection of your best projects — all generated from your GitHub, without filling in anything by hand.",
     "features.publicProfile.title": "Public Profile",
     "features.publicProfile.description":
-      "A page at meufolio.dev/@you with your bio, real stack, and projects ranked by impact — always up to date.",
+      "A page at meufolio.dev/you with your bio, real stack, and projects ranked by impact — always up to date.",
     "features.pdfResume.title": "PDF Resume",
     "features.pdfResume.description":
       "One click and the same profile becomes a ready-to-send resume — complete with your GitHub photo and projects included.",
@@ -282,7 +282,7 @@ export const translations: Record<Language, Dictionary> = {
       "Um perfil público, um currículo em PDF, e uma seleção curada dos seus melhores projetos — tudo gerado a partir do seu GitHub, sem preencher nada manualmente.",
     "features.publicProfile.title": "Perfil Público",
     "features.publicProfile.description":
-      "Uma página em meufolio.dev/@voce com sua bio, stack real, e projetos ranqueados por impacto — sempre atualizada.",
+      "Uma página em meufolio.dev/voce com sua bio, stack real, e projetos ranqueados por impacto — sempre atualizada.",
     "features.pdfResume.title": "Currículo em PDF",
     "features.pdfResume.description":
       "Um clique e o mesmo perfil vira um currículo pronto para enviar — completo, com sua foto do GitHub e projetos incluídos.",
