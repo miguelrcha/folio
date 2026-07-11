@@ -32,9 +32,15 @@ import type { PublicProfile, Repo } from "@/lib/profile";
 // trailing edge's padding survives — so a lopsided gutter would reappear.
 // Padding that belongs to the wrapper being centered/scrolled has no such
 // asymmetry, since it's baked into the wrapper's own box on every side.
+// overscroll-contain: at typical widths the page has no horizontal overflow
+// at all (scrollWidth === clientWidth), so a trackpad left/right swipe here
+// has nothing to scroll — without this, the browser reads that as "swipe to
+// navigate back," and a screenshot mid-slide looks exactly like the page
+// getting sliced. Containing overscroll stops that chain without touching
+// the panel's own (vertical) scrolling.
 function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex-1 overflow-auto bg-black/40">
+    <div className="flex-1 overflow-auto overscroll-contain bg-black/40">
       <div className="mx-auto h-fit w-fit p-8">
         <div className="shadow-2xl">{children}</div>
       </div>
