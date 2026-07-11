@@ -2,7 +2,7 @@
 
 import { createPortal } from "react-dom";
 import { useLanguage } from "@/components/LanguageProvider";
-import { CvPreviewCanvas } from "@/components/cv/CvPreviewCanvas";
+import { CvPreviewCanvasAutoFit } from "@/components/cv/CvPreviewCanvasAutoFit";
 import { CV_TEMPLATES } from "@/lib/cv/templates";
 import type { CvConfig } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
@@ -50,7 +50,7 @@ export function CvPreviewModal({
   return createPortal(
     <div className="fixed inset-0 z-[100] flex print:hidden">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative m-auto flex h-[90vh] w-[95vw] max-w-4xl flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
+      <div className="relative m-auto flex h-screen w-screen flex-col overflow-hidden border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl sm:h-[90vh] sm:w-[95vw] sm:max-w-4xl sm:rounded-xl sm:border">
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
           <h2 className="font-mono text-sm text-[var(--color-text)]">{t("cvPreview.title")}</h2>
           <button
@@ -62,9 +62,9 @@ export function CvPreviewModal({
           </button>
         </div>
 
-        <CvPreviewCanvas>
+        <CvPreviewCanvasAutoFit>
           <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
-        </CvPreviewCanvas>
+        </CvPreviewCanvasAutoFit>
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-[var(--color-border)] px-5 py-4">
           <button
