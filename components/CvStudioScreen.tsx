@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -17,41 +17,13 @@ import {
 } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
-// Scales its child down (never up) so the whole page is visible inside
-// whatever space is available, instead of rendering at natural print size
-// and forcing a scrollbar — re-measures on any container/content resize
-// (e.g. toggling a section changes the page's height).
+// Renders its child at natural (print) size, scrolling the surrounding
+// canvas rather than shrinking the page to fit — a scaled-down preview read
+// worse than a scrollable one at true size.
 function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const content = contentRef.current;
-    if (!container || !content) return;
-
-    const recalc = () => {
-      const cw = container.clientWidth;
-      const ch = container.clientHeight;
-      const nw = content.scrollWidth;
-      const nh = content.scrollHeight;
-      if (!nw || !nh) return;
-      setScale(Math.min(cw / nw, ch / nh, 1));
-    };
-
-    recalc();
-    const ro = new ResizeObserver(recalc);
-    ro.observe(container);
-    ro.observe(content);
-    return () => ro.disconnect();
-  }, []);
-
   return (
-    <div ref={containerRef} className="flex flex-1 items-center justify-center overflow-hidden bg-black/40 p-8">
-      <div ref={contentRef} className="shadow-2xl" style={{ transform: `scale(${scale})` }}>
-        {children}
-      </div>
+    <div className="flex flex-1 justify-center overflow-auto bg-black/40 p-8">
+      <div className="h-fit shadow-2xl">{children}</div>
     </div>
   );
 }
