@@ -122,6 +122,23 @@ describe("CvStudioScreen", () => {
     expect(screen.getAllByText("Portuguese - Native")).toHaveLength(2);
   });
 
+  it("opens a preview popup on Print, reflecting live unsaved edits, and downloads from inside it", () => {
+    const printSpy = vi.fn();
+    vi.stubGlobal("print", printSpy);
+
+    renderScreen();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Hide bio" }));
+    fireEvent.click(screen.getByText("Print"));
+
+    expect(screen.getByText("CV Preview")).toBeInTheDocument();
+    expect(screen.queryByText(profile.bio!)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Download CV"));
+    expect(printSpy).toHaveBeenCalledOnce();
+
+    vi.unstubAllGlobals();
+  });
+
   it("links back to the public profile", () => {
     renderScreen();
     const backLink = screen.getByText("Back to profile").closest("a");

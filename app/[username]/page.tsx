@@ -118,7 +118,7 @@ export default async function ProfilePage({
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
-        <DownloadCvButton profile={profile} isOwner={isOwner} />
+        <DownloadCvButton profile={profile} repos={selectedRepos} isOwner={isOwner} />
       </ProfileHeader>
 
       <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
