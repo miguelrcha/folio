@@ -220,6 +220,10 @@ export const translations: Record<Language, Dictionary> = {
     "downloadCv.generating": "Generating…",
     "downloadCv.viewCv": "View CV",
 
+    // CvPreviewModal
+    "cvPreview.title": "CV Preview",
+    "cvPreview.download": "Download CV",
+
     // CvStudioScreen
     "cvStudio.title": "Customize CV",
     "cvStudio.openControls": "Customize",
@@ -455,6 +459,10 @@ export const translations: Record<Language, Dictionary> = {
     // DownloadCvButton
     "downloadCv.generating": "Gerando…",
     "downloadCv.viewCv": "Ver Currículo",
+
+    // CvPreviewModal
+    "cvPreview.title": "Pré-visualização do currículo",
+    "cvPreview.download": "Baixar currículo",
 
     // CvStudioScreen
     "cvStudio.title": "Personalizar currículo",

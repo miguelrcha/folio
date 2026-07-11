@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/components/LanguageProvider";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { SignOutButton } from "@/components/SignOutButton";
+import { CvPreviewCanvas } from "@/components/cv/CvPreviewCanvas";
+import { CvPreviewModal } from "@/components/CvPreviewModal";
 import { CV_TEMPLATES } from "@/lib/cv/templates";
 import {
   resolveCvConfig,
@@ -16,37 +18,6 @@ import {
   type CvTemplateKey,
 } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
-
-// Renders its child at natural (print) size, scrolling the surrounding
-// canvas rather than shrinking the page to fit — a scaled-down preview read
-// worse than a scrollable one at true size. Centering is done with margin
-// auto on the child (not justify-center on the container): when the child
-// is wider than the pane, a centered flex item overflows equally on both
-// sides and the left edge becomes unreachable (scroll containers can't
-// scroll to a negative offset) — margin auto instead collapses to 0 and
-// left-aligns, so every letter stays scrollable into view.
-//
-// The gutter is padding on this inner wrapper, not on the scroll container:
-// a scroll container's own leading-edge padding (left, when scrolled
-// horizontally) collapses to 0 once its content overflows — only the
-// trailing edge's padding survives — so a lopsided gutter would reappear.
-// Padding that belongs to the wrapper being centered/scrolled has no such
-// asymmetry, since it's baked into the wrapper's own box on every side.
-// overscroll-contain: at typical widths the page has no horizontal overflow
-// at all (scrollWidth === clientWidth), so a trackpad left/right swipe here
-// has nothing to scroll — without this, the browser reads that as "swipe to
-// navigate back," and a screenshot mid-slide looks exactly like the page
-// getting sliced. Containing overscroll stops that chain without touching
-// the panel's own (vertical) scrolling.
-function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex-1 overflow-auto overscroll-contain bg-black/40">
-      <div className="mx-auto h-fit w-fit p-8">
-        <div className="shadow-2xl">{children}</div>
-      </div>
-    </div>
-  );
-}
 
 // Owner-only "Customize CV" screen: a full page (not a modal) so the live
 // preview gets the whole viewport instead of being squeezed into a dialog box.
@@ -77,6 +48,7 @@ export function CvStudioScreen({
   // the CV is what you see first; irrelevant at md+, where both are always
   // shown together (see the `md:flex` overrides below).
   const [controlsOpen, setControlsOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const TEMPLATE_LABELS: Record<CvTemplateKey, string> = {
     classic: t("cvStudio.template.classic"),
@@ -106,7 +78,7 @@ export function CvStudioScreen({
     }));
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => setPreviewOpen(true);
 
   const handleSave = async () => {
     setSaving(true);
@@ -295,6 +267,15 @@ export function CvStudioScreen({
       </div>
 
       <CvTemplate profile={profile} repos={repos} config={config} variant="print" />
+
+      {previewOpen && (
+        <CvPreviewModal
+          profile={profile}
+          repos={repos}
+          config={config}
+          onClose={() => setPreviewOpen(false)}
+        />
+      )}
     </>
   );
 }
