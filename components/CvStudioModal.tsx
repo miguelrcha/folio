@@ -65,11 +65,17 @@ function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
 
 // Owner-only "Customize CV" editor: template/photo/bio/section controls on the
 // left, a live preview of the selected template on the right (a plain React
-// re-render — no PDF regeneration, no debounce needed). Portaled to
-// document.body because ProfileHeader renders a real <header>, and globals.css
-// hides `header { display: none !important }` on print — an ancestor
-// display:none hides all descendants regardless of their own print:block, so
-// this modal (and its print target) must live outside that subtree.
+// re-render — no PDF regeneration, no debounce needed). Also carries its own
+// print-variant node (bottom of the portaled tree) reflecting the live,
+// possibly-unsaved config — CvPrintFallback (rendered elsewhere on the page)
+// steps aside while this modal is open, via CvExportCoordinator, so there's
+// never two print-eligible CV nodes mounted at once.
+//
+// Portaled to document.body because ProfileHeader renders a real <header>,
+// and globals.css hides it entirely on print
+// (`header { display: none !important }`) — an ancestor display:none hides
+// all descendants regardless of their own print:block, so this modal must
+// live outside that subtree.
 export function CvStudioModal({
   profile,
   repos,
