@@ -155,7 +155,11 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
           languageEntries.length > 0 && (
             <div className="break-inside-avoid">
               <SectionTitle>Languages</SectionTitle>
-              <BulletList items={languageEntries.map((entry) => formatLanguageEntry(entry))} />
+              <BulletList
+                items={languageEntries.map((entry) =>
+                  formatLanguageEntry(entry, { showFlag: config.showLanguageFlags })
+                )}
+              />
             </div>
           )
         );

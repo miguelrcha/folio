@@ -87,7 +87,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
               <ul className="space-y-[3pt]">
                 {languageEntries.map((entry, i) => (
                   <li key={i} className="text-[7.5pt]" style={{ color: "#d1d5db" }}>
-                    {formatLanguageEntry(entry)}
+                    {formatLanguageEntry(entry, { showFlag: config.showLanguageFlags })}
                   </li>
                 ))}
               </ul>

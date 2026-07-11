@@ -229,13 +229,25 @@ export function CvStudioScreen({
                   {t("cvStudio.sections")}
                 </p>
                 {config.sections.map((s) => (
-                  <label
-                    key={s.key}
-                    className="flex items-center gap-2 text-sm font-mono text-[var(--color-text-muted)] cursor-pointer"
-                  >
-                    <input type="checkbox" checked={s.visible} onChange={() => toggleSection(s.key)} />
-                    {SECTION_LABELS[s.key]}
-                  </label>
+                  <div key={s.key}>
+                    <label className="flex items-center gap-2 text-sm font-mono text-[var(--color-text-muted)] cursor-pointer">
+                      <input type="checkbox" checked={s.visible} onChange={() => toggleSection(s.key)} />
+                      {SECTION_LABELS[s.key]}
+                    </label>
+                    {s.key === "languages" && (
+                      <label className="ml-6 mt-1 flex items-center gap-2 text-sm font-mono text-[var(--color-text-muted)] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={config.showLanguageFlags}
+                          disabled={!s.visible}
+                          onChange={(e) =>
+                            setConfig((prev) => ({ ...prev, showLanguageFlags: e.target.checked }))
+                          }
+                        />
+                        {t("cvStudio.showLanguageFlags")}
+                      </label>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

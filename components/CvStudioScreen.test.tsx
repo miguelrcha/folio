@@ -39,7 +39,7 @@ const profile: PublicProfile = {
   github_created_at: null,
   experiences_json: [],
   certifications_json: [],
-  languages_json: [],
+  languages_json: [{ language: "portuguese", proficiency: "Native" }],
   total_commits: 0,
   cv_config: null,
 };
@@ -110,6 +110,16 @@ describe("CvStudioScreen", () => {
     expect(update).toHaveBeenCalledWith(
       expect.objectContaining({ cv_config: expect.objectContaining({ hideBio: true }) })
     );
+  });
+
+  it("drops the flag emoji from the Languages section when unchecked", () => {
+    renderScreen();
+    expect(screen.getAllByText("🇧🇷 Portuguese - Native")).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Show flag emoji" }));
+
+    expect(screen.queryByText("🇧🇷 Portuguese - Native")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Portuguese - Native")).toHaveLength(2);
   });
 
   it("links back to the public profile", () => {

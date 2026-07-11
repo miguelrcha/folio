@@ -23,6 +23,13 @@ describe("resolveCvConfig", () => {
     expect(resolveCvConfig({ hideBio: "yes" }).hideBio).toBe(DEFAULT_CV_CONFIG.hideBio);
   });
 
+  it("merges showLanguageFlags when present and boolean", () => {
+    expect(resolveCvConfig({ showLanguageFlags: false }).showLanguageFlags).toBe(false);
+    expect(resolveCvConfig({ showLanguageFlags: "no" }).showLanguageFlags).toBe(
+      DEFAULT_CV_CONFIG.showLanguageFlags
+    );
+  });
+
   it("merges font when present and a known key, defaults otherwise", () => {
     expect(resolveCvConfig({ font: "serif" }).font).toBe("serif");
     expect(resolveCvConfig({ font: "comic-sans" }).font).toBe(DEFAULT_CV_CONFIG.font);
