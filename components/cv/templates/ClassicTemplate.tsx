@@ -3,7 +3,7 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
-import type { CvSectionKey } from "@/lib/cv/config";
+import { CV_FONT_STACKS, type CvSectionKey } from "@/lib/cv/config";
 import type { CvTemplateProps } from "@/lib/cv/types";
 
 function SectionTitle({ children }: { children: ReactNode }) {
@@ -172,7 +172,7 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
           ? "hidden print:flex flex-col items-center bg-white text-[#111827]"
           : "flex flex-col items-center bg-white text-[#111827]"
       }
-      style={{ fontFamily: "var(--font-sans)" }}
+      style={{ fontFamily: CV_FONT_STACKS[config.font] }}
     >
       <div className="w-full max-w-[440pt]">
         {/* Header */}

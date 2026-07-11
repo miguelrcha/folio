@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/components/LanguageProvider";
 import { CV_TEMPLATES } from "@/lib/cv/templates";
-import { resolveCvConfig, type CvConfig, type CvSectionKey, type CvTemplateKey } from "@/lib/cv/config";
+import {
+  resolveCvConfig,
+  type CvConfig,
+  type CvFont,
+  type CvSectionKey,
+  type CvTemplateKey,
+} from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
 function CloseIcon() {
@@ -15,6 +21,45 @@ function CloseIcon() {
       <line x1="6" y1="6" x2="18" y2="18" />
       <line x1="18" y1="6" x2="6" y2="18" />
     </svg>
+  );
+}
+
+// Scales its child down (never up) so the whole page is visible inside
+// whatever space is available, instead of rendering at natural print size
+// and forcing a scrollbar — re-measures on any container/content resize
+// (e.g. toggling a section changes the page's height).
+function CvPreviewCanvas({ children }: { children: React.ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+
+    const recalc = () => {
+      const cw = container.clientWidth;
+      const ch = container.clientHeight;
+      const nw = content.scrollWidth;
+      const nh = content.scrollHeight;
+      if (!nw || !nh) return;
+      setScale(Math.min(cw / nw, ch / nh, 1));
+    };
+
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    ro.observe(container);
+    ro.observe(content);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="flex flex-1 items-center justify-center overflow-hidden bg-black/40 p-8">
+      <div ref={contentRef} className="shadow-2xl" style={{ transform: `scale(${scale})` }}>
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -44,6 +89,11 @@ export function CvStudioModal({
   const TEMPLATE_LABELS: Record<CvTemplateKey, string> = {
     classic: t("cvStudio.template.classic"),
     modern: t("cvStudio.template.modern"),
+  };
+
+  const FONT_LABELS: Record<CvFont, string> = {
+    sans: t("cvStudio.font.sans"),
+    serif: t("cvStudio.font.serif"),
   };
 
   const SECTION_LABELS: Record<CvSectionKey, string> = {
@@ -132,6 +182,28 @@ export function CvStudioModal({
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <p className="text-xs font-mono text-[var(--color-text-faint)] uppercase tracking-wide">
+                  {t("cvStudio.font")}
+                </p>
+                <div className="flex gap-2">
+                  {(Object.keys(FONT_LABELS) as CvFont[]).map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setConfig((prev) => ({ ...prev, font: key }))}
+                      className={`flex-1 rounded-md border px-3 py-2 text-sm font-mono transition-colors ${
+                        config.font === key
+                          ? "border-transparent bg-[var(--color-text)] text-[var(--color-ink)]"
+                          : "border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                      }`}
+                    >
+                      {FONT_LABELS[key]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <label className="flex items-center gap-2 text-sm font-mono text-[var(--color-text-muted)] cursor-pointer">
                 <input
                   type="checkbox"
@@ -167,11 +239,9 @@ export function CvStudioModal({
               </div>
             </div>
 
-            <div className="flex flex-1 justify-center overflow-auto bg-black/40 p-8">
-              <div className="h-fit shadow-2xl">
-                <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
-              </div>
-            </div>
+            <CvPreviewCanvas>
+              <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
+            </CvPreviewCanvas>
           </div>
 
           <div className="shrink-0 border-t border-[var(--color-border)] px-5 py-4">

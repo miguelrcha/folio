@@ -88,6 +88,19 @@ describe("CvStudioModal", () => {
     expect(screen.queryByText(profile.bio!)).not.toBeInTheDocument();
   });
 
+  it("switches the preview font when a Font option is clicked", () => {
+    renderModal();
+    // Portaled content attaches to document.body, outside RTL's own render
+    // container — query the document directly. Preview and print variants
+    // share the same live config, so either match reflects the same font.
+    const templateRoot = document.querySelector('[style*="font-family"]') as HTMLElement;
+    expect(templateRoot.style.fontFamily).toContain("var(--font-sans)");
+
+    fireEvent.click(screen.getByRole("button", { name: "Serif" }));
+
+    expect(templateRoot.style.fontFamily).toContain("Georgia");
+  });
+
   it("saves the current config and refreshes on Save", async () => {
     renderModal();
     fireEvent.click(screen.getByRole("checkbox", { name: "Hide bio" }));

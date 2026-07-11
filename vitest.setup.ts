@@ -6,3 +6,13 @@ import { afterEach } from "vitest";
 afterEach(() => {
   cleanup();
 });
+
+// jsdom doesn't implement ResizeObserver — stub it so components that use it
+// (e.g. CvStudioModal's auto-fit preview) can mount under Vitest.
+if (typeof globalThis.ResizeObserver === "undefined") {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
