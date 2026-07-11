@@ -16,6 +16,7 @@ export type CvSectionConfig = {
 export type CvConfig = {
   template: CvTemplateKey;
   showPhoto: boolean;
+  hideBio: boolean;
   /** Array order is display order. */
   sections: CvSectionConfig[];
 };
@@ -34,6 +35,7 @@ const TEMPLATE_KEYS: CvTemplateKey[] = ["classic", "modern"];
 export const DEFAULT_CV_CONFIG: CvConfig = {
   template: "classic",
   showPhoto: false,
+  hideBio: false,
   sections: SECTION_ORDER.map((key) => ({ key, visible: true })),
 };
 
@@ -54,6 +56,7 @@ export function resolveCvConfig(raw: unknown): CvConfig {
       : DEFAULT_CV_CONFIG.template;
 
   const showPhoto = typeof input.showPhoto === "boolean" ? input.showPhoto : DEFAULT_CV_CONFIG.showPhoto;
+  const hideBio = typeof input.hideBio === "boolean" ? input.hideBio : DEFAULT_CV_CONFIG.hideBio;
 
   const rawSections = Array.isArray(input.sections) ? input.sections : [];
   const validSections = rawSections.filter(
@@ -69,6 +72,7 @@ export function resolveCvConfig(raw: unknown): CvConfig {
   return {
     template,
     showPhoto,
+    hideBio,
     sections: [...validSections, ...missingSections],
   };
 }

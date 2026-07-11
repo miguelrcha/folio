@@ -18,6 +18,11 @@ describe("resolveCvConfig", () => {
     expect(resolveCvConfig({ template: "brutalist" }).template).toBe("classic");
   });
 
+  it("merges hideBio when present and boolean", () => {
+    expect(resolveCvConfig({ hideBio: true }).hideBio).toBe(true);
+    expect(resolveCvConfig({ hideBio: "yes" }).hideBio).toBe(DEFAULT_CV_CONFIG.hideBio);
+  });
+
   it("drops unknown section keys and backfills missing ones as visible", () => {
     const result = resolveCvConfig({
       sections: [

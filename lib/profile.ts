@@ -19,6 +19,8 @@ export type PublicProfile = {
   certifications_json: CertificationEntry[] | null;
   languages_json: LanguageEntry[] | null;
   total_commits: number | null;
+  /** Opaque on purpose — always narrow through resolveCvConfig() before use. */
+  cv_config: unknown;
 };
 
 export type Repo = {
