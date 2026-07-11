@@ -1,4 +1,5 @@
 export type CvTemplateKey = "classic" | "modern";
+export type CvFont = "sans" | "serif";
 
 export type CvSectionKey =
   | "overview"
@@ -17,8 +18,16 @@ export type CvConfig = {
   template: CvTemplateKey;
   showPhoto: boolean;
   hideBio: boolean;
+  font: CvFont;
   /** Array order is display order. */
   sections: CvSectionConfig[];
+};
+
+// No font files to ship: "sans" reuses the app's existing Inter stack (reads
+// like Arial/Helvetica), "serif" is a web-safe Times-like stack.
+export const CV_FONT_STACKS: Record<CvFont, string> = {
+  sans: "var(--font-sans)",
+  serif: "Georgia, 'Times New Roman', Times, serif",
 };
 
 const SECTION_ORDER: CvSectionKey[] = [
@@ -31,11 +40,13 @@ const SECTION_ORDER: CvSectionKey[] = [
 ];
 
 const TEMPLATE_KEYS: CvTemplateKey[] = ["classic", "modern"];
+const FONT_KEYS: CvFont[] = ["sans", "serif"];
 
 export const DEFAULT_CV_CONFIG: CvConfig = {
   template: "classic",
   showPhoto: false,
   hideBio: false,
+  font: "sans",
   sections: SECTION_ORDER.map((key) => ({ key, visible: true })),
 };
 
@@ -57,6 +68,10 @@ export function resolveCvConfig(raw: unknown): CvConfig {
 
   const showPhoto = typeof input.showPhoto === "boolean" ? input.showPhoto : DEFAULT_CV_CONFIG.showPhoto;
   const hideBio = typeof input.hideBio === "boolean" ? input.hideBio : DEFAULT_CV_CONFIG.hideBio;
+  const font =
+    typeof input.font === "string" && (FONT_KEYS as string[]).includes(input.font)
+      ? (input.font as CvFont)
+      : DEFAULT_CV_CONFIG.font;
 
   const rawSections = Array.isArray(input.sections) ? input.sections : [];
   const validSections = rawSections.filter(
@@ -73,6 +88,7 @@ export function resolveCvConfig(raw: unknown): CvConfig {
     template,
     showPhoto,
     hideBio,
+    font,
     sections: [...validSections, ...missingSections],
   };
 }

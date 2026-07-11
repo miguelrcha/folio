@@ -3,7 +3,7 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
-import type { CvSectionConfig, CvSectionKey } from "@/lib/cv/config";
+import { CV_FONT_STACKS, type CvSectionConfig, type CvSectionKey } from "@/lib/cv/config";
 import type { CvTemplateProps } from "@/lib/cv/types";
 
 // Fixed brand accent — per-user color customization is out of scope until v2
@@ -211,7 +211,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
   return (
     <div
       className={variant === "print" ? "hidden print:flex" : "flex"}
-      style={{ fontFamily: "var(--font-sans)" }}
+      style={{ fontFamily: CV_FONT_STACKS[config.font] }}
     >
       <div className="flex w-full max-w-[500pt] mx-auto">
         {/* Sidebar */}

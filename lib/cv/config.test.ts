@@ -23,6 +23,12 @@ describe("resolveCvConfig", () => {
     expect(resolveCvConfig({ hideBio: "yes" }).hideBio).toBe(DEFAULT_CV_CONFIG.hideBio);
   });
 
+  it("merges font when present and a known key, defaults otherwise", () => {
+    expect(resolveCvConfig({ font: "serif" }).font).toBe("serif");
+    expect(resolveCvConfig({ font: "comic-sans" }).font).toBe(DEFAULT_CV_CONFIG.font);
+    expect(resolveCvConfig({}).font).toBe("sans");
+  });
+
   it("drops unknown section keys and backfills missing ones as visible", () => {
     const result = resolveCvConfig({
       sections: [
