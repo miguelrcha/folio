@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useCvPreview } from "@/components/CvPreviewCoordinator";
 import { CvPreviewPanel } from "@/components/CvPreviewPanel";
 import { resolveCvConfig } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
@@ -27,13 +27,16 @@ export function DownloadCvButton({
 }) {
   const router = useRouter();
   const { t } = useLanguage();
-  const [previewOpen, setPreviewOpen] = useState(false);
+  // Shared with CvPreviewLayoutShell (via CvPreviewCoordinator, wrapping
+  // the whole page), which reflows the profile into the space beside the
+  // panel — local state here wouldn't be visible to that sibling.
+  const { panelOpen, setPanelOpen } = useCvPreview();
 
   // Owners get the full-screen customization studio; everyone else gets a
   // docked preview panel of the owner's saved config, with the actual
   // print/save triggered from inside it.
   const handleClick = () =>
-    isOwner ? router.push(`/${profile.github_username}/cv-studio`) : setPreviewOpen((v) => !v);
+    isOwner ? router.push(`/${profile.github_username}/cv-studio`) : setPanelOpen(!panelOpen);
 
   useKeyboardShortcut("d", handleClick);
 
@@ -47,12 +50,12 @@ export function DownloadCvButton({
         {t("downloadCv.viewCv")}
         <Kbd>D</Kbd>
       </button>
-      {previewOpen && (
+      {panelOpen && (
         <CvPreviewPanel
           profile={profile}
           repos={repos}
           config={resolveCvConfig(profile.cv_config)}
-          onClose={() => setPreviewOpen(false)}
+          onClose={() => setPanelOpen(false)}
         />
       )}
     </>

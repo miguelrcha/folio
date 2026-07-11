@@ -56,6 +56,11 @@ export function CvPreviewPanel({
   if (typeof document === "undefined") return null;
 
   return createPortal(
+    // 640px at sm+ (matches CvPreviewLayoutShell's sm:pr-[640px], which
+    // reflows the profile page to make room beside the panel instead of
+    // letting it get covered — keep both in sync if this changes), full
+    // width below that: at phone widths there's no "beside it" space to
+    // dock into anyway, so the panel just takes over the whole screen.
     <div className="fixed inset-y-0 right-0 z-[100] w-full overflow-y-auto bg-white shadow-2xl print:hidden sm:w-[640px]">
       <div className="sticky top-0 z-10 flex justify-end gap-2 bg-white/95 px-4 py-3 backdrop-blur-sm">
         <button
