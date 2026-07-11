@@ -19,6 +19,8 @@ export type CvConfig = {
   showPhoto: boolean;
   hideBio: boolean;
   font: CvFont;
+  /** Flag emoji (🇧🇷, 🇺🇸, ...) next to each entry in the Languages section. */
+  showLanguageFlags: boolean;
   /** Array order is display order. */
   sections: CvSectionConfig[];
 };
@@ -47,6 +49,7 @@ export const DEFAULT_CV_CONFIG: CvConfig = {
   showPhoto: false,
   hideBio: false,
   font: "sans",
+  showLanguageFlags: true,
   sections: SECTION_ORDER.map((key) => ({ key, visible: true })),
 };
 
@@ -68,6 +71,10 @@ export function resolveCvConfig(raw: unknown): CvConfig {
 
   const showPhoto = typeof input.showPhoto === "boolean" ? input.showPhoto : DEFAULT_CV_CONFIG.showPhoto;
   const hideBio = typeof input.hideBio === "boolean" ? input.hideBio : DEFAULT_CV_CONFIG.hideBio;
+  const showLanguageFlags =
+    typeof input.showLanguageFlags === "boolean"
+      ? input.showLanguageFlags
+      : DEFAULT_CV_CONFIG.showLanguageFlags;
   const font =
     typeof input.font === "string" && (FONT_KEYS as string[]).includes(input.font)
       ? (input.font as CvFont)
@@ -89,6 +96,7 @@ export function resolveCvConfig(raw: unknown): CvConfig {
     showPhoto,
     hideBio,
     font,
+    showLanguageFlags,
     sections: [...validSections, ...missingSections],
   };
 }

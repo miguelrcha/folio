@@ -32,8 +32,8 @@ export function emptyLanguageEntry(): LanguageEntry {
   return { language: LANGUAGE_OPTIONS[0].code, proficiency: PROFICIENCY_OPTIONS[0] };
 }
 
-export function formatLanguageEntry(entry: LanguageEntry): string {
+export function formatLanguageEntry(entry: LanguageEntry, { showFlag = true } = {}): string {
   const lang = LANGUAGE_OPTIONS.find((l) => l.code === entry.language);
   if (!lang) return "";
-  return `${lang.flag} ${lang.name} - ${entry.proficiency}`;
+  return showFlag ? `${lang.flag} ${lang.name} - ${entry.proficiency}` : `${lang.name} - ${entry.proficiency}`;
 }
