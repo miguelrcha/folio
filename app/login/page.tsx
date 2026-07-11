@@ -1,10 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { GithubIcon } from "@/components/GithubIcon";
 import { useLanguage } from "@/components/LanguageProvider";
 import { createClient } from "@/lib/supabase/client";
+
+// Error codes the OAuth callback reports back via ?error= — until now they
+// were silently dropped and a denied GitHub prompt looked like a no-op.
+const LOGIN_ERROR_KEYS: Record<string, string> = {
+  auth_failed: "login.error.authFailed",
+  profile_save_failed: "login.error.profileSaveFailed",
+};
+
+// useSearchParams needs its own Suspense boundary on a prerendered page.
+function LoginErrorBanner() {
+  const { t } = useLanguage();
+  const searchParams = useSearchParams();
+  const errorKey = LOGIN_ERROR_KEYS[searchParams.get("error") ?? ""];
+
+  if (!errorKey) return null;
+
+  return (
+    <p className="mt-6 w-full text-center text-xs font-mono text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+      {t(errorKey)}
+    </p>
+  );
+}
 
 const GITHUB_DEFAULT_AVATAR = "https://github.com/Braian-de-Liz.png";
 const GITHUB_DEFAULT_AVATAR2 = "https://github.com/hemkdev.png";
@@ -76,6 +98,16 @@ export default function SignInPage() {
 
     const checkSession = async () => {
       try {
+        // The callback redirects here with ?error= when something went wrong
+        // (e.g. the profile upsert failed with a live session). Skipping the
+        // auto-redirect lets the person actually read the error — signing in
+        // again is the recovery action.
+        const params = new URLSearchParams(window.location.search);
+        if (LOGIN_ERROR_KEYS[params.get("error") ?? ""]) {
+          finish();
+          return;
+        }
+
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -149,6 +181,10 @@ export default function SignInPage() {
         </span>
 
         <DevAvatarStack totalCount={totalCount} />
+
+        <Suspense fallback={null}>
+          <LoginErrorBanner />
+        </Suspense>
 
         <button
           onClick={handleSignIn}
