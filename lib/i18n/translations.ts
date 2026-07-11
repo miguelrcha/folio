@@ -250,6 +250,14 @@ export const translations: Record<Language, Dictionary> = {
     "share.copied": "Link copied ✓",
     "share.button": "Share",
     "share.text": "Check out {name}'s professional profile on folio",
+
+    // ShareCardButton / ShareCardModal
+    "shareCard.button": "Share as image",
+    "shareCard.title": "Share your profile",
+    "shareCard.download": "Download image",
+    "shareCard.copyCaption": "Copy caption",
+    "shareCard.captionCopied": "Copied ✓",
+    "shareCard.generating": "Generating…",
   },
   pt: {
     // Header
@@ -490,6 +498,14 @@ export const translations: Record<Language, Dictionary> = {
     "share.copied": "Link copiado ✓",
     "share.button": "Compartilhar",
     "share.text": "Confira o perfil profissional de {name} no folio",
+
+    // ShareCardButton / ShareCardModal
+    "shareCard.button": "Compartilhar como imagem",
+    "shareCard.title": "Compartilhe seu perfil",
+    "shareCard.download": "Baixar imagem",
+    "shareCard.copyCaption": "Copiar legenda",
+    "shareCard.captionCopied": "Copiado ✓",
+    "shareCard.generating": "Gerando…",
   },
 };
 
