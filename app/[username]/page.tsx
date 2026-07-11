@@ -16,6 +16,7 @@ import { EditLanguagesModal } from "@/components/EditLanguagesModal";
 import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
 import { ProtectedEmailLink } from "@/components/ProtectedEmailLink";
+import { ShareCardButton } from "@/components/ShareCardButton";
 import { CvPrintFallback } from "@/components/CvPrintFallback";
 import { CvPreviewCoordinator } from "@/components/CvPreviewCoordinator";
 import { CvPreviewLayoutShell } from "@/components/CvPreviewLayoutShell";
@@ -137,41 +138,44 @@ export default async function ProfilePage({
           ) : (
             <div className="h-24 w-24 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-bright)] shrink-0" />
           )}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-mono text-[var(--color-text)] flex flex-wrap items-baseline gap-x-2.5">
-              {profile.full_name && <span>{profile.full_name}</span>}
-              <span className={profile.full_name ? "text-[var(--color-text-muted)] text-xl md:text-2xl" : ""}>
-                @{profile.github_username}
-              </span>
-            </h1>
-            {(profile.location || profile.contact_email || isOwner) && (
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[var(--color-text-muted)]">
-                {profile.location && <span>{profile.location}</span>}
-                {(profile.contact_email || isOwner) && (
-                  <span className="inline-flex items-center gap-1.5">
-                    {profile.contact_email && (
-                      <ProtectedEmailLink
-                        encodedEmail={Buffer.from(profile.contact_email).toString("base64")}
-                        className="inline-flex items-center gap-1.5 hover:text-[var(--color-text)] transition-colors"
-                      />
-                    )}
-                    {!profile.contact_email && isOwner && <MailIcon className="h-4 w-4" />}
-                    {isOwner && (
-                      <EditEmailModal
-                        profileId={profile.id}
-                        initialEmail={profile.contact_email ?? ""}
-                        githubEmail={currentUser?.email ?? null}
-                      />
-                    )}
-                  </span>
-                )}
-              </div>
-            )}
-            {profile.bio && (
-              <p className="mt-3 max-w-xl text-[var(--color-text)] leading-relaxed">
-                {profile.bio}
-              </p>
-            )}
+          <div className="flex-1 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-mono text-[var(--color-text)] flex flex-wrap items-baseline gap-x-2.5">
+                {profile.full_name && <span>{profile.full_name}</span>}
+                <span className={profile.full_name ? "text-[var(--color-text-muted)] text-xl md:text-2xl" : ""}>
+                  @{profile.github_username}
+                </span>
+              </h1>
+              {(profile.location || profile.contact_email || isOwner) && (
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[var(--color-text-muted)]">
+                  {profile.location && <span>{profile.location}</span>}
+                  {(profile.contact_email || isOwner) && (
+                    <span className="inline-flex items-center gap-1.5">
+                      {profile.contact_email && (
+                        <ProtectedEmailLink
+                          encodedEmail={Buffer.from(profile.contact_email).toString("base64")}
+                          className="inline-flex items-center gap-1.5 hover:text-[var(--color-text)] transition-colors"
+                        />
+                      )}
+                      {!profile.contact_email && isOwner && <MailIcon className="h-4 w-4" />}
+                      {isOwner && (
+                        <EditEmailModal
+                          profileId={profile.id}
+                          initialEmail={profile.contact_email ?? ""}
+                          githubEmail={currentUser?.email ?? null}
+                        />
+                      )}
+                    </span>
+                  )}
+                </div>
+              )}
+              {profile.bio && (
+                <p className="mt-3 max-w-xl text-[var(--color-text)] leading-relaxed">
+                  {profile.bio}
+                </p>
+              )}
+            </div>
+            <ShareCardButton username={profile.github_username} />
           </div>
         </section>
 
