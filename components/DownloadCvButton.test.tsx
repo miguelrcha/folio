@@ -49,10 +49,10 @@ describe("DownloadCvButton", () => {
     fireEvent.click(screen.getByText("View CV"));
 
     expect(push).toHaveBeenCalledWith("/octocat/cv-studio");
-    expect(screen.queryByText("CV Preview")).not.toBeInTheDocument();
+    expect(screen.queryByText("Download CV")).not.toBeInTheDocument();
   });
 
-  it("opens a preview popup for a visitor, with a Download CV action inside", () => {
+  it("opens a docked preview panel for a visitor, with a Download CV action inside", () => {
     const printSpy = vi.fn();
     vi.stubGlobal("print", printSpy);
 
@@ -60,11 +60,22 @@ describe("DownloadCvButton", () => {
     fireEvent.click(screen.getByText("View CV"));
 
     expect(push).not.toHaveBeenCalled();
-    expect(screen.getByText("CV Preview")).toBeInTheDocument();
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
 
     fireEvent.click(screen.getByText("Download CV"));
     expect(printSpy).toHaveBeenCalledOnce();
 
     vi.unstubAllGlobals();
+  });
+
+  it("toggles the panel closed when View CV is clicked again", () => {
+    renderButton(false);
+    const viewCv = screen.getByText("View CV");
+
+    fireEvent.click(viewCv);
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+
+    fireEvent.click(viewCv);
+    expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
   });
 });

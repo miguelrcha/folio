@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 import { useLanguage } from "@/components/LanguageProvider";
-import { CvPreviewModal } from "@/components/CvPreviewModal";
+import { CvPreviewPanel } from "@/components/CvPreviewPanel";
 import { resolveCvConfig } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
@@ -30,10 +30,10 @@ export function DownloadCvButton({
   const [previewOpen, setPreviewOpen] = useState(false);
 
   // Owners get the full-screen customization studio; everyone else gets a
-  // preview popup of the owner's saved config, with the actual print/save
-  // triggered from inside it.
+  // docked preview panel of the owner's saved config, with the actual
+  // print/save triggered from inside it.
   const handleClick = () =>
-    isOwner ? router.push(`/${profile.github_username}/cv-studio`) : setPreviewOpen(true);
+    isOwner ? router.push(`/${profile.github_username}/cv-studio`) : setPreviewOpen((v) => !v);
 
   useKeyboardShortcut("d", handleClick);
 
@@ -48,7 +48,7 @@ export function DownloadCvButton({
         <Kbd>D</Kbd>
       </button>
       {previewOpen && (
-        <CvPreviewModal
+        <CvPreviewPanel
           profile={profile}
           repos={repos}
           config={resolveCvConfig(profile.cv_config)}
