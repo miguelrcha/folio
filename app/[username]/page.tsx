@@ -16,7 +16,8 @@ import { EditLanguagesModal } from "@/components/EditLanguagesModal";
 import { EditEmailModal } from "@/components/EditEmailModal";
 import { MailIcon } from "@/components/MailIcon";
 import { ProtectedEmailLink } from "@/components/ProtectedEmailLink";
-import { ResumeDocument } from "@/components/ResumeDocument";
+import { CV_TEMPLATES } from "@/lib/cv/templates";
+import { DEFAULT_CV_CONFIG } from "@/lib/cv/config";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
@@ -111,12 +112,13 @@ export default async function ProfilePage({
   const githubSinceYear = profile.github_created_at
     ? new Date(profile.github_created_at).getFullYear()
     : null;
+  const CvTemplate = CV_TEMPLATES[DEFAULT_CV_CONFIG.template].component;
 
   return (
     <div className="relative z-10 min-h-screen">
       <ProfileHeader>
         {isOwner && <SignOutButton />}
-        <DownloadCvButton profile={profile} repos={selectedRepos} />
+        <DownloadCvButton profile={profile} />
       </ProfileHeader>
 
       <main id="resume-content" className="max-w-4xl mx-auto px-6 py-14 print:hidden">
@@ -434,7 +436,7 @@ export default async function ProfilePage({
         </footer>
       </main>
 
-      <ResumeDocument profile={profile} repos={selectedRepos} />
+      <CvTemplate profile={profile} repos={selectedRepos} config={DEFAULT_CV_CONFIG} />
     </div>
   );
 }

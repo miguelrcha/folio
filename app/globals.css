@@ -123,11 +123,11 @@ body {
   }
 }
 
-/* CV em PDF: o botão "View CV" chama window.print(). A página de perfil
-   (#resume-content) fica escondida via print:hidden e, no lugar dela, entra
-   o <ResumeDocument> (components/ResumeDocument.tsx) — um layout dedicado de
-   1 página A4, com sua própria tipografia clara, pensado pra impressão em
-   vez de ser um retrato da UI escura do site. */
+/* CV as PDF: the "View CV" button calls window.print(). The profile page
+   (#resume-content) is hidden via print:hidden and, in its place, the
+   selected template from components/cv/templates/ (registered in
+   lib/cv/templates.ts) renders — an A4 layout with its own light typography,
+   built for print rather than a portrait of the site's dark UI. */
 @page {
   size: A4;
   margin: 14mm 16mm;
