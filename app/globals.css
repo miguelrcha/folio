@@ -115,6 +115,20 @@ body {
   outline-offset: 2px;
 }
 
+/* Tailwind's preflight (and the browser default) leaves <button> at
+   cursor: default — only <a> gets a pointer cursor for free. Every button
+   in the app is a real click target, so this restores the affordance
+   globally instead of adding `cursor-pointer` one class at a time.
+   Disabled buttons are excluded on purpose: default/not-allowed there is
+   correct (e.g. Save while saving). */
+button:not(:disabled),
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
