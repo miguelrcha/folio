@@ -246,11 +246,6 @@ export const translations: Record<Language, Dictionary> = {
     "cvStudio.print": "Print",
     "cvStudio.backToProfile": "Back to profile",
 
-    // ShareButton
-    "share.copied": "Link copied ✓",
-    "share.button": "Share",
-    "share.text": "Check out {name}'s professional profile on folio",
-
     // ShareCardButton / ShareCardModal
     "shareCard.button": "Share as image",
     "shareCard.title": "Share your profile",
@@ -494,11 +489,6 @@ export const translations: Record<Language, Dictionary> = {
     "cvStudio.showLanguageFlags": "Mostrar emoji de bandeira",
     "cvStudio.print": "Imprimir",
     "cvStudio.backToProfile": "Voltar ao perfil",
-
-    // ShareButton
-    "share.copied": "Link copiado ✓",
-    "share.button": "Compartilhar",
-    "share.text": "Confira o perfil profissional de {name} no folio",
 
     // ShareCardButton / ShareCardModal
     "shareCard.button": "Compartilhar como imagem",
