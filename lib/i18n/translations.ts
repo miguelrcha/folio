@@ -254,6 +254,7 @@ export const translations: Record<Language, Dictionary> = {
     // ShareCardButton / ShareCardModal
     "shareCard.button": "Share as image",
     "shareCard.title": "Share your profile",
+    "shareCard.share": "Share",
     "shareCard.download": "Download image",
     "shareCard.copyCaption": "Copy caption",
     "shareCard.captionCopied": "Copied ✓",
@@ -505,6 +506,7 @@ export const translations: Record<Language, Dictionary> = {
     // ShareCardButton / ShareCardModal
     "shareCard.button": "Compartilhar como imagem",
     "shareCard.title": "Compartilhe seu perfil",
+    "shareCard.share": "Compartilhar",
     "shareCard.download": "Baixar imagem",
     "shareCard.copyCaption": "Copiar legenda",
     "shareCard.captionCopied": "Copiado ✓",

@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { ShareCardButton } from "@/components/ShareCardButton";
 
@@ -21,6 +21,16 @@ function renderButton() {
 describe("ShareCardButton", () => {
   beforeEach(() => {
     Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } });
+  });
+
+  afterEach(() => {
+    // navigator.share/canShare are assigned directly onto the shared jsdom
+    // navigator by the native-share test below — remove them so later tests
+    // (which assert the native Share button is absent by default) aren't
+    // affected by state left over from an earlier test in this file.
+    delete (navigator as { share?: unknown }).share;
+    delete (navigator as { canShare?: unknown }).canShare;
+    vi.unstubAllGlobals();
   });
 
   it("opens the share card modal with the generated image and an English caption", () => {
@@ -73,6 +83,32 @@ describe("ShareCardButton", () => {
       "href",
       `https://wa.me/?text=${encodeURIComponent(`${captionBody} ${profileUrl}`)}`
     );
+  });
+
+  it("has no native Share button when the browser doesn't implement the Web Share API", () => {
+    renderButton();
+    fireEvent.click(screen.getByRole("button", { name: "Share as image" }));
+
+    expect(screen.queryByRole("button", { name: "Share" })).not.toBeInTheDocument();
+  });
+
+  it("hands the image file and caption to the OS share sheet when the Web Share API is available", async () => {
+    const shareMock = vi.fn().mockResolvedValue(undefined);
+    const canShareMock = vi.fn().mockReturnValue(true);
+    Object.assign(navigator, { share: shareMock, canShare: canShareMock });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ blob: () => Promise.resolve(new Blob(["fake"], { type: "image/png" })) })
+    );
+
+    renderButton();
+    fireEvent.click(screen.getByRole("button", { name: "Share as image" }));
+    fireEvent.click(screen.getByRole("button", { name: "Share" }));
+
+    await waitFor(() => expect(shareMock).toHaveBeenCalledTimes(1));
+    const shareData = shareMock.mock.calls[0][0];
+    expect(shareData.files[0].name).toBe("octocat-folio.png");
+    expect(shareData.text).toBe(CAPTION);
   });
 
   it("closes the modal", () => {
