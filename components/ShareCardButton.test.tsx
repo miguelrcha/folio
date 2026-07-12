@@ -63,28 +63,6 @@ describe("ShareCardButton", () => {
     expect(await screen.findByText("Copied ✓")).toBeInTheDocument();
   });
 
-  it("offers share-intent links for X, LinkedIn and WhatsApp with the profile link and caption", () => {
-    renderButton();
-    fireEvent.click(screen.getByRole("button", { name: "Share as image" }));
-
-    const captionBody =
-      "Check out my profile on Folio — a platform that turns your GitHub activity into an auto-generated resume.";
-    const profileUrl = "https://meufolio.dev/octocat";
-
-    expect(screen.getByRole("link", { name: "Share on X" })).toHaveAttribute(
-      "href",
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(captionBody)}&url=${encodeURIComponent(profileUrl)}`
-    );
-    expect(screen.getByRole("link", { name: "Share on LinkedIn" })).toHaveAttribute(
-      "href",
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`
-    );
-    expect(screen.getByRole("link", { name: "Share on WhatsApp" })).toHaveAttribute(
-      "href",
-      `https://wa.me/?text=${encodeURIComponent(`${captionBody} ${profileUrl}`)}`
-    );
-  });
-
   it("has no native Share button when the browser doesn't implement the Web Share API", () => {
     renderButton();
     fireEvent.click(screen.getByRole("button", { name: "Share as image" }));

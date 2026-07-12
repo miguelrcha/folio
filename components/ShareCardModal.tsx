@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useLanguage } from "@/components/LanguageProvider";
-import { XIcon } from "@/components/XIcon";
-import { LinkedInIcon } from "@/components/LinkedInIcon";
-import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { SITE_URL } from "@/lib/site";
 
 function CloseIcon() {
@@ -37,33 +34,12 @@ function buildCaption(profileUrl: string): string {
   return `Check out my profile on Folio — a platform that turns your GitHub activity into an auto-generated resume. ${profileUrl}`;
 }
 
-// Web share-intent links: the lightweight, no-API-keys way to open each
-// platform pre-filled with the caption + profile link, letting the user
-// confirm and post themselves — there's no such thing as a true one-click
-// "post without opening the app/tab" on any of these platforms (that would
-// need OAuth app registration + review per platform, explicitly out of
-// scope per #65). X/LinkedIn get the link via their own `url` param so it
-// isn't duplicated inside the tweet/post text; WhatsApp only takes one
-// `text` field, so the link is inlined there instead.
-function buildShareIntents(captionBody: string, profileUrl: string) {
-  const encodedBody = encodeURIComponent(captionBody);
-  const encodedUrl = encodeURIComponent(profileUrl);
-  return {
-    x: `https://twitter.com/intent/tweet?text=${encodedBody}&url=${encodedUrl}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${captionBody} ${profileUrl}`)}`,
-  };
-}
-
-const CAPTION_BODY =
-  "Check out my profile on Folio — a platform that turns your GitHub activity into an auto-generated resume.";
-
 // Preview-before-you-post popup for the share card image, opened from
 // ShareCardButton. Same visual language as CvPreviewModal (centered dialog,
 // dimmed backdrop). Offers the generated PNG (from
 // app/api/share-card/[username]/route.tsx), a ready-to-paste English
-// caption, and share-intent buttons for X/LinkedIn/WhatsApp, so the image +
-// caption pair can go straight into a post on any of them.
+// caption, and a native OS share button, so the image + caption pair can go
+// straight into a post on whatever the user picks from the OS share sheet.
 export function ShareCardModal({
   username,
   onClose,
@@ -79,7 +55,6 @@ export function ShareCardModal({
   const imageSrc = `/api/share-card/${username}`;
   const profileUrl = `${SITE_URL}/${username}`;
   const caption = buildCaption(profileUrl);
-  const shareIntents = buildShareIntents(CAPTION_BODY, profileUrl);
   // Only true in the browser and only on the (mostly mobile, some desktop
   // Chromium) browsers that implement the Web Share API at all — this is a
   // client-only component mounted after a click, so there's no SSR/hydration
@@ -119,7 +94,7 @@ export function ShareCardModal({
       }
     } catch {
       // user cancelled the share, or the browser rejected it — the
-      // download/copy/platform-button fallbacks below still work
+      // download/copy fallbacks below still work
     } finally {
       setSharing(false);
     }
@@ -178,39 +153,6 @@ export function ShareCardModal({
               {sharing ? t("shareCard.generating") : t("shareCard.share")}
             </button>
           )}
-
-          <div className="flex items-center gap-2">
-            <a
-              href={shareIntents.x}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("shareCard.shareOnX")}
-              title={t("shareCard.shareOnX")}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--color-border)] py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-            >
-              <XIcon className="h-4 w-4" />
-            </a>
-            <a
-              href={shareIntents.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("shareCard.shareOnLinkedIn")}
-              title={t("shareCard.shareOnLinkedIn")}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--color-border)] py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-            >
-              <LinkedInIcon className="h-4 w-4" />
-            </a>
-            <a
-              href={shareIntents.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("shareCard.shareOnWhatsApp")}
-              title={t("shareCard.shareOnWhatsApp")}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--color-border)] py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-            </a>
-          </div>
         </div>
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-[var(--color-border)] px-5 py-4">
