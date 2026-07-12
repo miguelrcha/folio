@@ -173,7 +173,7 @@ export function Header() {
   }, []);
 
   const NAV_LINKS = [
-    { label: t("header.examples"), href: "#" },
+    { label: t("header.examples"), href: "/miguelrcha" },
     { label: t("header.docs"), href: "/docs" },
   ];
 
@@ -356,14 +356,14 @@ export function Header() {
           </nav>
 
           <div className="flex flex-1 justify-end items-center gap-4">
-            <a
+            <Link
               ref={examplesLinkRef}
-              href="#"
+              href="/miguelrcha"
               className="hidden lg:inline-flex items-center gap-2.5 rounded-2xl px-4 h-10 text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition ease-in-out duration-200"
             >
               {t("header.showExamples")}
               <Kbd>E</Kbd>
-            </a>
+            </Link>
             <LanguageSwitcher />
             {loggedInUser ? (
               <LoggedInChip user={loggedInUser} />
