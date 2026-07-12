@@ -10,7 +10,7 @@ vi.mock("next/navigation", () => ({
 function renderButton() {
   render(
     <LanguageProvider initialLang="en">
-      <ShareCardButton username="octocat" />
+      <ShareCardButton username="octocat" totalCommits={1083} publicRepos={32} />
     </LanguageProvider>
   );
 }
@@ -29,7 +29,7 @@ describe("ShareCardButton", () => {
     expect(screen.getByText("Share your profile")).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "/api/share-card/octocat");
     expect(
-      screen.getByText("This is my profile on Folio — check it out: meufolio.dev/octocat")
+      screen.getByText("1083 commits, 32 repos, one auto-generated resume. Built with Folio: meufolio.dev/octocat")
     ).toBeInTheDocument();
   });
 
@@ -49,7 +49,7 @@ describe("ShareCardButton", () => {
     fireEvent.click(screen.getByRole("button", { name: "Copy caption" }));
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "This is my profile on Folio — check it out: meufolio.dev/octocat"
+      "1083 commits, 32 repos, one auto-generated resume. Built with Folio: meufolio.dev/octocat"
     );
     expect(await screen.findByText("Copied ✓")).toBeInTheDocument();
   });

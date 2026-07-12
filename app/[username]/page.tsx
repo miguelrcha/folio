@@ -175,7 +175,11 @@ export default async function ProfilePage({
                 </p>
               )}
             </div>
-            <ShareCardButton username={profile.github_username} />
+            <ShareCardButton
+              username={profile.github_username}
+              totalCommits={profile.total_commits ?? 0}
+              publicRepos={profile.public_repos ?? 0}
+            />
           </div>
         </section>
 

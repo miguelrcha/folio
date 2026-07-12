@@ -16,9 +16,12 @@ function CloseIcon() {
 // Intentionally always English regardless of the site's pt/en toggle: this
 // is outward-facing copy meant for an Instagram/X/LinkedIn post, not app UI
 // text, so it stays in the language most likely to read well to a broad,
-// professional audience.
-function buildCaption(username: string): string {
-  return `This is my profile on Folio — check it out: meufolio.dev/${username}`;
+// professional audience. Leads with the same numbers already shown in the
+// card image, so caption and image tell one story instead of two — see the
+// discussion on #65 about the original placeholder caption being the one
+// part of the card a stranger in a feed actually reads.
+function buildCaption(username: string, totalCommits: number, publicRepos: number): string {
+  return `${totalCommits} commits, ${publicRepos} repos, one auto-generated resume. Built with Folio: meufolio.dev/${username}`;
 }
 
 // Preview-before-you-post popup for the share card image, opened from
@@ -28,9 +31,13 @@ function buildCaption(username: string): string {
 // caption, so the pair can be dropped straight into a social post.
 export function ShareCardModal({
   username,
+  totalCommits,
+  publicRepos,
   onClose,
 }: {
   username: string;
+  totalCommits: number;
+  publicRepos: number;
   onClose: () => void;
 }) {
   const { t } = useLanguage();
@@ -38,7 +45,7 @@ export function ShareCardModal({
   const [captionCopied, setCaptionCopied] = useState(false);
 
   const imageSrc = `/api/share-card/${username}`;
-  const caption = buildCaption(username);
+  const caption = buildCaption(username, totalCommits, publicRepos);
 
   const handleCopyCaption = async () => {
     try {
