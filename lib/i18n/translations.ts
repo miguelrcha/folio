@@ -136,17 +136,20 @@ export const translations: Record<Language, Dictionary> = {
     "modal.save": "Save",
     "modal.saving": "Saving...",
     "modal.done": "Done",
+    "modal.close": "Close",
     "modal.unexpectedError": "Unexpected error while saving.",
 
     // EditOverviewModal
     "modal.overview.ariaEdit": "Edit overview",
     "modal.overview.title": "Edit overview",
     "modal.overview.placeholder": "Write a short professional summary...",
+    "modal.overview.ariaSummary": "Professional summary",
     "modal.overview.characters": "{n} characters",
 
     // EditEmailModal
     "modal.email.ariaEdit": "Edit email",
     "modal.email.title": "Edit email",
+    "modal.email.ariaEmail": "Contact email",
     "modal.email.invalid": "Invalid email",
     "modal.email.saveError": "Couldn't save, try again",
     "modal.email.hint": "shown on your public profile and CV",
@@ -172,6 +175,7 @@ export const translations: Record<Language, Dictionary> = {
     "modal.stacks.ariaEdit": "Edit stacks",
     "modal.stacks.title": "Edit stacks",
     "modal.stacks.placeholder": "E.g. TypeScript, Docker, PostgreSQL...",
+    "modal.stacks.ariaInput": "New stack",
     "modal.stacks.add": "+ add",
     "modal.stacks.empty": "no stacks yet.",
     "modal.stacks.ariaRemove": "Remove {name}",
@@ -193,6 +197,8 @@ export const translations: Record<Language, Dictionary> = {
     "modal.languages.ariaEdit": "Edit languages",
     "modal.languages.title": "Edit languages",
     "modal.languages.ariaRemove": "Remove language",
+    "modal.languages.ariaLanguage": "Language",
+    "modal.languages.ariaProficiency": "Proficiency",
     "modal.languages.addEntry": "+ add language",
 
     // EditProjectsModal
@@ -380,17 +386,20 @@ export const translations: Record<Language, Dictionary> = {
     "modal.save": "Salvar",
     "modal.saving": "Salvando...",
     "modal.done": "Concluído",
+    "modal.close": "Fechar",
     "modal.unexpectedError": "Erro inesperado ao salvar.",
 
     // EditOverviewModal
     "modal.overview.ariaEdit": "Editar resumo",
     "modal.overview.title": "Editar resumo",
     "modal.overview.placeholder": "Escreva um resumo profissional curto...",
+    "modal.overview.ariaSummary": "Resumo profissional",
     "modal.overview.characters": "{n} caracteres",
 
     // EditEmailModal
     "modal.email.ariaEdit": "Editar e-mail",
     "modal.email.title": "Editar e-mail",
+    "modal.email.ariaEmail": "E-mail de contato",
     "modal.email.invalid": "E-mail inválido",
     "modal.email.saveError": "Não foi possível salvar, tente de novo",
     "modal.email.hint": "exibido no seu perfil público e currículo",
@@ -416,6 +425,7 @@ export const translations: Record<Language, Dictionary> = {
     "modal.stacks.ariaEdit": "Editar stacks",
     "modal.stacks.title": "Editar stacks",
     "modal.stacks.placeholder": "Ex: TypeScript, Docker, PostgreSQL...",
+    "modal.stacks.ariaInput": "Nova stack",
     "modal.stacks.add": "+ adicionar",
     "modal.stacks.empty": "nenhuma stack ainda.",
     "modal.stacks.ariaRemove": "Remover {name}",
@@ -437,6 +447,8 @@ export const translations: Record<Language, Dictionary> = {
     "modal.languages.ariaEdit": "Editar idiomas",
     "modal.languages.title": "Editar idiomas",
     "modal.languages.ariaRemove": "Remover idioma",
+    "modal.languages.ariaLanguage": "Idioma",
+    "modal.languages.ariaProficiency": "Proficiência",
     "modal.languages.addEntry": "+ adicionar idioma",
 
     // EditProjectsModal

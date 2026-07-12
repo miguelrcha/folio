@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { TrashIcon } from "@/components/TrashIcon";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ModalDialog } from "@/components/ModalDialog";
 
 export function DeleteAccountButton({ profileId }: { profileId: string }) {
   const router = useRouter();
@@ -54,9 +55,11 @@ export function DeleteAccountButton({ profileId }: { profileId: string }) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleClose} />
-          <div className="relative w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-2xl">
+        <ModalDialog
+          label={t("deleteAccount.title")}
+          onClose={handleClose}
+          panelClassName="relative w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-2xl"
+        >
             <h2 className="font-mono text-sm text-[var(--color-text)]">{t("deleteAccount.title")}</h2>
             <p className="mt-2 text-sm text-[var(--color-text-muted)] leading-relaxed">
               {t("deleteAccount.description")}
@@ -84,8 +87,7 @@ export function DeleteAccountButton({ profileId }: { profileId: string }) {
                 {deleting ? t("deleteAccount.deleting") : t("deleteAccount.button")}
               </button>
             </div>
-          </div>
-        </div>
+        </ModalDialog>
       )}
     </>
   );

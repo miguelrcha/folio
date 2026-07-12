@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ModalDialog } from "@/components/ModalDialog";
 import {
   LANGUAGE_OPTIONS,
   PROFICIENCY_OPTIONS,
@@ -79,12 +80,14 @@ export function EditLanguagesModal({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-lg max-h-[80vh] flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
+        <ModalDialog
+          label={t("modal.languages.title")}
+          onClose={() => setOpen(false)}
+          panelClassName="relative w-full max-w-lg max-h-[80vh] flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl"
+        >
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
               <h2 className="font-mono text-sm text-[var(--color-text)]">{t("modal.languages.title")}</h2>
-              <button onClick={() => setOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
+              <button onClick={() => setOpen(false)} aria-label={t("modal.close")} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <line x1="6" y1="6" x2="18" y2="18" />
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -97,6 +100,7 @@ export function EditLanguagesModal({
                 <div key={i} className="flex items-center gap-2">
                   <select
                     value={entry.language}
+                    aria-label={t("modal.languages.ariaLanguage")}
                     onChange={(e) => updateEntry(i, { language: e.target.value })}
                     className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20"
                   >
@@ -108,6 +112,7 @@ export function EditLanguagesModal({
                   </select>
                   <select
                     value={entry.proficiency}
+                    aria-label={t("modal.languages.ariaProficiency")}
                     onChange={(e) => updateEntry(i, { proficiency: e.target.value })}
                     className="w-36 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20"
                   >
@@ -173,8 +178,7 @@ export function EditLanguagesModal({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+        </ModalDialog>
       )}
     </>
   );

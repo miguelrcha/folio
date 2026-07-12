@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ModalDialog } from "@/components/ModalDialog";
 import { getMonths } from "@/lib/experience";
 import {
   emptyCertificationEntry as emptyEntry,
@@ -79,12 +80,14 @@ export function EditCertificationsModal({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-xl max-h-[85vh] flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
+        <ModalDialog
+          label={t("modal.certifications.title")}
+          onClose={() => setOpen(false)}
+          panelClassName="relative w-full max-w-xl max-h-[85vh] flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl"
+        >
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
               <h2 className="font-mono text-sm text-[var(--color-text)]">{t("modal.certifications.title")}</h2>
-              <button onClick={() => setOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
+              <button onClick={() => setOpen(false)} aria-label={t("modal.close")} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <line x1="6" y1="6" x2="18" y2="18" />
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -109,8 +112,9 @@ export function EditCertificationsModal({
                   )}
 
                   <div>
-                    <label className="text-xs font-mono text-[var(--color-text-faint)]">{t("modal.certifications.name")}</label>
+                    <label htmlFor={`cert-${i}-name`} className="text-xs font-mono text-[var(--color-text-faint)]">{t("modal.certifications.name")}</label>
                     <input
+                      id={`cert-${i}-name`}
                       type="text"
                       value={entry.name}
                       onChange={(e) => updateEntry(i, { name: e.target.value })}
@@ -120,8 +124,9 @@ export function EditCertificationsModal({
                   </div>
 
                   <div>
-                    <label className="text-xs font-mono text-[var(--color-text-faint)]">{t("modal.certifications.issuer")}</label>
+                    <label htmlFor={`cert-${i}-issuer`} className="text-xs font-mono text-[var(--color-text-faint)]">{t("modal.certifications.issuer")}</label>
                     <input
+                      id={`cert-${i}-issuer`}
                       type="text"
                       value={entry.issuer}
                       onChange={(e) => updateEntry(i, { issuer: e.target.value })}
@@ -136,6 +141,7 @@ export function EditCertificationsModal({
                       <div className="mt-1 flex gap-2">
                         <select
                           value={entry.issueMonth}
+                          aria-label={t("modal.certifications.issuedOn")}
                           onChange={(e) => updateEntry(i, { issueMonth: Number(e.target.value) })}
                           className="w-1/2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20"
                         >
@@ -147,6 +153,7 @@ export function EditCertificationsModal({
                           type="number"
                           value={entry.issueYear}
                           onChange={(e) => updateEntry(i, { issueYear: Number(e.target.value) })}
+                          aria-label={t("modal.experiences.year")}
                           placeholder={t("modal.experiences.year")}
                           className="w-1/2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20"
                         />
@@ -159,6 +166,7 @@ export function EditCertificationsModal({
                         <select
                           value={entry.expirationMonth ?? ""}
                           disabled={!entry.hasExpiration}
+                          aria-label={t("modal.certifications.expiration")}
                           onChange={(e) => updateEntry(i, { expirationMonth: Number(e.target.value) })}
                           className="w-1/2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20 disabled:opacity-40"
                         >
@@ -172,6 +180,7 @@ export function EditCertificationsModal({
                           value={entry.expirationYear ?? ""}
                           disabled={!entry.hasExpiration}
                           onChange={(e) => updateEntry(i, { expirationYear: Number(e.target.value) })}
+                          aria-label={t("modal.experiences.year")}
                           placeholder={t("modal.experiences.year")}
                           className="w-1/2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20 disabled:opacity-40"
                         />
@@ -226,8 +235,7 @@ export function EditCertificationsModal({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+        </ModalDialog>
       )}
     </>
   );

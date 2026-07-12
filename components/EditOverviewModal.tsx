@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ModalDialog } from "@/components/ModalDialog";
 
 export function EditOverviewModal({
   profileId,
@@ -65,13 +66,16 @@ export function EditOverviewModal({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-lg flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl">
+        <ModalDialog
+          label={t("modal.overview.title")}
+          onClose={() => setOpen(false)}
+          panelClassName="relative w-full max-w-lg flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl"
+        >
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
               <h2 className="font-mono text-sm text-[var(--color-text)]">{t("modal.overview.title")}</h2>
               <button
                 onClick={() => setOpen(false)}
+                aria-label={t("modal.close")}
                 className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -86,6 +90,7 @@ export function EditOverviewModal({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={6}
+                aria-label={t("modal.overview.ariaSummary")}
                 placeholder={t("modal.overview.placeholder")}
                 className="w-full resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3.5 py-3 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none focus:border-white/20 transition-colors"
               />
@@ -110,8 +115,7 @@ export function EditOverviewModal({
                 {saving ? t("modal.saving") : t("modal.save")}
               </button>
             </div>
-          </div>
-        </div>
+        </ModalDialog>
       )}
     </>
   );
