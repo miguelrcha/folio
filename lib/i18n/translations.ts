@@ -258,6 +258,9 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copy caption",
     "shareCard.captionCopied": "Copied ✓",
     "shareCard.generating": "Generating…",
+    "shareCard.shareOnX": "Share on X",
+    "shareCard.shareOnLinkedIn": "Share on LinkedIn",
+    "shareCard.shareOnWhatsApp": "Share on WhatsApp",
   },
   pt: {
     // Header
@@ -506,6 +509,9 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copiar legenda",
     "shareCard.captionCopied": "Copiado ✓",
     "shareCard.generating": "Gerando…",
+    "shareCard.shareOnX": "Compartilhar no X",
+    "shareCard.shareOnLinkedIn": "Compartilhar no LinkedIn",
+    "shareCard.shareOnWhatsApp": "Compartilhar no WhatsApp",
   },
 };
 

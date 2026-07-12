@@ -7,10 +7,13 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
 }));
 
+const CAPTION =
+  "Check out my profile on Folio — a platform that turns your GitHub activity into an auto-generated resume. https://meufolio.dev/octocat";
+
 function renderButton() {
   render(
     <LanguageProvider initialLang="en">
-      <ShareCardButton username="octocat" totalCommits={1083} publicRepos={32} />
+      <ShareCardButton username="octocat" />
     </LanguageProvider>
   );
 }
@@ -28,9 +31,7 @@ describe("ShareCardButton", () => {
 
     expect(screen.getByText("Share your profile")).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "/api/share-card/octocat");
-    expect(
-      screen.getByText("1083 commits, 32 repos, one auto-generated resume. Built with Folio: meufolio.dev/octocat")
-    ).toBeInTheDocument();
+    expect(screen.getByText(CAPTION)).toBeInTheDocument();
   });
 
   it("offers a download link pointing at the share card image endpoint", () => {
@@ -48,10 +49,30 @@ describe("ShareCardButton", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Copy caption" }));
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "1083 commits, 32 repos, one auto-generated resume. Built with Folio: meufolio.dev/octocat"
-    );
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(CAPTION);
     expect(await screen.findByText("Copied ✓")).toBeInTheDocument();
+  });
+
+  it("offers share-intent links for X, LinkedIn and WhatsApp with the profile link and caption", () => {
+    renderButton();
+    fireEvent.click(screen.getByRole("button", { name: "Share as image" }));
+
+    const captionBody =
+      "Check out my profile on Folio — a platform that turns your GitHub activity into an auto-generated resume.";
+    const profileUrl = "https://meufolio.dev/octocat";
+
+    expect(screen.getByRole("link", { name: "Share on X" })).toHaveAttribute(
+      "href",
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(captionBody)}&url=${encodeURIComponent(profileUrl)}`
+    );
+    expect(screen.getByRole("link", { name: "Share on LinkedIn" })).toHaveAttribute(
+      "href",
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`
+    );
+    expect(screen.getByRole("link", { name: "Share on WhatsApp" })).toHaveAttribute(
+      "href",
+      `https://wa.me/?text=${encodeURIComponent(`${captionBody} ${profileUrl}`)}`
+    );
   });
 
   it("closes the modal", () => {
