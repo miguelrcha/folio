@@ -16,8 +16,7 @@ function ShareIcon() {
 
 // Small icon-only trigger next to the profile name that opens ShareCardModal
 // — a downloadable image card + caption for posting the profile to
-// Instagram/X/LinkedIn. Distinct from ShareButton (native share sheet /
-// copy-link), which shares the raw profile URL, not an image.
+// Instagram/X/LinkedIn.
 export function ShareCardButton({ username }: { username: string }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);

@@ -24,13 +24,13 @@ function Kbd({
 }) {
   if (variant === "light") {
     return (
-      <kbd className="inline-flex items-center justify-center size-5 rounded-[4px] bg-black/[0.16] text-[11px] font-medium text-[var(--color-ink)] border border-black/[0.12] tracking-[-0.01em]">
+      <kbd className="hidden pointer-fine:inline-flex items-center justify-center size-5 rounded-[4px] bg-black/[0.16] text-[11px] font-medium text-[var(--color-ink)] border border-black/[0.12] tracking-[-0.01em]">
         {children}
       </kbd>
     );
   }
   return (
-    <kbd className="inline-flex items-center justify-center size-5 rounded-[4px] bg-white/[0.12] text-[11px] font-medium text-[#ababab] border border-white/[0.12] tracking-[-0.01em]">
+    <kbd className="hidden pointer-fine:inline-flex items-center justify-center size-5 rounded-[4px] bg-white/[0.12] text-[11px] font-medium text-[#ababab] border border-white/[0.12] tracking-[-0.01em]">
       {children}
     </kbd>
   );
@@ -173,7 +173,7 @@ export function Header() {
   }, []);
 
   const NAV_LINKS = [
-    { label: t("header.examples"), href: "#" },
+    { label: t("header.examples"), href: "/miguelrcha" },
     { label: t("header.docs"), href: "/docs" },
   ];
 
@@ -356,14 +356,14 @@ export function Header() {
           </nav>
 
           <div className="flex flex-1 justify-end items-center gap-4">
-            <a
+            <Link
               ref={examplesLinkRef}
-              href="#"
+              href="/miguelrcha"
               className="hidden lg:inline-flex items-center gap-2.5 rounded-2xl px-4 h-10 text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition ease-in-out duration-200"
             >
               {t("header.showExamples")}
               <Kbd>E</Kbd>
-            </a>
+            </Link>
             <LanguageSwitcher />
             {loggedInUser ? (
               <LoggedInChip user={loggedInUser} />

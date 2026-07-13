@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLanguage } from "@/components/LanguageProvider";
 import { SITE_URL } from "@/lib/site";
@@ -51,6 +51,21 @@ export function ShareCardModal({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [captionCopied, setCaptionCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Portal + full-screen-on-mobile layout keeps this modal off ModalDialog;
+  // it carries the same dialog semantics inline.
+  useEffect(() => {
+    panelRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
 
   const imageSrc = `/api/share-card/${username}`;
   const profileUrl = `${SITE_URL}/${username}`;
@@ -105,12 +120,19 @@ export function ShareCardModal({
   return createPortal(
     <div className="fixed inset-0 z-[100] flex print:hidden">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative m-auto flex h-screen w-screen flex-col overflow-hidden border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl sm:h-auto sm:max-h-[90vh] sm:w-[95vw] sm:max-w-2xl sm:rounded-xl sm:border">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("shareCard.title")}
+        tabIndex={-1}
+        className="relative m-auto flex h-screen w-screen flex-col overflow-hidden border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl outline-none sm:h-auto sm:max-h-[90vh] sm:w-[95vw] sm:max-w-2xl sm:rounded-xl sm:border"
+      >
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
           <h2 className="font-mono text-sm text-[var(--color-text)]">{t("shareCard.title")}</h2>
           <button
             onClick={onClose}
-            aria-label={t("modal.cancel")}
+            aria-label={t("modal.close")}
             className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
           >
             <CloseIcon />

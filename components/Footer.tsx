@@ -9,9 +9,9 @@ export function Footer() {
   const { t } = useLanguage();
 
   const PRODUCT_LINKS = [
-    { label: t("features.publicProfile.title"), href: "#" },
-    { label: t("features.pdfResume.title"), href: "#" },
-    { label: t("features.autoSelection.title"), href: "#" },
+    { label: t("features.publicProfile.title"), href: "/docs/public-profile" },
+    { label: t("features.pdfResume.title"), href: "/docs/pdf-resume" },
+    { label: t("features.autoSelection.title"), href: "/docs/auto-selection" },
   ];
 
   const COMPANY_LINKS = [
@@ -34,13 +34,13 @@ export function Footer() {
             <div className="flex flex-col gap-3">
               <span className="text-sm font-medium text-[var(--color-text)]">{t("footer.product")}</span>
               {PRODUCT_LINKS.map((l) => (
-                <a
+                <Link
                   key={l.label}
                   href={l.href}
                   className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
                 >
                   {l.label}
-                </a>
+                </Link>
               ))}
             </div>
 
