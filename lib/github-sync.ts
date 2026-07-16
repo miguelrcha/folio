@@ -796,7 +796,7 @@ export async function syncGithubProfile(
   // 5. Total account commits (full history, including private repos)
   const totalCommits = await fetchTotalCommits(githubAccessToken, githubUser.created_at ?? null);
 
-  // 6. Salva repos
+  // 6. Save repos
   const { error: reposError } = await supabase
     .from("repos")
     .upsert(enriched, { onConflict: "profile_id,github_repo_id" });
