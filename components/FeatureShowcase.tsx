@@ -161,14 +161,14 @@ export function FeatureShowcase() {
               <p className="text-[13px] font-semibold text-white">Marina Costa</p>
               <p className="text-[10px] text-white/40 mt-0.5">github.com/marinacosta · meufolio.dev/marinacosta</p>
               <div className="mt-3 border-t border-white/10 pt-2">
-                <p className="text-[9px] uppercase tracking-wider text-white/50">Overview</p>
+                <p className="text-[9px] uppercase tracking-wider text-white/50">{t("cvStudio.section.overview")}</p>
                 <div className="mt-1.5 space-y-1.5">
                   <div className="h-1.5 w-full rounded bg-white/10" />
                   <div className="h-1.5 w-4/5 rounded bg-white/10" />
                 </div>
               </div>
               <div className="mt-3 pt-2 border-t border-white/10">
-                <p className="text-[9px] uppercase tracking-wider text-white/50">Projects</p>
+                <p className="text-[9px] uppercase tracking-wider text-white/50">{t("cvStudio.section.projects")}</p>
                 <div className="mt-1.5 space-y-1.5">
                   <div className="h-1.5 w-full rounded bg-white/10" />
                   <div className="h-1.5 w-3/5 rounded bg-white/10" />

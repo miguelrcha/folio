@@ -3,6 +3,8 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
+import { localizedSummary } from "@/lib/profile";
+import { translate } from "@/lib/i18n/translations";
 import {
   CV_FONT_STACKS,
   CV_SECTION_LIMITS,
@@ -55,7 +57,15 @@ function MainTitle({ children }: { children: ReactNode }) {
 // to it (SIDEBAR_SECTIONS / MAIN_SECTIONS) rather than one free-flowing list.
 // Not exposed to any picker yet (see issue #29) — built and print-verified
 // ahead of time so #29 only has to add selection UI.
-export function ModernTemplate({ profile, repos, config, variant = "print" }: CvTemplateProps) {
+export function ModernTemplate({
+  profile,
+  repos,
+  config,
+  variant = "print",
+  lang = "en",
+}: CvTemplateProps) {
+  const t = (key: string) => translate(lang, key);
+  const summary = localizedSummary(profile, lang);
   const stacks = profile.top_stack ?? [];
   const experiences = Array.isArray(profile.experiences_json) ? profile.experiences_json : [];
   const certifications = Array.isArray(profile.certifications_json)
@@ -70,7 +80,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
         return (
           stacks.length > 0 && (
             <div className="break-inside-avoid">
-              <SidebarTitle>Stacks</SidebarTitle>
+              <SidebarTitle>{t("cv.section.stacks")}</SidebarTitle>
               <div className="flex flex-wrap gap-[4pt]">
                 {stacks.map((s) => (
                   <span
@@ -90,11 +100,11 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
         return (
           languageEntries.length > 0 && (
             <div className="break-inside-avoid">
-              <SidebarTitle>Languages</SidebarTitle>
+              <SidebarTitle>{t("cv.section.languages")}</SidebarTitle>
               <ul className="space-y-[3pt]">
                 {languageEntries.map((entry, i) => (
                   <li key={i} className="text-[7.5pt]" style={{ color: "#d1d5db" }}>
-                    {formatLanguageEntry(entry, { showFlag: config.showLanguageFlags })}
+                    {formatLanguageEntry(entry, { showFlag: config.showLanguageFlags, lang })}
                   </li>
                 ))}
               </ul>
@@ -111,10 +121,10 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
     switch (key) {
       case "overview":
         return (
-          profile.summary && (
+          summary && (
             <div className="break-inside-avoid">
-              <MainTitle>Overview</MainTitle>
-              <p className="text-[8.5pt] text-[#374151] leading-relaxed">{profile.summary}</p>
+              <MainTitle>{t("cv.section.overview")}</MainTitle>
+              <p className="text-[8.5pt] text-[#374151] leading-relaxed">{summary}</p>
             </div>
           )
         );
@@ -123,10 +133,10 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
         return (
           experiences.length > 0 && (
             <div>
-              <MainTitle>Experiences</MainTitle>
+              <MainTitle>{t("cv.section.experiences")}</MainTitle>
               <ul className="space-y-[5pt] pl-[10pt]">
                 {experiences.slice(0, LIMITS.experiences).map((exp, i) => {
-                  const range = formatExperienceRange(exp);
+                  const range = formatExperienceRange(exp, lang);
                   const parts = [exp?.title ?? "", exp?.company ?? ""].filter(Boolean).join(" — ");
                   const headline = range ? `${parts} (${range})` : parts;
                   return (
@@ -159,7 +169,7 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
         return (
           repos.length > 0 && (
             <div>
-              <MainTitle>Projects, by impact</MainTitle>
+              <MainTitle>{t("cv.section.projects")}</MainTitle>
               <ul className="space-y-[5pt] pl-[10pt]">
                 {repos.slice(0, LIMITS.projects).map((repo) => (
                   <li
@@ -191,10 +201,10 @@ export function ModernTemplate({ profile, repos, config, variant = "print" }: Cv
         return (
           certifications.length > 0 && (
             <div className="break-inside-avoid">
-              <MainTitle>Certificates</MainTitle>
+              <MainTitle>{t("cv.section.certificates")}</MainTitle>
               <ul className="space-y-[2pt] pl-[10pt]">
                 {certifications.slice(0, LIMITS.certifications).map((cert, i) => {
-                  const range = formatCertificationRange(cert);
+                  const range = formatCertificationRange(cert, lang);
                   const parts = [cert?.name ?? "", cert?.issuer ?? ""].filter(Boolean).join(" — ");
                   return (
                     <li

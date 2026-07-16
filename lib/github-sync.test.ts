@@ -132,6 +132,12 @@ describe("joinStack", () => {
   it("uses a comma list with a trailing 'and' for three or more", () => {
     expect(joinStack(["React", "Vue.js", "Svelte"])).toBe("React, Vue.js and Svelte");
   });
+
+  it("uses the Portuguese conjunction and fallback for pt", () => {
+    expect(joinStack(["React", "Vue.js", "Svelte"], "pt")).toBe("React, Vue.js e Svelte");
+    expect(joinStack(["React", "Vue.js"], "pt")).toBe("React e Vue.js");
+    expect(joinStack([], "pt")).toBe("múltiplas tecnologias");
+  });
 });
 
 describe("impactScore", () => {
@@ -214,5 +220,23 @@ describe("buildSummary", () => {
     const a = buildSummary({ ...opts, username: "alice" });
     const b = buildSummary({ ...opts, username: "bob" });
     expect(a).not.toBe(b);
+  });
+
+  it("defaults to English", () => {
+    expect(buildSummary(opts)).toBe(buildSummary(opts, "en"));
+  });
+
+  it("writes Portuguese prose for the pt locale", () => {
+    // Every pt variant mentions "repositórios" — a language check that holds
+    // regardless of which hash bucket the username lands in.
+    const pt = buildSummary(opts, "pt");
+    expect(pt).toContain("repositórios");
+    expect(pt).toContain("TypeScript");
+    expect(buildSummary(opts, "en")).not.toContain("repositórios");
+  });
+
+  it("is deterministic per language and keeps the variant index paired", () => {
+    expect(buildSummary(opts, "pt")).toBe(buildSummary(opts, "pt"));
+    expect(buildSummary(opts, "pt")).not.toBe(buildSummary(opts, "en"));
   });
 });

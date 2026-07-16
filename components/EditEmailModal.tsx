@@ -91,7 +91,7 @@ export function EditEmailModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 aria-label={t("modal.email.ariaEmail")}
-                placeholder="you@example.com"
+                placeholder={t("modal.email.placeholder")}
                 className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3.5 py-2.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] outline-none focus:border-white/20 transition-colors"
               />
               {error && <p className="mt-2 text-xs text-red-400 font-mono">{error}</p>}

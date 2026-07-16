@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GithubIcon } from "@/components/GithubIcon";
+import { useLanguage } from "@/components/LanguageProvider";
 
 function StarIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
   return (
@@ -12,6 +13,7 @@ function StarIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
 }
 
 export function GithubStarsBadge({ className = "" }: { className?: string }) {
+  const { t } = useLanguage();
   const [stars, setStars] = useState<number | null>(null);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function GithubStarsBadge({ className = "" }: { className?: string }) {
       className={`inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white hover:bg-white/[0.08] transition-colors ${className}`}
     >
       <GithubIcon className="h-4 w-4 text-white" />
-      <span>Try Folio Open Source</span>
+      <span>{t("badge.tryOpenSource")}</span>
       <span className="inline-flex items-center gap-1 text-amber-400">
         <StarIcon className="h-3.5 w-3.5" />
         <span className="font-lato text-xs text-neutral-400">{stars ?? "—"}</span>

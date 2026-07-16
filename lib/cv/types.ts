@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import type { PublicProfile, Repo } from "@/lib/profile";
 import type { CvConfig, CvTemplateKey } from "@/lib/cv/config";
+import type { Language } from "@/lib/i18n/translations";
 
 export type CvTemplateVariant = "print" | "preview";
 
@@ -10,6 +11,8 @@ export type CvTemplateProps = {
   config: CvConfig;
   /** "print": hidden except under @media print (default). "preview": always visible — used by CvStudioModal's live preview. */
   variant?: CvTemplateVariant;
+  /** Locale for section titles, date ranges and the generated summary. */
+  lang?: Language;
 };
 
 export type CvTemplateMeta = {

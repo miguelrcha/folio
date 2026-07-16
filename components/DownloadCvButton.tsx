@@ -45,7 +45,7 @@ export function DownloadCvButton({
       <button
         onClick={handleClick}
         className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[var(--color-text)] text-[var(--color-ink)] hover:opacity-90 transition duration-200 text-sm h-9 px-4 font-semibold cursor-pointer"
-        aria-label={`View ${profile.github_username}'s CV as PDF`}
+        aria-label={t("downloadCv.ariaView", { username: profile.github_username })}
       >
         {t("downloadCv.viewCv")}
         <Kbd>D</Kbd>

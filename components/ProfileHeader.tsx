@@ -239,6 +239,7 @@ function useLoggedInUser() {
 }
 
 export function ProfileHeader({ children }: { children: React.ReactNode }) {
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const loggedInUser = useLoggedInUser();
@@ -257,14 +258,14 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
           ? "border-white/[0.08] bg-black/80 backdrop-blur-xl backdrop-saturate-150"
           : "border-transparent"
       }`}
-      aria-label="Main"
+      aria-label={t("nav.ariaMain")}
     >
       <div className="mx-auto w-full max-w-7xl px-6 relative">
         {/* Mobile: logo + hamburger */}
         <div className="flex w-full items-center justify-between py-4 md:hidden">
           <Logo size="sm" />
           <button
-            aria-label="menu"
+            aria-label={t("nav.ariaMenu")}
             onClick={() => setMobileOpen((v) => !v)}
             className="inline-flex items-center justify-center rounded-md p-1 text-[var(--color-text)]/70 hover:bg-white/[0.04] hover:text-[var(--color-text)] transition"
           >
@@ -299,7 +300,7 @@ export function ProfileHeader({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        {/* Desktop bar — mesma estrutura de colunas da landing, pra manter o logo no mesmo X */}
+        {/* Desktop bar — same column structure as the landing page, keeping the logo at the same X */}
         <div className="mx-auto hidden h-[58px] w-full items-center md:flex">
           <div className="flex flex-1 items-center gap-4 lg:w-[320px]">
             <Link href="/">

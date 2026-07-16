@@ -38,7 +38,7 @@ export function CvStudioScreen({
   repos: Repo[];
 }) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const supabase = createClient();
   const [config, setConfig] = useState<CvConfig>(() => resolveCvConfig(profile.cv_config));
   const [saving, setSaving] = useState(false);
@@ -250,7 +250,7 @@ export function CvStudioScreen({
 
           <div className={`${controlsOpen ? "hidden" : "flex"} md:flex flex-1 min-h-0 min-w-0`}>
             <CvPreviewCanvas>
-              <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
+              <CvTemplate profile={profile} repos={repos} config={config} variant="preview" lang={lang} />
             </CvPreviewCanvas>
           </div>
 
@@ -266,7 +266,7 @@ export function CvStudioScreen({
         </div>
       </div>
 
-      <CvTemplate profile={profile} repos={repos} config={config} variant="print" />
+      <CvTemplate profile={profile} repos={repos} config={config} variant="print" lang={lang} />
 
       {previewOpen && (
         <CvPreviewModal

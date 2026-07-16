@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
 import type { ContributionDay } from "@/lib/mock-data";
 
 const intensityColor = (count: number) => {
@@ -35,6 +36,7 @@ export function ContributionGraph({
   cell?: number;
   gap?: number;
 }) {
+  const { t } = useLanguage();
   const weeks = Math.ceil(data.length / 7);
   const [revealedWeeks, setRevealedWeeks] = useState(mode === "building" ? 0 : weeks);
 
@@ -60,7 +62,7 @@ export function ContributionGraph({
       width="100%"
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label="GitHub contribution graph"
+      aria-label={t("contributionGraph.aria")}
     >
       {Array.from({ length: weeks }, (_, w) => {
         const isRevealed = mode !== "building" || w < revealedWeeks;

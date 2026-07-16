@@ -8,10 +8,42 @@ export function isSupportedLanguage(value: string | undefined | null): value is 
   return value === "en" || value === "pt";
 }
 
+// Picks the first supported language from an Accept-Language header. Relies
+// on real browsers listing languages in preference order instead of parsing
+// q= weights — "pt-BR,pt;q=0.9,en;q=0.8" resolves to "pt".
+export function pickLanguageFromAcceptHeader(header: string | null): Language | null {
+  if (!header) return null;
+  for (const part of header.split(",")) {
+    const primary = part.split(";")[0].trim().toLowerCase().split("-")[0];
+    if (isSupportedLanguage(primary)) return primary;
+  }
+  return null;
+}
+
 type Dictionary = Record<string, string>;
 
 export const translations: Record<Language, Dictionary> = {
   en: {
+    // Site metadata (root layout / profile pages)
+    "meta.title": "Folio - Turn your GitHub into a professional resume with AI",
+    "meta.description":
+      "Folio analyzes your repositories, commits, and real tech stack to generate a professional profile and an AI-powered resume.",
+    "meta.ogDescription": "Turn your GitHub into a professional resume with AI.",
+    "meta.profileNotFoundTitle": "Profile not found - Folio",
+    "meta.profileNotFoundDescription": "This GitHub username isn't on Folio yet.",
+    "meta.profileFallbackDescription":
+      "See {name}'s projects, tech stack and resume on Folio.",
+
+    // Shared navigation a11y labels
+    "nav.ariaMain": "Main",
+    "nav.ariaMenu": "menu",
+
+    // GithubStarsBadge
+    "badge.tryOpenSource": "Try Folio Open Source",
+
+    // ContributionGraph
+    "contributionGraph.aria": "GitHub contribution graph",
+
     // Header
     "header.features": "Features",
     "header.examples": "Examples",
@@ -67,6 +99,7 @@ export const translations: Record<Language, Dictionary> = {
     "footer.rights": "All rights reserved.",
 
     // Login
+    "login.docTitle": "Folio - Sign Up",
     "login.joinDevs": "Join several other devs",
     "login.readOnly": "read-only · no write access to your repositories",
     "login.error.authFailed": "GitHub sign-in didn't complete. Try again.",
@@ -150,6 +183,7 @@ export const translations: Record<Language, Dictionary> = {
     "modal.email.ariaEdit": "Edit email",
     "modal.email.title": "Edit email",
     "modal.email.ariaEmail": "Contact email",
+    "modal.email.placeholder": "you@example.com",
     "modal.email.invalid": "Invalid email",
     "modal.email.saveError": "Couldn't save, try again",
     "modal.email.hint": "shown on your public profile and CV",
@@ -225,6 +259,7 @@ export const translations: Record<Language, Dictionary> = {
     // DownloadCvButton
     "downloadCv.generating": "Generating…",
     "downloadCv.viewCv": "View CV",
+    "downloadCv.ariaView": "View {username}'s CV as PDF",
 
     // CvPreviewModal
     "cvPreview.title": "CV Preview",
@@ -260,8 +295,65 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copy caption",
     "shareCard.captionCopied": "Copied ✓",
     "shareCard.generating": "Generating…",
+
+    // CV templates (printed/exported resume)
+    "cv.section.overview": "Overview",
+    "cv.section.experiences": "Experiences",
+    "cv.section.stacks": "Stacks",
+    "cv.section.projects": "Projects, by impact",
+    "cv.section.certificates": "Certificates",
+    "cv.section.languages": "Languages",
+
+    // Spoken language names (lib/language.ts LANGUAGE_OPTIONS)
+    "language.portuguese": "Portuguese",
+    "language.english": "English",
+    "language.spanish": "Spanish",
+    "language.french": "French",
+    "language.german": "German",
+    "language.italian": "Italian",
+    "language.japanese": "Japanese",
+    "language.mandarin": "Mandarin",
+    "language.korean": "Korean",
+    "language.russian": "Russian",
+    "language.arabic": "Arabic",
+    "language.hindi": "Hindi",
+    "language.dutch": "Dutch",
+    "language.swedish": "Swedish",
+    "language.polish": "Polish",
+    "language.turkish": "Turkish",
+    "language.vietnamese": "Vietnamese",
+    "language.greek": "Greek",
+    "language.hebrew": "Hebrew",
+    "language.ukrainian": "Ukrainian",
+
+    // Proficiency levels (lib/language.ts PROFICIENCY_OPTIONS)
+    "proficiency.basic": "Basic",
+    "proficiency.intermediate": "Intermediate",
+    "proficiency.advanced": "Advanced",
+    "proficiency.fluent": "Fluent",
+    "proficiency.native": "Native",
   },
   pt: {
+    // Site metadata (root layout / profile pages)
+    "meta.title": "Folio - Transforme seu GitHub em um currículo profissional com IA",
+    "meta.description":
+      "O Folio analisa seus repositórios, commits e stack real para gerar um perfil profissional e um currículo com IA.",
+    "meta.ogDescription": "Transforme seu GitHub em um currículo profissional com IA.",
+    "meta.profileNotFoundTitle": "Perfil não encontrado - Folio",
+    "meta.profileNotFoundDescription": "Esse username do GitHub ainda não está no Folio.",
+    "meta.profileFallbackDescription":
+      "Veja os projetos, a stack e o currículo de {name} no Folio.",
+
+    // Shared navigation a11y labels
+    "nav.ariaMain": "Principal",
+    "nav.ariaMenu": "menu",
+
+    // GithubStarsBadge
+    "badge.tryOpenSource": "Experimente o Folio Open Source",
+
+    // ContributionGraph
+    "contributionGraph.aria": "Gráfico de contribuições do GitHub",
+
     // Header
     "header.features": "Recursos",
     "header.examples": "Exemplos",
@@ -317,6 +409,7 @@ export const translations: Record<Language, Dictionary> = {
     "footer.rights": "Todos os direitos reservados.",
 
     // Login
+    "login.docTitle": "Folio - Cadastro",
     "login.joinDevs": "Junte-se a vários outros devs",
     "login.readOnly": "somente leitura · sem acesso de escrita aos seus repositórios",
     "login.error.authFailed": "O login com o GitHub não foi concluído. Tente de novo.",
@@ -400,6 +493,7 @@ export const translations: Record<Language, Dictionary> = {
     "modal.email.ariaEdit": "Editar e-mail",
     "modal.email.title": "Editar e-mail",
     "modal.email.ariaEmail": "E-mail de contato",
+    "modal.email.placeholder": "voce@exemplo.com",
     "modal.email.invalid": "E-mail inválido",
     "modal.email.saveError": "Não foi possível salvar, tente de novo",
     "modal.email.hint": "exibido no seu perfil público e currículo",
@@ -475,6 +569,7 @@ export const translations: Record<Language, Dictionary> = {
     // DownloadCvButton
     "downloadCv.generating": "Gerando…",
     "downloadCv.viewCv": "Ver Currículo",
+    "downloadCv.ariaView": "Ver o currículo de {username} em PDF",
 
     // CvPreviewModal
     "cvPreview.title": "Pré-visualização do currículo",
@@ -510,6 +605,43 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copiar legenda",
     "shareCard.captionCopied": "Copiado ✓",
     "shareCard.generating": "Gerando…",
+
+    // CV templates (printed/exported resume)
+    "cv.section.overview": "Visão geral",
+    "cv.section.experiences": "Experiências",
+    "cv.section.stacks": "Stacks",
+    "cv.section.projects": "Projetos, por impacto",
+    "cv.section.certificates": "Certificados",
+    "cv.section.languages": "Idiomas",
+
+    // Spoken language names (lib/language.ts LANGUAGE_OPTIONS)
+    "language.portuguese": "Português",
+    "language.english": "Inglês",
+    "language.spanish": "Espanhol",
+    "language.french": "Francês",
+    "language.german": "Alemão",
+    "language.italian": "Italiano",
+    "language.japanese": "Japonês",
+    "language.mandarin": "Mandarim",
+    "language.korean": "Coreano",
+    "language.russian": "Russo",
+    "language.arabic": "Árabe",
+    "language.hindi": "Hindi",
+    "language.dutch": "Holandês",
+    "language.swedish": "Sueco",
+    "language.polish": "Polonês",
+    "language.turkish": "Turco",
+    "language.vietnamese": "Vietnamita",
+    "language.greek": "Grego",
+    "language.hebrew": "Hebraico",
+    "language.ukrainian": "Ucraniano",
+
+    // Proficiency levels (lib/language.ts PROFICIENCY_OPTIONS)
+    "proficiency.basic": "Básico",
+    "proficiency.intermediate": "Intermediário",
+    "proficiency.advanced": "Avançado",
+    "proficiency.fluent": "Fluente",
+    "proficiency.native": "Nativo",
   },
 };
 

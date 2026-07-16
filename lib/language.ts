@@ -1,3 +1,5 @@
+import { translate, type Language } from "@/lib/i18n/translations";
+
 export type LanguageEntry = {
   language: string; // code, ex: "portuguese"
   proficiency: string; // ex: "Native"
@@ -32,8 +34,29 @@ export function emptyLanguageEntry(): LanguageEntry {
   return { language: LANGUAGE_OPTIONS[0].code, proficiency: PROFICIENCY_OPTIONS[0] };
 }
 
-export function formatLanguageEntry(entry: LanguageEntry, { showFlag = true } = {}): string {
-  const lang = LANGUAGE_OPTIONS.find((l) => l.code === entry.language);
-  if (!lang) return "";
-  return showFlag ? `${lang.flag} ${lang.name} - ${entry.proficiency}` : `${lang.name} - ${entry.proficiency}`;
+// Dictionary lookup that keeps the stored value as fallback — translate()
+// returns the key itself on a miss, which must never leak into the UI.
+function tOr(lang: Language, key: string, fallback: string): string {
+  const value = translate(lang, key);
+  return value === key ? fallback : value;
+}
+
+export function languageName(code: string, lang: Language = "en"): string {
+  const option = LANGUAGE_OPTIONS.find((l) => l.code === code);
+  if (!option) return "";
+  return tOr(lang, `language.${option.code}`, option.name);
+}
+
+export function proficiencyLabel(proficiency: string, lang: Language = "en"): string {
+  return tOr(lang, `proficiency.${proficiency.toLowerCase()}`, proficiency);
+}
+
+export function formatLanguageEntry(
+  entry: LanguageEntry,
+  { showFlag = true, lang = "en" as Language } = {}
+): string {
+  const option = LANGUAGE_OPTIONS.find((l) => l.code === entry.language);
+  if (!option) return "";
+  const label = `${languageName(entry.language, lang)} - ${proficiencyLabel(entry.proficiency, lang)}`;
+  return showFlag ? `${option.flag} ${label}` : label;
 }

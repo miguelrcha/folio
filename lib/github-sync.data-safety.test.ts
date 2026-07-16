@@ -269,7 +269,9 @@ describe("syncGithubProfile data safety", () => {
     const { writes } = await runSync();
     const update = getWrite(writes, "profiles", "update") as Record<string, unknown>;
 
-    expect(Object.keys(update).sort()).toEqual([...ALLOWED_PROFILE_COLUMNS, "summary"].sort());
+    expect(Object.keys(update).sort()).toEqual(
+      [...ALLOWED_PROFILE_COLUMNS, "summary", "summary_pt"].sort()
+    );
     // Spot-check that values are field-by-field picks, not payload spreads.
     expect(update.bio).toBe(GITHUB_USER.bio);
     expect(update.total_commits).toBe(126); // 3 mocked years × 42 commits

@@ -28,7 +28,7 @@ import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 import { syncProfileIfStale } from "@/lib/github-sync";
 import { getServerLanguage } from "@/lib/i18n/server";
 import { translate } from "@/lib/i18n/translations";
-import type { Repo } from "@/lib/profile";
+import { localizedSummary, type Repo } from "@/lib/profile";
 import { buildProfileMetaDescription, profileDisplayName } from "@/lib/profile-metadata";
 import { getPublicProfile } from "./profile-data";
 
@@ -39,20 +39,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { username } = await params;
   const profile = await getPublicProfile(username);
+  const lang = await getServerLanguage();
 
   // Unknown usernames get honest not-found metadata and stay out of the
   // index instead of advertising a page that 404s.
   if (!profile) {
     return {
-      title: "Profile not found - Folio",
-      description: "This GitHub username isn't on Folio yet.",
+      title: translate(lang, "meta.profileNotFoundTitle"),
+      description: translate(lang, "meta.profileNotFoundDescription"),
       robots: { index: false },
     };
   }
 
   const displayName = profileDisplayName(profile);
   const title = `${displayName} - Folio`;
-  const description = buildProfileMetaDescription(profile);
+  const description = buildProfileMetaDescription(profile, lang);
   const path = `/${profile.github_username}`;
 
   // og:image and twitter:image come from the sibling opengraph-image.tsx
@@ -207,7 +208,7 @@ export default async function ProfilePage({
               <span className="flex-1 h-px bg-[var(--color-border)]" />
             </div>
             <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl">
-              {profile.summary || (
+              {localizedSummary(profile, lang) || (
                 <span className="text-[var(--color-text-faint)] font-mono text-sm">
                   {t("profile.empty.summary")}
                 </span>
@@ -417,7 +418,7 @@ export default async function ProfilePage({
                   key={i}
                   className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2.5 py-1 font-mono text-xs text-[var(--color-text)]"
                 >
-                  {formatLanguageEntry(entry)}
+                  {formatLanguageEntry(entry, { lang })}
                 </span>
               ))}
             </div>
