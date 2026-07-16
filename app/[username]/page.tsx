@@ -28,7 +28,7 @@ import { ConnectLinkedInButton } from "@/components/ConnectLinkedInButton";
 import { syncProfileIfStale } from "@/lib/github-sync";
 import { getServerLanguage } from "@/lib/i18n/server";
 import { translate } from "@/lib/i18n/translations";
-import type { Repo } from "@/lib/profile";
+import { localizedSummary, type Repo } from "@/lib/profile";
 import { buildProfileMetaDescription, profileDisplayName } from "@/lib/profile-metadata";
 import { getPublicProfile } from "./profile-data";
 
@@ -207,7 +207,7 @@ export default async function ProfilePage({
               <span className="flex-1 h-px bg-[var(--color-border)]" />
             </div>
             <p className="mt-3 text-[var(--color-text)] leading-relaxed max-w-3xl">
-              {profile.summary || (
+              {localizedSummary(profile, lang) || (
                 <span className="text-[var(--color-text-faint)] font-mono text-sm">
                   {t("profile.empty.summary")}
                 </span>

@@ -32,7 +32,9 @@ export function EditOverviewModal({
     setError(null);
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ summary: text.trim(), summary_manual: true })
+      // Clears summary_pt: a manual overview is single-language text shown
+      // verbatim to every visitor, so the generated PT variant must not linger.
+      .update({ summary: text.trim(), summary_manual: true, summary_pt: null })
       .eq("id", profileId);
     setSaving(false);
 

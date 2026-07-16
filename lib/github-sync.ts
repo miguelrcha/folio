@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decrypt } from "@/lib/crypto";
+import type { Language } from "@/lib/i18n/translations";
 
 export class SyncError extends Error {
   status: number;
@@ -504,51 +505,82 @@ export function extractReadmeStacks(markdown: string): string[] {
   return Array.from(names);
 }
 
-export function joinStack(names: string[]): string {
-  if (names.length === 0) return "multiple technologies";
+export function joinStack(names: string[], lang: Language = "en"): string {
+  const and = lang === "pt" ? "e" : "and";
+  if (names.length === 0) return lang === "pt" ? "múltiplas tecnologias" : "multiple technologies";
   if (names.length === 1) return names[0];
-  if (names.length === 2) return `${names[0]} and ${names[1]}`;
-  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+  if (names.length === 2) return `${names[0]} ${and} ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")} ${and} ${names[names.length - 1]}`;
 }
 
-export function buildSummary(opts: {
-  username: string;
-  topStack: { name: string; percentage: number }[];
-  publicRepos: number;
-  activeRepos: number;
-  totalStars: number;
-  topRepoName: string | null;
-}) {
+export function buildSummary(
+  opts: {
+    username: string;
+    topStack: { name: string; percentage: number }[];
+    publicRepos: number;
+    activeRepos: number;
+    totalStars: number;
+    topRepoName: string | null;
+  },
+  lang: Language = "en"
+) {
   const stackNames = opts.topStack.slice(0, 3).map((s) => s.name);
-  const stack = joinStack(stackNames);
+  const stack = joinStack(stackNames, lang);
   const hasStars = opts.totalStars > 0;
   const hasTopRepo = Boolean(opts.topRepoName);
 
-  const variants = [
-    `Developer focused on ${stack}, maintaining ${opts.publicRepos} public repositories on GitHub — ${opts.activeRepos} of them active in the last 90 days.`,
+  const variants =
+    lang === "pt"
+      ? [
+          `Dev com foco em ${stack}, mantendo ${opts.publicRepos} repositórios públicos no GitHub — ${opts.activeRepos} deles ativos nos últimos 90 dias.`,
 
-    `Works mainly with ${stack}.${
-      hasStars
-        ? ` On GitHub, has ${opts.totalStars} stars spread across ${opts.publicRepos} public repositories.`
-        : ` Maintains ${opts.publicRepos} public repositories on GitHub, favoring quality over quantity.`
-    }`,
+          `Trabalha principalmente com ${stack}.${
+            hasStars
+              ? ` No GitHub, tem ${opts.totalStars} estrelas distribuídas em ${opts.publicRepos} repositórios públicos.`
+              : ` Mantém ${opts.publicRepos} repositórios públicos no GitHub, priorizando qualidade em vez de quantidade.`
+          }`,
 
-    `${stack} form the main stack.${
-      hasTopRepo
-        ? ` The ${opts.topRepoName} project is the current highlight, out of ${opts.publicRepos} public repositories total.`
-        : ` Maintains a base of ${opts.publicRepos} public repositories on GitHub.`
-    }`,
+          `${stack} formam a stack principal.${
+            hasTopRepo
+              ? ` O projeto ${opts.topRepoName} é o destaque atual, entre ${opts.publicRepos} repositórios públicos no total.`
+              : ` Mantém uma base de ${opts.publicRepos} repositórios públicos no GitHub.`
+          }`,
 
-    `Builds mainly in ${stack}.${
-      hasStars
-        ? ` Has accumulated ${opts.totalStars} stars across open source projects`
-        : ` Maintains an active open source presence`
-    }, with ${opts.activeRepos} repositories in development over the last 90 days.`,
+          `Constrói principalmente em ${stack}.${
+            hasStars
+              ? ` Acumulou ${opts.totalStars} estrelas em projetos open source`
+              : ` Mantém uma presença open source ativa`
+          }, com ${opts.activeRepos} repositórios em desenvolvimento nos últimos 90 dias.`,
 
-    `Out of ${opts.publicRepos} public repositories on GitHub, ${opts.activeRepos} are still under active development — mainly in ${stack}${
-      hasTopRepo ? `, with ${opts.topRepoName} standing out` : ""
-    }.`,
-  ];
+          `Dos ${opts.publicRepos} repositórios públicos no GitHub, ${opts.activeRepos} seguem em desenvolvimento ativo — principalmente em ${stack}${
+            hasTopRepo ? `, com destaque para ${opts.topRepoName}` : ""
+          }.`,
+        ]
+      : [
+          `Developer focused on ${stack}, maintaining ${opts.publicRepos} public repositories on GitHub — ${opts.activeRepos} of them active in the last 90 days.`,
+
+          `Works mainly with ${stack}.${
+            hasStars
+              ? ` On GitHub, has ${opts.totalStars} stars spread across ${opts.publicRepos} public repositories.`
+              : ` Maintains ${opts.publicRepos} public repositories on GitHub, favoring quality over quantity.`
+          }`,
+
+          `${stack} form the main stack.${
+            hasTopRepo
+              ? ` The ${opts.topRepoName} project is the current highlight, out of ${opts.publicRepos} public repositories total.`
+              : ` Maintains a base of ${opts.publicRepos} public repositories on GitHub.`
+          }`,
+
+          `Builds mainly in ${stack}.${
+            hasStars
+              ? ` Has accumulated ${opts.totalStars} stars across open source projects`
+              : ` Maintains an active open source presence`
+          }, with ${opts.activeRepos} repositories in development over the last 90 days.`,
+
+          `Out of ${opts.publicRepos} public repositories on GitHub, ${opts.activeRepos} are still under active development — mainly in ${stack}${
+            hasTopRepo ? `, with ${opts.topRepoName} standing out` : ""
+          }.`,
+        ];
 
   const index = hashSeed(opts.username) % variants.length;
   return variants[index];
@@ -790,14 +822,18 @@ export async function syncGithubProfile(
   };
 
   if (!profile?.summary_manual) {
-    profileUpdate.summary = buildSummary({
+    // Stored once per language; the profile page picks the column matching
+    // the visitor's locale (falling back to the English `summary`).
+    const summaryInputs = {
       username: githubUser.login,
       topStack,
       publicRepos: githubUser.public_repos,
       activeRepos,
       totalStars,
       topRepoName,
-    });
+    };
+    profileUpdate.summary = buildSummary(summaryInputs, "en");
+    profileUpdate.summary_pt = buildSummary(summaryInputs, "pt");
   }
 
   const { error: profileError } = await supabase
