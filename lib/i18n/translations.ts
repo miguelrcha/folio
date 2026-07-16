@@ -272,6 +272,35 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copy caption",
     "shareCard.captionCopied": "Copied ✓",
     "shareCard.generating": "Generating…",
+
+    // Spoken language names (lib/language.ts LANGUAGE_OPTIONS)
+    "language.portuguese": "Portuguese",
+    "language.english": "English",
+    "language.spanish": "Spanish",
+    "language.french": "French",
+    "language.german": "German",
+    "language.italian": "Italian",
+    "language.japanese": "Japanese",
+    "language.mandarin": "Mandarin",
+    "language.korean": "Korean",
+    "language.russian": "Russian",
+    "language.arabic": "Arabic",
+    "language.hindi": "Hindi",
+    "language.dutch": "Dutch",
+    "language.swedish": "Swedish",
+    "language.polish": "Polish",
+    "language.turkish": "Turkish",
+    "language.vietnamese": "Vietnamese",
+    "language.greek": "Greek",
+    "language.hebrew": "Hebrew",
+    "language.ukrainian": "Ukrainian",
+
+    // Proficiency levels (lib/language.ts PROFICIENCY_OPTIONS)
+    "proficiency.basic": "Basic",
+    "proficiency.intermediate": "Intermediate",
+    "proficiency.advanced": "Advanced",
+    "proficiency.fluent": "Fluent",
+    "proficiency.native": "Native",
   },
   pt: {
     // Header
@@ -522,6 +551,35 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copiar legenda",
     "shareCard.captionCopied": "Copiado ✓",
     "shareCard.generating": "Gerando…",
+
+    // Spoken language names (lib/language.ts LANGUAGE_OPTIONS)
+    "language.portuguese": "Português",
+    "language.english": "Inglês",
+    "language.spanish": "Espanhol",
+    "language.french": "Francês",
+    "language.german": "Alemão",
+    "language.italian": "Italiano",
+    "language.japanese": "Japonês",
+    "language.mandarin": "Mandarim",
+    "language.korean": "Coreano",
+    "language.russian": "Russo",
+    "language.arabic": "Árabe",
+    "language.hindi": "Hindi",
+    "language.dutch": "Holandês",
+    "language.swedish": "Sueco",
+    "language.polish": "Polonês",
+    "language.turkish": "Turco",
+    "language.vietnamese": "Vietnamita",
+    "language.greek": "Grego",
+    "language.hebrew": "Hebraico",
+    "language.ukrainian": "Ucraniano",
+
+    // Proficiency levels (lib/language.ts PROFICIENCY_OPTIONS)
+    "proficiency.basic": "Básico",
+    "proficiency.intermediate": "Intermediário",
+    "proficiency.advanced": "Avançado",
+    "proficiency.fluent": "Fluente",
+    "proficiency.native": "Nativo",
   },
 };
 

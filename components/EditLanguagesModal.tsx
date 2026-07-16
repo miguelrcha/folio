@@ -10,6 +10,8 @@ import {
   PROFICIENCY_OPTIONS,
   emptyLanguageEntry as emptyEntry,
   formatLanguageEntry,
+  languageName,
+  proficiencyLabel,
   type LanguageEntry,
 } from "@/lib/language";
 
@@ -21,7 +23,7 @@ export function EditLanguagesModal({
   initialEntries: LanguageEntry[];
 }) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const supabase = createClient();
   const [open, setOpen] = useState(false);
   const [entries, setEntries] = useState<LanguageEntry[]>(initialEntries);
@@ -106,7 +108,7 @@ export function EditLanguagesModal({
                   >
                     {LANGUAGE_OPTIONS.map((l) => (
                       <option key={l.code} value={l.code}>
-                        {l.flag} {l.name}
+                        {l.flag} {languageName(l.code, lang)}
                       </option>
                     ))}
                   </select>
@@ -117,7 +119,7 @@ export function EditLanguagesModal({
                     className="w-36 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-white/20"
                   >
                     {PROFICIENCY_OPTIONS.map((p) => (
-                      <option key={p} value={p}>{p}</option>
+                      <option key={p} value={p}>{proficiencyLabel(p, lang)}</option>
                     ))}
                   </select>
                   {entries.length > 1 && (
@@ -149,7 +151,7 @@ export function EditLanguagesModal({
                       key={i}
                       className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2.5 py-1 font-mono text-xs text-[var(--color-text)]"
                     >
-                      {formatLanguageEntry(entry)}
+                      {formatLanguageEntry(entry, { lang })}
                     </span>
                   ))}
                 </div>

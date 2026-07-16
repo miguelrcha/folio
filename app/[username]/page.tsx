@@ -417,7 +417,7 @@ export default async function ProfilePage({
                   key={i}
                   className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2.5 py-1 font-mono text-xs text-[var(--color-text)]"
                 >
-                  {formatLanguageEntry(entry)}
+                  {formatLanguageEntry(entry, { lang })}
                 </span>
               ))}
             </div>
