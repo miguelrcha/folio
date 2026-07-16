@@ -19,6 +19,7 @@ const profile: PublicProfile = {
   location: null,
   contact_email: null,
   summary: null,
+  summary_pt: null,
   public_repos: 0,
   followers: 0,
   top_stack: null,

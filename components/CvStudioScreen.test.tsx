@@ -33,6 +33,7 @@ const profile: PublicProfile = {
   location: "London",
   contact_email: "ada@example.com",
   summary: "Engineer with a knack for the analytical engine.",
+  summary_pt: null,
   public_repos: 1,
   followers: 0,
   top_stack: [{ name: "TypeScript", percentage: 80 }],
