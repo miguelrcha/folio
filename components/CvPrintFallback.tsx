@@ -1,6 +1,7 @@
 "use client";
 
 import { CV_TEMPLATES } from "@/lib/cv/templates";
+import { useLanguage } from "@/components/LanguageProvider";
 import type { CvConfig } from "@/lib/cv/config";
 import type { PublicProfile, Repo } from "@/lib/profile";
 
@@ -18,6 +19,9 @@ export function CvPrintFallback({
   repos: Repo[];
   config: CvConfig;
 }) {
+  const { lang } = useLanguage();
   const CvTemplate = CV_TEMPLATES[config.template].component;
-  return <CvTemplate profile={profile} repos={repos} config={config} variant="print" />;
+  return (
+    <CvTemplate profile={profile} repos={repos} config={config} variant="print" lang={lang} />
+  );
 }

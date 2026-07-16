@@ -273,6 +273,14 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.captionCopied": "Copied ✓",
     "shareCard.generating": "Generating…",
 
+    // CV templates (printed/exported resume)
+    "cv.section.overview": "Overview",
+    "cv.section.experiences": "Experiences",
+    "cv.section.stacks": "Stacks",
+    "cv.section.projects": "Projects, by impact",
+    "cv.section.certificates": "Certificates",
+    "cv.section.languages": "Languages",
+
     // Spoken language names (lib/language.ts LANGUAGE_OPTIONS)
     "language.portuguese": "Portuguese",
     "language.english": "English",
@@ -551,6 +559,14 @@ export const translations: Record<Language, Dictionary> = {
     "shareCard.copyCaption": "Copiar legenda",
     "shareCard.captionCopied": "Copiado ✓",
     "shareCard.generating": "Gerando…",
+
+    // CV templates (printed/exported resume)
+    "cv.section.overview": "Visão geral",
+    "cv.section.experiences": "Experiências",
+    "cv.section.stacks": "Stacks",
+    "cv.section.projects": "Projetos, por impacto",
+    "cv.section.certificates": "Certificados",
+    "cv.section.languages": "Idiomas",
 
     // Spoken language names (lib/language.ts LANGUAGE_OPTIONS)
     "language.portuguese": "Português",

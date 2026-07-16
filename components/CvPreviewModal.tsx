@@ -41,7 +41,7 @@ export function CvPreviewModal({
   config: CvConfig;
   onClose: () => void;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const CvTemplate = CV_TEMPLATES[config.template].component;
 
@@ -63,7 +63,7 @@ export function CvPreviewModal({
         </div>
 
         <CvPreviewCanvasAutoFit>
-          <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
+          <CvTemplate profile={profile} repos={repos} config={config} variant="preview" lang={lang} />
         </CvPreviewCanvasAutoFit>
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-[var(--color-border)] px-5 py-4">

@@ -3,6 +3,8 @@ import { GithubIcon } from "@/components/GithubIcon";
 import { formatExperienceRange } from "@/lib/experience";
 import { formatCertificationRange } from "@/lib/certification";
 import { formatLanguageEntry } from "@/lib/language";
+import { localizedSummary } from "@/lib/profile";
+import { translate } from "@/lib/i18n/translations";
 import { CV_FONT_STACKS, CV_SECTION_LIMITS, type CvSectionKey } from "@/lib/cv/config";
 import type { CvTemplateProps } from "@/lib/cv/types";
 
@@ -35,7 +37,15 @@ function BulletList({ items }: { items: string[] }) {
 // bullets, no photo by default, no tags/cards. Rendered `hidden print:block`
 // — only appears when the page is printed/exported (see the export button
 // which calls window.print(), and the @page rule in app/globals.css).
-export function ClassicTemplate({ profile, repos, config, variant = "print" }: CvTemplateProps) {
+export function ClassicTemplate({
+  profile,
+  repos,
+  config,
+  variant = "print",
+  lang = "en",
+}: CvTemplateProps) {
+  const t = (key: string) => translate(lang, key);
+  const summary = localizedSummary(profile, lang);
   const stacks = profile.top_stack ?? [];
   const experiences = Array.isArray(profile.experiences_json) ? profile.experiences_json : [];
   const certifications = Array.isArray(profile.certifications_json)
@@ -48,10 +58,10 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
     switch (key) {
       case "overview":
         return (
-          profile.summary && (
+          summary && (
             <div className="break-inside-avoid">
-              <SectionTitle>Overview</SectionTitle>
-              <p className="text-[8.5pt] text-[#374151] leading-relaxed">{profile.summary}</p>
+              <SectionTitle>{t("cv.section.overview")}</SectionTitle>
+              <p className="text-[8.5pt] text-[#374151] leading-relaxed">{summary}</p>
             </div>
           )
         );
@@ -60,10 +70,10 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
         return (
           experiences.length > 0 && (
             <div>
-              <SectionTitle>Experiences</SectionTitle>
+              <SectionTitle>{t("cv.section.experiences")}</SectionTitle>
               <ul className="space-y-[5pt] pl-[10pt]">
                 {experiences.slice(0, LIMITS.experiences).map((exp, i) => {
-                  const range = formatExperienceRange(exp);
+                  const range = formatExperienceRange(exp, lang);
                   const parts = [exp?.title ?? "", exp?.company ?? ""].filter(Boolean).join(" — ");
                   const headline = range ? `${parts} (${range})` : parts;
                   return (
@@ -96,7 +106,7 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
         return (
           stacks.length > 0 && (
             <div className="break-inside-avoid">
-              <SectionTitle>Stacks</SectionTitle>
+              <SectionTitle>{t("cv.section.stacks")}</SectionTitle>
               <p className="text-[8.5pt] text-[#374151] leading-relaxed">
                 {stacks.map((s) => s.name).join("  ·  ")}
               </p>
@@ -108,7 +118,7 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
         return (
           repos.length > 0 && (
             <div>
-              <SectionTitle>Projects, by impact</SectionTitle>
+              <SectionTitle>{t("cv.section.projects")}</SectionTitle>
               <ul className="space-y-[5pt] pl-[10pt]">
                 {repos.slice(0, LIMITS.projects).map((repo) => (
                   <li
@@ -140,10 +150,10 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
         return (
           certifications.length > 0 && (
             <div className="break-inside-avoid">
-              <SectionTitle>Certificates</SectionTitle>
+              <SectionTitle>{t("cv.section.certificates")}</SectionTitle>
               <BulletList
                 items={certifications.slice(0, LIMITS.certifications).map((cert) => {
-                  const range = formatCertificationRange(cert);
+                  const range = formatCertificationRange(cert, lang);
                   const parts = [cert?.name ?? "", cert?.issuer ?? ""].filter(Boolean).join(" — ");
                   return range ? `${parts} (${range})` : parts;
                 })}
@@ -156,10 +166,10 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
         return (
           languageEntries.length > 0 && (
             <div className="break-inside-avoid">
-              <SectionTitle>Languages</SectionTitle>
+              <SectionTitle>{t("cv.section.languages")}</SectionTitle>
               <BulletList
                 items={languageEntries.map((entry) =>
-                  formatLanguageEntry(entry, { showFlag: config.showLanguageFlags })
+                  formatLanguageEntry(entry, { showFlag: config.showLanguageFlags, lang })
                 )}
               />
             </div>
@@ -218,7 +228,7 @@ export function ClassicTemplate({ profile, repos, config, variant = "print" }: C
         </div>
 
         <div className="mt-[14pt] pt-[6pt] border-t border-[#e5e7eb] text-[7.5pt] text-[#9ca3af] text-center">
-          generated automatically from github · meufolio.dev/{profile.github_username}
+          {t("profile.footer.generated")} · meufolio.dev/{profile.github_username}
         </div>
       </div>
     </div>

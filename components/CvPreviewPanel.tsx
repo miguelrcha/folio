@@ -49,7 +49,7 @@ export function CvPreviewPanel({
   config: CvConfig;
   onClose: () => void;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const CvTemplate = CV_TEMPLATES[config.template].component;
 
@@ -81,7 +81,7 @@ export function CvPreviewPanel({
       </div>
 
       <div className="px-2 pb-10">
-        <CvTemplate profile={profile} repos={repos} config={config} variant="preview" />
+        <CvTemplate profile={profile} repos={repos} config={config} variant="preview" lang={lang} />
       </div>
     </div>,
     document.body
