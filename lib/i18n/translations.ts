@@ -8,6 +8,18 @@ export function isSupportedLanguage(value: string | undefined | null): value is 
   return value === "en" || value === "pt";
 }
 
+// Picks the first supported language from an Accept-Language header. Relies
+// on real browsers listing languages in preference order instead of parsing
+// q= weights — "pt-BR,pt;q=0.9,en;q=0.8" resolves to "pt".
+export function pickLanguageFromAcceptHeader(header: string | null): Language | null {
+  if (!header) return null;
+  for (const part of header.split(",")) {
+    const primary = part.split(";")[0].trim().toLowerCase().split("-")[0];
+    if (isSupportedLanguage(primary)) return primary;
+  }
+  return null;
+}
+
 type Dictionary = Record<string, string>;
 
 export const translations: Record<Language, Dictionary> = {
