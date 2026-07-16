@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { pickLanguageFromAcceptHeader } from "@/lib/i18n/translations";
+import { pickLanguageFromAcceptHeader, translations } from "@/lib/i18n/translations";
+
+describe("translations dictionaries", () => {
+  it("keeps en and pt key sets identical", () => {
+    // translate() silently falls back to English on a missing pt key (and to
+    // the raw key on a missing en key), so drift never fails at runtime —
+    // this is the only guard.
+    expect(Object.keys(translations.pt).sort()).toEqual(Object.keys(translations.en).sort());
+  });
+});
 
 describe("pickLanguageFromAcceptHeader", () => {
   it("resolves a Brazilian browser header to pt", () => {
