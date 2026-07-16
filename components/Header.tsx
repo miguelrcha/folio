@@ -190,7 +190,7 @@ export function Header() {
           ? "border-white/[0.06] bg-black/95 backdrop-blur-2xl backdrop-saturate-[1.8] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_16px_40px_-12px_rgba(0,0,0,0.85)]"
           : "border-transparent"
       }`}
-      aria-label="Main"
+      aria-label={t("nav.ariaMain")}
     >
       {scrolled && (
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.02] via-transparent to-black/[0.2]" />
@@ -212,7 +212,7 @@ export function Header() {
               <span className="text-md font-semibold">{profileCount ?? "—"}</span>
             </a>
             <button
-              aria-label="menu"
+              aria-label={t("nav.ariaMenu")}
               onClick={() => setMobileOpen((v) => !v)}
               className="inline-flex items-center justify-center rounded-md p-1 text-[var(--color-text)]/70 hover:bg-white/[0.04] hover:text-[var(--color-text)] transition"
             >

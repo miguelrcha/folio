@@ -39,20 +39,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { username } = await params;
   const profile = await getPublicProfile(username);
+  const lang = await getServerLanguage();
 
   // Unknown usernames get honest not-found metadata and stay out of the
   // index instead of advertising a page that 404s.
   if (!profile) {
     return {
-      title: "Profile not found - Folio",
-      description: "This GitHub username isn't on Folio yet.",
+      title: translate(lang, "meta.profileNotFoundTitle"),
+      description: translate(lang, "meta.profileNotFoundDescription"),
       robots: { index: false },
     };
   }
 
   const displayName = profileDisplayName(profile);
   const title = `${displayName} - Folio`;
-  const description = buildProfileMetaDescription(profile);
+  const description = buildProfileMetaDescription(profile, lang);
   const path = `/${profile.github_username}`;
 
   // og:image and twitter:image come from the sibling opengraph-image.tsx

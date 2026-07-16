@@ -74,8 +74,8 @@ export default function SignInPage() {
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
-    document.title = "Folio - Sign Up";
-  }, []);
+    document.title = t("login.docTitle");
+  }, [t]);
 
   useEffect(() => {
     const supabase = createClient();
