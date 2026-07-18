@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getPublicProfile } from "@/app/[username]/profile-data";
+import { fetchAvatarDataUrl } from "@/lib/avatar";
 
 export const size = { width: 1200, height: 630 };
 
@@ -11,9 +12,9 @@ const BORDER = "#262626";
 const TEXT = "#ededed";
 const TEXT_MUTED = "#8c8c8c";
 
-// satori fails the whole render if a remote <img> can't be fetched, so every
-// image (avatar, logo) is resolved to a data URL first and dropped gracefully
-// on failure — shared with opengraph-image.tsx's fetchAvatarDataUrl.
+// Same data-URL trick as lib/avatar.ts, but for the same-origin logo only —
+// the avatar goes through fetchAvatarDataUrl, which enforces the host
+// allowlist on the DB-sourced URL.
 async function fetchImageDataUrl(url: string): Promise<string | null> {
   try {
     const res = await fetch(url);
@@ -42,7 +43,7 @@ export async function GET(
   }
 
   const [avatar, logo] = await Promise.all([
-    profile.avatar_url ? fetchImageDataUrl(profile.avatar_url) : Promise.resolve(null),
+    fetchAvatarDataUrl(profile.avatar_url),
     fetchImageDataUrl(new URL("/logo.png", request.url).toString()),
   ]);
 
