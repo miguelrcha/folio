@@ -622,6 +622,7 @@ async function fetchTotalCommits(accessToken: string, createdAt: string | null):
                 viewer {
                   contributionsCollection(from: $from, to: $to) {
                     totalCommitContributions
+                    restrictedContributionsCount
                   }
                 }
               }
@@ -632,7 +633,14 @@ async function fetchTotalCommits(accessToken: string, createdAt: string | null):
 
         if (!res.ok) return 0;
         const json = await res.json();
-        return json?.data?.viewer?.contributionsCollection?.totalCommitContributions ?? 0;
+        // restrictedContributionsCount covers private-repo contributions as an
+        // anonymous total — the token only has read:user, so they no longer
+        // appear in totalCommitContributions.
+        const collection = json?.data?.viewer?.contributionsCollection;
+        return (
+          (collection?.totalCommitContributions ?? 0) +
+          (collection?.restrictedContributionsCount ?? 0)
+        );
       } catch {
         return 0;
       }
