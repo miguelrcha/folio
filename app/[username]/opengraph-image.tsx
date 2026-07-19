@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getPublicProfile } from "./profile-data";
 import { profileDisplayName } from "@/lib/profile-metadata";
+import { fetchAvatarDataUrl } from "@/lib/avatar";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -14,21 +15,6 @@ const BORDER = "#262626";
 const TEXT = "#ededed";
 const TEXT_MUTED = "#8c8c8c";
 const GRAPH_GREENS = ["#1a1a1a", "#2d4a2f", "#3d6640", "#4a7d4f"];
-
-// satori fails the whole render if a remote <img> can't be fetched, so the
-// avatar is resolved to a data URL first and dropped gracefully on failure.
-async function fetchAvatarDataUrl(url: string | null): Promise<string | null> {
-  if (!url) return null;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const buffer = Buffer.from(await res.arrayBuffer());
-    const type = res.headers.get("content-type") ?? "image/png";
-    return `data:${type};base64,${buffer.toString("base64")}`;
-  } catch {
-    return null;
-  }
-}
 
 // Decorative contribution-graph strip. Deterministic per cell (no
 // randomness), so the same profile always renders the same card.
