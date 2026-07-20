@@ -157,7 +157,10 @@ export default function SignInPage() {
       provider: "github",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: "read:user repo",
+        // Public data only (repos, languages, profile README) — the broad
+        // "repo" scope (read/write, incl. private) contradicted the read-only
+        // promise below and is not needed by the sync.
+        scopes: "read:user",
       },
     });
   };
