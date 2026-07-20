@@ -188,6 +188,7 @@ function createSupabaseMock(profileRow: Record<string, unknown>) {
 const jsonResponse = (body: unknown, status = 200) => ({
   ok: status >= 200 && status < 300,
   status,
+  headers: { get: () => null },
   json: async () => body,
   text: async () => (typeof body === "string" ? body : JSON.stringify(body)),
 });

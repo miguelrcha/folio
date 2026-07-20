@@ -24,6 +24,36 @@ function githubFetchError(res: Response, what: string): SyncError {
     : new SyncError(`github ${what} fetch failed`, 502);
 }
 
+// Bounded-concurrency map: like Promise.all(items.map(fn)) but with at most
+// `limit` calls in flight, and no new work starts after the first failure —
+// once GitHub starts refusing (rate limit, outage), hammering it with the
+// remaining queue only makes things worse. The first rejection still
+// propagates to the caller.
+export async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  let failed = false;
+
+  const worker = async () => {
+    while (!failed && next < items.length) {
+      const index = next++;
+      try {
+        results[index] = await fn(items[index], index);
+      } catch (err) {
+        failed = true;
+        throw err;
+      }
+    }
+  };
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
 type StructureSignals = {
   hasReadme: boolean;
   hasTests: boolean;
@@ -650,6 +680,37 @@ async function fetchTotalCommits(accessToken: string, createdAt: string | null):
   return totals.reduce((sum, n) => sum + n, 0);
 }
 
+// GitHub caps per_page at 100 and exposes further pages only through the
+// `Link` response header. Following rel="next" until it disappears is the
+// only way to see every repo — trusting a single page made the stale-repo
+// cleanup below delete everything from repo 101 on.
+function nextPageUrl(linkHeader: string | null): string | null {
+  const match = linkHeader?.match(/<([^>]+)>;\s*rel="next"/);
+  return match ? match[1] : null;
+}
+
+async function fetchAllRepos(headers: Record<string, string>): Promise<GithubRepo[]> {
+  const repos: GithubRepo[] = [];
+  let url: string | null =
+    "https://api.github.com/user/repos?per_page=100&sort=pushed&affiliation=owner";
+
+  while (url) {
+    const res: Response = await fetch(url, { headers });
+    if (!res.ok) {
+      throw githubFetchError(res, "repos");
+    }
+    repos.push(...((await res.json()) as GithubRepo[]));
+    url = nextPageUrl(res.headers.get("link"));
+  }
+
+  return repos;
+}
+
+// At most this many repos are enriched at once; each one costs two GitHub
+// requests (languages + tree), so the previous unbounded Promise.all meant
+// ~200 simultaneous requests for a 100-repo account.
+const SYNC_REPO_CONCURRENCY = 10;
+
 export async function syncGithubProfile(
   supabase: SupabaseClient,
   userId: string,
@@ -679,14 +740,7 @@ export async function syncGithubProfile(
   // counted separately in the total commits, via GraphQL (see
   // fetchTotalCommits), so we discard the private ones here without losing
   // that number.
-  const reposRes = await fetch(
-    "https://api.github.com/user/repos?per_page=100&sort=pushed&affiliation=owner",
-    { headers: githubHeaders }
-  );
-  if (!reposRes.ok) {
-    throw githubFetchError(reposRes, "repos");
-  }
-  const allRepos: GithubRepo[] = await reposRes.json();
+  const allRepos = await fetchAllRepos(githubHeaders);
   const repos = allRepos.filter((repo) => !repo.private);
 
   // 2.1 Selections already made by the profile's owner — a re-sync (e.g.
@@ -701,51 +755,40 @@ export async function syncGithubProfile(
     (existingRepos ?? []).map((r) => [r.github_repo_id, r.is_selected])
   );
 
-  // 2.2 Removes from the table any repo that didn't come back in this public
-  // batch (went private after already being synced, or was deleted on
-  // GitHub) — without this, a repo selected before going private would keep
-  // showing up with a broken link on the portfolio forever.
-  const currentRepoIds = repos.map((repo) => repo.id);
-  if (currentRepoIds.length > 0) {
-    await supabase
-      .from("repos")
-      .delete()
-      .eq("profile_id", userId)
-      .not("github_repo_id", "in", `(${currentRepoIds.join(",")})`);
-  } else {
-    await supabase.from("repos").delete().eq("profile_id", userId);
-  }
-
-  // 3. Languages per repo (bytes), in parallel — used both for the repo's
-  // card and for aggregating the profile's overall stack
+  // 3. Languages per repo (bytes), with bounded concurrency — used both for
+  // the repo's card and for aggregating the profile's overall stack. A
+  // non-ok languages response must fail the sync: GitHub's error body
+  // ({message, documentation_url}) parses as valid JSON and used to get
+  // written into `stack` and `top_stack` as if it were language data.
   const languageBytesTotal: Record<string, number> = {};
 
-  const enriched = await Promise.all(
-    repos.map(async (repo) => {
-      const [langRes, structureSignals] = await Promise.all([
-        fetch(repo.languages_url, { headers: githubHeaders }),
-        fetchStructureSignals(repo, githubHeaders),
-      ]);
-      const languages: Record<string, number> = await langRes.json();
+  const enriched = await mapWithConcurrency(repos, SYNC_REPO_CONCURRENCY, async (repo) => {
+    const [langRes, structureSignals] = await Promise.all([
+      fetch(repo.languages_url, { headers: githubHeaders }),
+      fetchStructureSignals(repo, githubHeaders),
+    ]);
+    if (!langRes.ok) {
+      throw githubFetchError(langRes, "languages");
+    }
+    const languages: Record<string, number> = await langRes.json();
 
-      for (const [lang, bytes] of Object.entries(languages)) {
-        languageBytesTotal[lang] = (languageBytesTotal[lang] ?? 0) + bytes;
-      }
+    for (const [lang, bytes] of Object.entries(languages)) {
+      languageBytesTotal[lang] = (languageBytesTotal[lang] ?? 0) + bytes;
+    }
 
-      return {
-        profile_id: userId,
-        github_repo_id: repo.id,
-        name: repo.name,
-        description: repo.description ?? "",
-        stack: Object.keys(languages),
-        stars: repo.stargazers_count,
-        forks: repo.forks_count,
-        commits: 0,
-        impact_score: impactScore(repo, structureSignals),
-        is_selected: existingSelection.get(repo.id) ?? false,
-      };
-    })
-  );
+    return {
+      profile_id: userId,
+      github_repo_id: repo.id,
+      name: repo.name,
+      description: repo.description ?? "",
+      stack: Object.keys(languages),
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
+      commits: 0,
+      impact_score: impactScore(repo, structureSignals),
+      is_selected: existingSelection.get(repo.id) ?? false,
+    };
+  });
 
   // 4. Aggregates the overall stack into percentages
   const totalBytes = Object.values(languageBytesTotal).reduce((a, b) => a + b, 0);
@@ -804,7 +847,24 @@ export async function syncGithubProfile(
   // 5. Total account commits (full history, including private repos)
   const totalCommits = await fetchTotalCommits(githubAccessToken, githubUser.created_at ?? null);
 
-  // 6. Save repos
+  // 6. Removes from the table any repo that didn't come back in this public
+  // batch (went private after already being synced, or was deleted on
+  // GitHub) — without this, a repo selected before going private would keep
+  // showing up with a broken link on the portfolio forever. Runs only after
+  // every GitHub fetch has succeeded: deleting first meant a mid-sync
+  // failure wiped rows the upsert never got to restore.
+  const currentRepoIds = repos.map((repo) => repo.id);
+  if (currentRepoIds.length > 0) {
+    await supabase
+      .from("repos")
+      .delete()
+      .eq("profile_id", userId)
+      .not("github_repo_id", "in", `(${currentRepoIds.join(",")})`);
+  } else {
+    await supabase.from("repos").delete().eq("profile_id", userId);
+  }
+
+  // 7. Save repos
   const { error: reposError } = await supabase
     .from("repos")
     .upsert(enriched, { onConflict: "profile_id,github_repo_id" });
@@ -813,7 +873,7 @@ export async function syncGithubProfile(
     throw new SyncError(reposError.message, 500);
   }
 
-  // 7. Updates the profile with the aggregated data
+  // 8. Updates the profile with the aggregated data
   // The overview (summary) manually edited by the profile's owner shouldn't
   // be overwritten on every sync — same logic already applied to top_stack.
   const profileUpdate: Record<string, unknown> = {
@@ -857,6 +917,10 @@ export async function syncGithubProfile(
 }
 
 const VISIT_SYNC_TTL_MS = 60 * 60 * 1000; // 1h
+// After a failed background sync, how long before a visit may try again.
+// Long enough not to hammer GitHub from a hot profile page, short enough
+// that a transient failure doesn't freeze the profile for the full TTL.
+const FAILED_SYNC_RETRY_MS = 5 * 60 * 1000; // 5min
 
 // Triggered on every visit/refresh of `folio.dev/{username}` (see
 // app/[username]/page.tsx) to keep photo, name, bio, followers and commits
@@ -907,6 +971,17 @@ export async function syncProfileIfStale(githubUsername: string): Promise<void> 
     await syncGithubProfile(supabase, profile.id, accessToken);
   } catch {
     // Background sync: a failure here (rate limit, revoked token, etc.)
-    // shouldn't break anything, just leaves it for the next visit/TTL to retry.
+    // shouldn't break the page render. But the claim above already stamped
+    // updated_at with "now", which would silently block any retry for the
+    // full TTL — rewind the stamp so a visit after a short backoff can try
+    // again instead of serving stale data for an hour.
+    await supabase
+      .from("profiles")
+      .update({
+        updated_at: new Date(
+          Date.now() - VISIT_SYNC_TTL_MS + FAILED_SYNC_RETRY_MS
+        ).toISOString(),
+      })
+      .eq("id", profile.id);
   }
 }
