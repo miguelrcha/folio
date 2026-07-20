@@ -917,6 +917,10 @@ export async function syncGithubProfile(
 }
 
 const VISIT_SYNC_TTL_MS = 60 * 60 * 1000; // 1h
+// After a failed background sync, how long before a visit may try again.
+// Long enough not to hammer GitHub from a hot profile page, short enough
+// that a transient failure doesn't freeze the profile for the full TTL.
+const FAILED_SYNC_RETRY_MS = 5 * 60 * 1000; // 5min
 
 // Triggered on every visit/refresh of `folio.dev/{username}` (see
 // app/[username]/page.tsx) to keep photo, name, bio, followers and commits
@@ -967,6 +971,17 @@ export async function syncProfileIfStale(githubUsername: string): Promise<void> 
     await syncGithubProfile(supabase, profile.id, accessToken);
   } catch {
     // Background sync: a failure here (rate limit, revoked token, etc.)
-    // shouldn't break anything, just leaves it for the next visit/TTL to retry.
+    // shouldn't break the page render. But the claim above already stamped
+    // updated_at with "now", which would silently block any retry for the
+    // full TTL — rewind the stamp so a visit after a short backoff can try
+    // again instead of serving stale data for an hour.
+    await supabase
+      .from("profiles")
+      .update({
+        updated_at: new Date(
+          Date.now() - VISIT_SYNC_TTL_MS + FAILED_SYNC_RETRY_MS
+        ).toISOString(),
+      })
+      .eq("id", profile.id);
   }
 }
