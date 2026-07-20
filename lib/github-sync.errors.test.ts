@@ -37,6 +37,23 @@ const GITHUB_USER = {
   created_at: "2024-01-15T00:00:00Z",
 };
 
+// Minimal public repo for the mid-sync (per-repo fetch) failure paths.
+const REPO = {
+  id: 101,
+  name: "widget",
+  description: null,
+  private: false,
+  fork: false,
+  size: 10,
+  stargazers_count: 0,
+  forks_count: 0,
+  pushed_at: "2026-07-01T00:00:00Z",
+  languages_url: "https://api.github.com/repos/octocat/widget/languages",
+  license: null,
+  default_branch: "main",
+  owner: { login: "octocat" },
+};
+
 // Failing responses carry the real error body GitHub sends — the old code
 // would happily .filter() over this object and crash with a TypeError.
 const RATE_LIMIT_BODY = {
@@ -71,10 +88,11 @@ function createSupabaseMock() {
         onFulfilled?: ((value: { data: unknown; error: null }) => T | PromiseLike<T>) | null,
         onRejected?: ((reason: unknown) => T | PromiseLike<T>) | null
       ) =>
-        Promise.resolve({ data: { top_stack: [], summary_manual: false }, error: null }).then(
-          onFulfilled,
-          onRejected
-        ),
+        Promise.resolve({
+          // The repos select expects a row list; the profiles select, a row.
+          data: table === "repos" ? [] : { top_stack: [], summary_manual: false },
+          error: null,
+        }).then(onFulfilled, onRejected),
     };
     return builder;
   };
@@ -156,6 +174,47 @@ describe("syncGithubProfile error handling", () => {
 
     const err = await expectSyncError(syncGithubProfile(supabase, "user-1", "token"));
     expect(err.status).toBe(429);
+    expect(writes).toEqual([]);
+  });
+
+  it("maps a mid-sync rate limit on a languages fetch to a 429 without writing anything", async () => {
+    const { supabase, writes } = createSupabaseMock();
+    stubFetch({
+      "https://api.github.com/repos/octocat/widget/languages": response(403, RATE_LIMIT_BODY, {
+        "x-ratelimit-remaining": "0",
+      }),
+      "https://api.github.com/repos/octocat/widget/git/trees": response(200, {
+        truncated: false,
+        tree: [],
+      }),
+      "https://api.github.com/user/repos": response(200, [REPO]),
+      "https://api.github.com/user": response(200, GITHUB_USER),
+    });
+
+    const err = await expectSyncError(syncGithubProfile(supabase, "user-1", "token"));
+    expect(err.status).toBe(429);
+    // The stale-repo delete must not have run: a mid-sync failure that
+    // deletes rows the upsert never restores is data loss, not an error.
+    expect(writes).toEqual([]);
+  });
+
+  it("maps any other languages failure to a 502 instead of storing the error body as a stack", async () => {
+    const { supabase, writes } = createSupabaseMock();
+    stubFetch({
+      "https://api.github.com/repos/octocat/widget/languages": response(500, {
+        message: "Server Error",
+      }),
+      "https://api.github.com/repos/octocat/widget/git/trees": response(200, {
+        truncated: false,
+        tree: [],
+      }),
+      "https://api.github.com/user/repos": response(200, [REPO]),
+      "https://api.github.com/user": response(200, GITHUB_USER),
+    });
+
+    const err = await expectSyncError(syncGithubProfile(supabase, "user-1", "token"));
+    expect(err.status).toBe(502);
+    expect(err.message).toBe("github languages fetch failed");
     expect(writes).toEqual([]);
   });
 
