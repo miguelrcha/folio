@@ -1,7 +1,20 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decrypt } from "@/lib/crypto";
-import { syncGithubProfile, SyncError } from "@/lib/github-sync";
+import { mapWithConcurrency, syncGithubProfile } from "@/lib/github-sync";
+
+// A full sync makes dozens of GitHub calls per profile; the platform default
+// timeout is not something to lean on implicitly for a job that grows with
+// the user base.
+export const maxDuration = 300;
+
+// How many profiles sync at once. Each one already fans out its own repo
+// fetches (bounded inside syncGithubProfile), and each uses its owner's
+// token, so GitHub rate limits are per-profile — this cap is about not
+// saturating the function's own network, not about GitHub quotas.
+// ponytail: all profiles still sync in a single invocation; move to a
+// cursor/queue (e.g. Vercel Queues) when profile count outgrows the 300s window.
+const CRON_SYNC_CONCURRENCY = 5;
 
 // Triggered once a day by Vercel Cron (see vercel.json) to keep bio, name,
 // and total commits current even without the person opening folio or
@@ -24,25 +37,24 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const results = await Promise.allSettled(
-    (profiles ?? []).map(async (profile) => {
+  // Failures are caught per profile (allSettled semantics) so one revoked
+  // token or rate-limited account never blocks the rest of the batch.
+  const results = await mapWithConcurrency(profiles ?? [], CRON_SYNC_CONCURRENCY, async (profile) => {
+    try {
       const accessToken = decrypt(profile.github_access_token as string);
-      return syncGithubProfile(supabase, profile.id, accessToken);
-    })
-  );
+      await syncGithubProfile(supabase, profile.id, accessToken);
+      return { profileId: profile.id as string, error: null };
+    } catch (err) {
+      return {
+        profileId: profile.id as string,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+  });
 
   const failures = results
-    .map((r, i) => ({ r, id: profiles![i].id }))
-    .filter((x) => x.r.status === "rejected")
-    .map((x) => ({
-      profileId: x.id,
-      error:
-        x.r.status === "rejected"
-          ? x.r.reason instanceof SyncError || x.r.reason instanceof Error
-            ? x.r.reason.message
-            : String(x.r.reason)
-          : "",
-    }));
+    .filter((r): r is { profileId: string; error: string } => r.error !== null)
+    .map((r) => ({ profileId: r.profileId, error: r.error }));
 
   return NextResponse.json({
     total: results.length,

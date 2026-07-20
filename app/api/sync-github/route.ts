@@ -3,6 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { decrypt } from "@/lib/crypto";
 import { syncGithubProfile, SyncError } from "@/lib/github-sync";
 
+// A large account (repos are paginated, each repo costs two more GitHub
+// calls) can take well over a minute — be explicit about the budget instead
+// of leaning on the platform default.
+export const maxDuration = 300;
+
 export async function POST() {
   const supabase = await createClient();
   const {
