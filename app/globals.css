@@ -9,7 +9,8 @@
   --color-border-bright: #333333;
   --color-text: #ededed;
   --color-text-muted: #8c8c8c;
-  --color-text-faint: #5c5c5c;
+  /* ~5.4:1 on black (WCAG AA); was #5c5c5c ≈2.86:1 */
+  --color-text-faint: #8a8a8a;
   --color-accent: #ffffff;
   --color-accent-dim: #ffffff;
   --color-green-commit: #4a7c4e;

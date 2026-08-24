@@ -199,9 +199,9 @@ export default async function ProfilePage({
         {(profile.summary || isOwner) && (
           <section className="mt-12">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)] m-0 font-normal">
                 {t("profile.section.overview")}
-              </span>
+              </h2>
               {isOwner && (
                 <EditOverviewModal profileId={profile.id} initialSummary={profile.summary ?? ""} />
               )}
@@ -220,9 +220,9 @@ export default async function ProfilePage({
         {/* Experiences */}
         <section className="mt-12">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+            <h2 className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)] m-0 font-normal">
               {t("profile.section.experiences")}
-            </span>
+            </h2>
             {isOwner && (
               <>
                 <EditExperiencesModal
@@ -270,9 +270,9 @@ export default async function ProfilePage({
         {((profile.top_stack && profile.top_stack.length > 0) || isOwner) && (
           <section className="mt-12">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)] m-0 font-normal">
                 {t("profile.section.stacks")}
-              </span>
+              </h2>
               {isOwner && (
                 <EditStacksModal profileId={profile.id} initialStacks={profile.top_stack ?? []} />
               )}
@@ -300,9 +300,9 @@ export default async function ProfilePage({
         {/* Portfolio ordered by impact — unchanged from before */}
         <section className="mt-12">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+            <h2 className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)] m-0 font-normal">
               {t("profile.section.projects")}
-            </span>
+            </h2>
             {isOwner && <EditProjectsModal profileId={profile.id} />}
             <span className="flex-1 h-px bg-[var(--color-border)]" />
           </div>
@@ -360,9 +360,9 @@ export default async function ProfilePage({
         {/* Certifications */}
         <section className="mt-12">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+            <h2 className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)] m-0 font-normal">
               {t("profile.section.certificates")}
-            </span>
+            </h2>
             {isOwner && (
               <>
                 <EditCertificationsModal
@@ -400,9 +400,9 @@ export default async function ProfilePage({
         {/* Languages */}
         <section className="mt-12 mb-20">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)]">
+            <h2 className="font-mono text-xs uppercase tracking-widest text-[var(--color-text-faint)] m-0 font-normal">
               {t("profile.section.languages")}
-            </span>
+            </h2>
             {isOwner && (
               <EditLanguagesModal
                 profileId={profile.id}
