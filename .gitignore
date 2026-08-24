@@ -4,6 +4,7 @@
 
 # dependencies
 /node_modules
+/marketing/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -18,6 +19,9 @@
 # next.js
 /.next/
 /out/
+
+# remotion render output (marketing package)
+/marketing/out/
 
 # fumadocs (generated content collections)
 /.source/
