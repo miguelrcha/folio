@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Folio",
       description: t("meta.ogDescription"),
-      url: "https://meufolio.dev",
+      url: SITE_URL,
       siteName: "Folio",
       images: [
         {

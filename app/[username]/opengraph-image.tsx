@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { getPublicProfile } from "./profile-data";
 import { profileDisplayName } from "@/lib/profile-metadata";
 import { fetchAvatarDataUrl } from "@/lib/avatar";
+import { SITE_HOST } from "@/lib/site";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -159,7 +160,7 @@ export default async function Image({
           >
             <div style={{ fontSize: 44, fontWeight: 600, color: TEXT }}>folio</div>
             <div style={{ fontSize: 28, color: TEXT_MUTED }}>
-              {`meufolio.dev/${profile.github_username}`}
+              {`${SITE_HOST}/${profile.github_username}`}
             </div>
           </div>
         </div>

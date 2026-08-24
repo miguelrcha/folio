@@ -7,6 +7,7 @@ import { localizedSummary } from "@/lib/profile";
 import { translate } from "@/lib/i18n/translations";
 import { CV_FONT_STACKS, CV_SECTION_LIMITS, type CvSectionKey } from "@/lib/cv/config";
 import type { CvTemplateProps } from "@/lib/cv/types";
+import { SITE_HOST } from "@/lib/site";
 
 const LIMITS = CV_SECTION_LIMITS.classic;
 
@@ -214,7 +215,7 @@ export function ClassicTemplate({
               <GithubIcon className="h-[8pt] w-[8pt]" />
               github.com/{profile.github_username}
             </span>
-            <span>meufolio.dev/{profile.github_username}</span>
+            <span>{SITE_HOST}/{profile.github_username}</span>
           </div>
         </div>
 
@@ -228,7 +229,7 @@ export function ClassicTemplate({
         </div>
 
         <div className="mt-[14pt] pt-[6pt] border-t border-[#e5e7eb] text-[7.5pt] text-[#9ca3af] text-center">
-          {t("profile.footer.generated")} · meufolio.dev/{profile.github_username}
+          {t("profile.footer.generated")} · {SITE_HOST}/{profile.github_username}
         </div>
       </div>
     </div>
