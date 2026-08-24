@@ -24,7 +24,7 @@ GitHub OAuth is configured inside Supabase, not via env vars.
 - `components/` — UI, including the `Edit*Modal.tsx` editable sections and the
   print-only `ResumeDocument.tsx`.
 - `lib/` — domain logic: `github-sync.ts` (the sync engine), `crypto.ts`, the
-  `resume/` CV generators, and `supabase/` (the browser/server/admin clients).
+  `cv/` template registry, and `supabase/` (the browser/server/admin clients).
 
 See `AGENTS.md` for the full architecture and the data-model notes.
 

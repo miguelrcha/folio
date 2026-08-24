@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Folio
 
-Turns a GitHub profile into a public portfolio/resume site (`folio.dev/{username}`), built with Next.js + Supabase. See AGENTS.md above for the full rundown of the data model, editable-section pattern, and CV export approach.
+Turns a GitHub profile into a public portfolio/resume site (`meufolio.dev/{username}`), built with Next.js + Supabase. See AGENTS.md above for the full rundown of the data model, editable-section pattern, and CV export approach.
 
 ## Commands
 
@@ -39,7 +39,7 @@ Sync flow: `/api/sync-github` (interactive, on connect) and `/api/cron/sync-all`
 
 - `app/` — routes. Public profile is `app/[username]/page.tsx`; auth via `app/login`, `app/auth/callback`, `app/connect`; API under `app/api/`.
 - `components/` — UI, including the `Edit*Modal.tsx` editable-section family and the print-only `cv/templates/{Classic,Modern}Template.tsx`.
-- `lib/` — data/domain helpers (`profile.ts`, `experience.ts`, `certification.ts`, `language.ts`), `github-sync.ts`, `crypto.ts`, `cv/` (template registry + `CvConfig`, the real CV-export path), `resume/generate.ts` (docx generator, currently unused), and `supabase/`.
+- `lib/` — data/domain helpers (`profile.ts`, `experience.ts`, `certification.ts`, `language.ts`), `github-sync.ts`, `crypto.ts`, `cv/` (template registry + `CvConfig`, the real CV-export path), and `supabase/`.
 
 ## Working notes specific to this repo
 
