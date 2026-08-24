@@ -52,7 +52,7 @@ export function FeatureResume() {
               Marina Costa
             </p>
             <p style={{ fontSize: 16, color: colors.textFaint, margin: "6px 0 0" }}>
-              github.com/marinacosta · folio.dev/marinacosta
+              github.com/marinacosta · meufolio.dev/marinacosta
             </p>
 
             <div style={{ marginTop: 22, paddingTop: 16, borderTop: `1px solid ${colors.border}` }}>

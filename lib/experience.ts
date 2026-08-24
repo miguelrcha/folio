@@ -21,9 +21,6 @@ export function getMonths(lang: Language = "en") {
   return MONTHS_BY_LANG[lang];
 }
 
-// English default, kept for any call site that doesn't (yet) thread a language through.
-export const MONTHS = MONTHS_BY_LANG.en;
-
 export function formatExperienceRange(exp: ExperienceEntry, lang: Language = "en"): string {
   const months = getMonths(lang);
   const hasValidStart =

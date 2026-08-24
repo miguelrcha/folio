@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Folio
 
-Turns a GitHub profile into a public portfolio/resume site (`folio.dev/{username}`), built with Next.js + Supabase. See AGENTS.md above for the full rundown of the data model, editable-section pattern, and CV export approach.
+Turns a GitHub profile into a public portfolio/resume site (`meufolio.dev/{username}`), built with Next.js + Supabase. See AGENTS.md above for the full rundown of the data model, editable-section pattern, and CV export approach.
 
 ## Commands
 
@@ -39,14 +39,14 @@ Sync flow: `/api/sync-github` (interactive, on connect) and `/api/cron/sync-all`
 
 - `app/` — routes. Public profile is `app/[username]/page.tsx`; auth via `app/login`, `app/auth/callback`, `app/connect`; API under `app/api/`.
 - `components/` — UI, including the `Edit*Modal.tsx` editable-section family and the print-only `cv/templates/{Classic,Modern}Template.tsx`.
-- `lib/` — data/domain helpers (`profile.ts`, `experience.ts`, `certification.ts`, `language.ts`), `github-sync.ts`, `crypto.ts`, `cv/` (template registry + `CvConfig`, the real CV-export path), `resume/generate.ts` (docx generator, currently unused), and `supabase/`.
+- `lib/` — data/domain helpers (`profile.ts`, `experience.ts`, `certification.ts`, `language.ts`), `github-sync.ts`, `crypto.ts`, `cv/` (template registry + `CvConfig`, the real CV-export path), and `supabase/`.
 
 ## Working notes specific to this repo
 
 - No headless-browser/PDF tooling is installed. To visually check print/PDF output (e.g. the CV), render with a locally installed Chromium-based browser in headless mode (`--headless=new --print-to-pdf=...` or `--screenshot=...`), then inspect the result — don't assume print CSS looks right without actually rendering it.
 - DB schema changes can't be applied from here (no Supabase CLI/migration setup, no direct Postgres connection) — always hand the user the exact SQL to run themselves, then verify the change against the DB via the Supabase JS client before building on top of it. Remember `public_profiles` is a hand-allowlisted view: adding a public field means re-running `CREATE OR REPLACE VIEW ... AS SELECT ...` with the existing column order preserved and new columns appended (reordering throws Postgres `42P16`).
 - **Controlled, issue-driven workflow — see `CONTRIBUTING.md`.** Nothing lands on `main` directly: work happens on a `<type>/<issue#>-<slug>` branch and merges via PR. Commits are atomic and use the emoji-prefixed Conventional Commits convention (`✨ feat:`, `🐛 fix:`, `🚧 chore:`, `✅ test:`, `✏️ docs:`). `npm run build`, `npm run lint`, and `npm test` must pass before a PR.
-- **Do not push or open PRs on your own.** Never push to `origin/main`. Create commits on a feature branch only, and push / open the PR only when the maintainer explicitly asks. Commits should end with a `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>` trailer.
+- **Do not push or open PRs on your own.** Never push to `origin/main`. Create commits on a feature branch only, and push / open the PR only when the maintainer explicitly asks. Commits should end with a `Co-Authored-By: Claude <model> <noreply@anthropic.com>` trailer naming the model that actually authored the commit (e.g. `Claude Opus 5`, `Claude Fable 5`) — never a hardcoded model name.
 - **English-only repository.** All code, comments, UI strings, commits and docs are in English — never mix languages within a file. (Note: some existing UI strings and comments are still in Portuguese; treat that as tech debt to fix via issues, not a pattern to follow.)
 
 ## Maintenance

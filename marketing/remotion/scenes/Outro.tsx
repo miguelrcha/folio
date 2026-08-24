@@ -53,7 +53,7 @@ export function Outro() {
             transform: `translateY(${title.translateY}px) scale(${title.scale})`,
           }}
         >
-          folio.dev/{"{"}you{"}"}
+          meufolio.dev/{"{"}you{"}"}
         </h2>
         <p
           style={{

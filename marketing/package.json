@@ -1,0 +1,21 @@
+{
+  "name": "folio-marketing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remotion pitch video for Folio. Isolated from the app package on purpose (issue #18 / #84): its dependencies must not mix with the app's.",
+  "scripts": {
+    "pitch:studio": "remotion studio remotion/index.ts",
+    "pitch:render": "remotion render remotion/index.ts Pitch out/pitch.mp4"
+  },
+  "dependencies": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "remotion": "^4.0.487"
+  },
+  "devDependencies": {
+    "@remotion/cli": "^4.0.487",
+    "@remotion/google-fonts": "^4.0.487",
+    "@remotion/player": "^4.0.487",
+    "@remotion/transitions": "^4.0.487"
+  }
+}

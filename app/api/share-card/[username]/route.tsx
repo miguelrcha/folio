@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getPublicProfile } from "@/app/[username]/profile-data";
 import { fetchAvatarDataUrl } from "@/lib/avatar";
+import { SITE_HOST } from "@/lib/site";
 
 export const size = { width: 1200, height: 630 };
 
@@ -150,7 +151,7 @@ export async function GET(
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ fontSize: 26, color: TEXT }}>{`meufolio.dev/${profile.github_username}`}</div>
+            <div style={{ fontSize: 26, color: TEXT }}>{`${SITE_HOST}/${profile.github_username}`}</div>
             {logo && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={logo} alt="" width={40} height={40} style={{ borderRadius: 8 }} />

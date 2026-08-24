@@ -2,3 +2,6 @@
 // and the sitemap. meufolio.dev is the production domain; the env override
 // exists for previews and local checks.
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://meufolio.dev";
+
+// Host-only form for display strings like "meufolio.dev/{username}".
+export const SITE_HOST = new URL(SITE_URL).host;

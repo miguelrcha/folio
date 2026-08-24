@@ -12,6 +12,7 @@ import {
   type CvSectionKey,
 } from "@/lib/cv/config";
 import type { CvTemplateProps } from "@/lib/cv/types";
+import { SITE_HOST } from "@/lib/site";
 
 const LIMITS = CV_SECTION_LIMITS.modern;
 
@@ -256,7 +257,7 @@ export function ModernTemplate({
               <GithubIcon className="h-[8pt] w-[8pt]" />
               github.com/{profile.github_username}
             </span>
-            <span>meufolio.dev/{profile.github_username}</span>
+            <span>{SITE_HOST}/{profile.github_username}</span>
           </div>
 
           {visibleInOrder(config.sections, SIDEBAR_SECTIONS).map((key) => (

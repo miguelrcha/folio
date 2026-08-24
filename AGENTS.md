@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # About this project
 
-Folio turns a GitHub profile into a public portfolio/resume site. A user signs in with GitHub OAuth, `/api/sync-github` pulls their repos, per-repo languages, and stack icons parsed out of their `github.com/{user}/{user}` profile README (skillicons.dev, shields.io badges, devicon/simple-icons `<img>` tags), and aggregates all of it into a profile at `folio.dev/{username}`.
+Folio turns a GitHub profile into a public portfolio/resume site. A user signs in with GitHub OAuth, `/api/sync-github` pulls their repos, per-repo languages, and stack icons parsed out of their `github.com/{user}/{user}` profile README (skillicons.dev, shields.io badges, devicon/simple-icons `<img>` tags), and aggregates all of it into a profile at `meufolio.dev/{username}`.
 
 **Stack:** Next.js (Turbopack), React 19, TypeScript, Tailwind CSS v4 (CSS-first theme in `app/globals.css` via `@theme inline` — there is no `tailwind.config.js`), Supabase (Postgres + GitHub OAuth). Fonts (Inter, JetBrains Mono) are loaded via `next/font/google` in `app/layout.tsx`.
 
@@ -18,7 +18,7 @@ Folio turns a GitHub profile into a public portfolio/resume site. A user signs i
 
 **Editable sections** (Overview, Experiences, Stacks, Certifications, Languages, Projects) all follow one convention: a small pencil-icon button opens a dark modal (`components/Edit*Modal.tsx`), which mutates Supabase directly from the client (`createClient()` from `@/lib/supabase/client`, no server actions/API routes for edits) and calls `router.refresh()` on save. Structured repeatable-entry sections (Experiences, Certifications) share the same add/remove-entry shape; Stacks and Languages use tag/dropdown pickers instead.
 
-**CV export:** the "View CV" button just calls `window.print()`. What gets printed is a real React/Tailwind template — `components/cv/templates/{Classic,Modern}Template.tsx`, registered in `lib/cv/templates.ts` and selected via `lib/cv/config.ts`'s `CvConfig` (`ClassicTemplate` is the current default for every profile), rendered `hidden print:block` and styled to fit an A4 page (`@page` rule in `app/globals.css`). Preview and export are the same component, so they can't drift. There's no server-side PDF rendering (no puppeteer/headless-chromium) — deliberately, to keep the project deployable as a plain Next.js app. `lib/resume/generate.ts` (a docx generator) exists but is currently unused by any button/route.
+**CV export:** the "View CV" button just calls `window.print()`. What gets printed is a real React/Tailwind template — `components/cv/templates/{Classic,Modern}Template.tsx`, registered in `lib/cv/templates.ts` and selected via `lib/cv/config.ts`'s `CvConfig` (`ClassicTemplate` is the current default for every profile), rendered `hidden print:block` and styled to fit an A4 page (`@page` rule in `app/globals.css`). Preview and export are the same component, so they can't drift. There's no server-side PDF rendering (no puppeteer/headless-chromium) — deliberately, to keep the project deployable as a plain Next.js app.
 
 **Commit convention:** emoji-prefixed Conventional Commits in English — `✨ feat:`, `🐛 fix:`, `🚧 chore:`, `✅ test:`, `✏️ docs:`.
 

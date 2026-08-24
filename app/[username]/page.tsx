@@ -7,6 +7,7 @@ import { DownloadCvButton } from "@/components/DownloadCvButton";
 import { SignOutButton } from "@/components/SignOutButton";
 import { DeleteAccountButton } from "@/components/DeleteAccountButton";
 import { createClient } from "@/lib/supabase/server";
+import { SITE_HOST } from "@/lib/site";
 import { EditProjectsModal } from "@/components/EditProjectsModal";
 import { EditOverviewModal } from "@/components/EditOverviewModal";
 import { EditExperiencesModal } from "@/components/EditExperiencesModal";
@@ -430,7 +431,7 @@ export default async function ProfilePage({
         </section>
 
         <footer className="pb-10 flex flex-col-reverse items-center gap-3 text-center text-xs font-mono text-[var(--color-text-faint)] md:flex-row md:justify-between md:text-left">
-          <span>{t("profile.footer.generated")} · meufolio.dev/{profile.github_username}</span>
+          <span>{t("profile.footer.generated")} · {SITE_HOST}/{profile.github_username}</span>
           <div className="flex items-center gap-4">
             {isOwner && <DeleteAccountButton profileId={profile.id} />}
             <a
