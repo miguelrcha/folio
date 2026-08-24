@@ -922,7 +922,7 @@ const VISIT_SYNC_TTL_MS = 60 * 60 * 1000; // 1h
 // that a transient failure doesn't freeze the profile for the full TTL.
 const FAILED_SYNC_RETRY_MS = 5 * 60 * 1000; // 5min
 
-// Triggered on every visit/refresh of `folio.dev/{username}` (see
+// Triggered on every visit/refresh of `meufolio.dev/{username}` (see
 // app/[username]/page.tsx) to keep photo, name, bio, followers and commits
 // current without depending on the person opening "edit projects". An
 // anonymous visitor has no session or token of their own, so this runs with

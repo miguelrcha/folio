@@ -27,7 +27,7 @@ export function FeatureProfile() {
         <FeatureLayout
           eyebrow="01 — public profile"
           title="A page that's always accurate"
-          description="folio.dev/you — bio, real stack, and projects ranked by impact. Pulled straight from GitHub, no manual upkeep."
+          description="meufolio.dev/you — bio, real stack, and projects ranked by impact. Pulled straight from GitHub, no manual upkeep."
         >
           <div
             style={{
